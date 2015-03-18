@@ -1,0 +1,357 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A890E8C31AB8DF93009FA404 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8C21AB8DF93009FA404 /* main.cpp */; };
+		A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */; };
+		A890E8DC1AB8E4D2009FA404 /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8D91AB8E4D2009FA404 /* RtAudio.cpp */; };
+		A8EB10591AB8E70400246DA8 /* libTonic-OSX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A890E8D41AB8E490009FA404 /* libTonic-OSX.a */; };
+		A8EB105B1AB8E77400246DA8 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8EB105A1AB8E77400246DA8 /* Accelerate.framework */; };
+		A8EB105E1AB8F7F400246DA8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8EB105D1AB8F7F400246DA8 /* AudioToolbox.framework */; };
+		A8EB10601AB8F7FA00246DA8 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8EB105F1AB8F7FA00246DA8 /* CoreAudio.framework */; };
+		A8EB10621AB8F80E00246DA8 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8EB10611AB8F80E00246DA8 /* CoreFoundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A890E8D31AB8E490009FA404 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A890E8CE1AB8E490009FA404 /* TonicLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 01F72690171520F900EBB4BB;
+			remoteInfo = "Tonic-OSX";
+		};
+		A890E8D51AB8E490009FA404 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A890E8CE1AB8E490009FA404 /* TonicLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F23A7CF1171B3D2E00AE8353;
+			remoteInfo = "Tonic-iOS";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A890E8BD1AB8DF93009FA404 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A890E8BF1AB8DF93009FA404 /* EliasResamplerDemo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EliasResamplerDemo; sourceTree = BUILT_PRODUCTS_DIR; };
+		A890E8C21AB8DF93009FA404 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RealtimeResampler.cpp; sourceTree = "<group>"; };
+		A890E8CB1AB8DFF3009FA404 /* RealtimeResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RealtimeResampler.h; sourceTree = "<group>"; };
+		A890E8CE1AB8E490009FA404 /* TonicLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TonicLib.xcodeproj; path = ../../submodules/Tonic/lib/TonicLib.xcodeproj; sourceTree = "<group>"; };
+		A890E8D91AB8E4D2009FA404 /* RtAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RtAudio.cpp; sourceTree = "<group>"; };
+		A890E8DA1AB8E4D2009FA404 /* RtAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtAudio.h; sourceTree = "<group>"; };
+		A890E8DB1AB8E4D2009FA404 /* RtError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtError.h; sourceTree = "<group>"; };
+		A8EB105A1AB8E77400246DA8 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		A8EB105D1AB8F7F400246DA8 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		A8EB105F1AB8F7FA00246DA8 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		A8EB10611AB8F80E00246DA8 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A890E8BC1AB8DF93009FA404 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A8EB10621AB8F80E00246DA8 /* CoreFoundation.framework in Frameworks */,
+				A8EB10601AB8F7FA00246DA8 /* CoreAudio.framework in Frameworks */,
+				A8EB105E1AB8F7F400246DA8 /* AudioToolbox.framework in Frameworks */,
+				A8EB105B1AB8E77400246DA8 /* Accelerate.framework in Frameworks */,
+				A8EB10591AB8E70400246DA8 /* libTonic-OSX.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A890E8B61AB8DF93009FA404 = {
+			isa = PBXGroup;
+			children = (
+				A8EB10611AB8F80E00246DA8 /* CoreFoundation.framework */,
+				A8EB105F1AB8F7FA00246DA8 /* CoreAudio.framework */,
+				A8EB105D1AB8F7F400246DA8 /* AudioToolbox.framework */,
+				A8EB105A1AB8E77400246DA8 /* Accelerate.framework */,
+				A890E8C11AB8DF93009FA404 /* EliasResamplerDemo */,
+				A890E8C01AB8DF93009FA404 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A890E8C01AB8DF93009FA404 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A890E8BF1AB8DF93009FA404 /* EliasResamplerDemo */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A890E8C11AB8DF93009FA404 /* EliasResamplerDemo */ = {
+			isa = PBXGroup;
+			children = (
+				A890E8D71AB8E4A8009FA404 /* lib */,
+				A890E8CE1AB8E490009FA404 /* TonicLib.xcodeproj */,
+				A890E8C91AB8DFB5009FA404 /* src */,
+				A890E8C21AB8DF93009FA404 /* main.cpp */,
+			);
+			path = EliasResamplerDemo;
+			sourceTree = "<group>";
+		};
+		A890E8C91AB8DFB5009FA404 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */,
+				A890E8CB1AB8DFF3009FA404 /* RealtimeResampler.h */,
+			);
+			name = src;
+			path = ../../../src;
+			sourceTree = "<group>";
+		};
+		A890E8CF1AB8E490009FA404 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A890E8D41AB8E490009FA404 /* libTonic-OSX.a */,
+				A890E8D61AB8E490009FA404 /* libTonic-iOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A890E8D71AB8E4A8009FA404 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				A890E8D81AB8E4D2009FA404 /* RTAudio */,
+			);
+			name = lib;
+			sourceTree = "<group>";
+		};
+		A890E8D81AB8E4D2009FA404 /* RTAudio */ = {
+			isa = PBXGroup;
+			children = (
+				A890E8D91AB8E4D2009FA404 /* RtAudio.cpp */,
+				A890E8DA1AB8E4D2009FA404 /* RtAudio.h */,
+				A890E8DB1AB8E4D2009FA404 /* RtError.h */,
+			);
+			name = RTAudio;
+			path = ../../submodules/Tonic/examples/Standalone/RTAudio;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A890E8BE1AB8DF93009FA404 /* EliasResamplerDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A890E8C61AB8DF93009FA404 /* Build configuration list for PBXNativeTarget "EliasResamplerDemo" */;
+			buildPhases = (
+				A890E8BB1AB8DF93009FA404 /* Sources */,
+				A890E8BC1AB8DF93009FA404 /* Frameworks */,
+				A890E8BD1AB8DF93009FA404 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EliasResamplerDemo;
+			productName = EliasResamplerDemo;
+			productReference = A890E8BF1AB8DF93009FA404 /* EliasResamplerDemo */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A890E8B71AB8DF93009FA404 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = "Morgan Packard";
+				TargetAttributes = {
+					A890E8BE1AB8DF93009FA404 = {
+						CreatedOnToolsVersion = 6.0.1;
+					};
+				};
+			};
+			buildConfigurationList = A890E8BA1AB8DF93009FA404 /* Build configuration list for PBXProject "EliasResamplerDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A890E8B61AB8DF93009FA404;
+			productRefGroup = A890E8C01AB8DF93009FA404 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A890E8CF1AB8E490009FA404 /* Products */;
+					ProjectRef = A890E8CE1AB8E490009FA404 /* TonicLib.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				A890E8BE1AB8DF93009FA404 /* EliasResamplerDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A890E8D41AB8E490009FA404 /* libTonic-OSX.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libTonic-OSX.a";
+			remoteRef = A890E8D31AB8E490009FA404 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A890E8D61AB8E490009FA404 /* libTonic-iOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libTonic-iOS.a";
+			remoteRef = A890E8D51AB8E490009FA404 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A890E8BB1AB8DF93009FA404 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */,
+				A890E8DC1AB8E4D2009FA404 /* RtAudio.cpp in Sources */,
+				A890E8C31AB8DF93009FA404 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A890E8C41AB8DF93009FA404 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = __MACOSX_CORE__;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../submodules/Tonic/src,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A890E8C51AB8DF93009FA404 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = __MACOSX_CORE__;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../submodules/Tonic/src,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		A890E8C71AB8DF93009FA404 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A890E8C81AB8DF93009FA404 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A890E8BA1AB8DF93009FA404 /* Build configuration list for PBXProject "EliasResamplerDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A890E8C41AB8DF93009FA404 /* Debug */,
+				A890E8C51AB8DF93009FA404 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A890E8C61AB8DF93009FA404 /* Build configuration list for PBXNativeTarget "EliasResamplerDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A890E8C71AB8DF93009FA404 /* Debug */,
+				A890E8C81AB8DF93009FA404 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A890E8B71AB8DF93009FA404 /* Project object */;
+}
