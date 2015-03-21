@@ -100,21 +100,22 @@
 		A890E8C11AB8DF93009FA404 /* EliasResamplerDemo */ = {
 			isa = PBXGroup;
 			children = (
+				A8EB10631AB8F90600246DA8 /* demo_src */,
 				A890E8D71AB8E4A8009FA404 /* lib */,
 				A890E8CE1AB8E490009FA404 /* TonicLib.xcodeproj */,
-				A890E8C91AB8DFB5009FA404 /* src */,
+				A890E8C91AB8DFB5009FA404 /* resampler */,
 				A890E8C21AB8DF93009FA404 /* main.cpp */,
 			);
 			path = EliasResamplerDemo;
 			sourceTree = "<group>";
 		};
-		A890E8C91AB8DFB5009FA404 /* src */ = {
+		A890E8C91AB8DFB5009FA404 /* resampler */ = {
 			isa = PBXGroup;
 			children = (
 				A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */,
 				A890E8CB1AB8DFF3009FA404 /* RealtimeResampler.h */,
 			);
-			name = src;
+			name = resampler;
 			path = ../../../src;
 			sourceTree = "<group>";
 		};
@@ -144,6 +145,13 @@
 			);
 			name = RTAudio;
 			path = ../../submodules/Tonic/examples/Standalone/RTAudio;
+			sourceTree = "<group>";
+		};
+		A8EB10631AB8F90600246DA8 /* demo_src */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = demo_src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -256,7 +264,10 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = __MACOSX_CORE__;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					__MACOSX_CORE__,
+					"DEBUG=1",
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
