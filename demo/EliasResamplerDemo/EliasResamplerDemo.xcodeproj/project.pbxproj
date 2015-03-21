@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A8080FA91ABE05DC001B817D /* PitchableBufferPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8080FA71ABE05DC001B817D /* PitchableBufferPlayer.cpp */; };
 		A890E8C31AB8DF93009FA404 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8C21AB8DF93009FA404 /* main.cpp */; };
 		A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */; };
 		A890E8DC1AB8E4D2009FA404 /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8D91AB8E4D2009FA404 /* RtAudio.cpp */; };
@@ -47,6 +48,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A8080FA71ABE05DC001B817D /* PitchableBufferPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PitchableBufferPlayer.cpp; sourceTree = "<group>"; };
+		A8080FA81ABE05DC001B817D /* PitchableBufferPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PitchableBufferPlayer.h; sourceTree = "<group>"; };
 		A890E8BF1AB8DF93009FA404 /* EliasResamplerDemo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EliasResamplerDemo; sourceTree = BUILT_PRODUCTS_DIR; };
 		A890E8C21AB8DF93009FA404 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RealtimeResampler.cpp; sourceTree = "<group>"; };
@@ -104,7 +107,6 @@
 				A890E8D71AB8E4A8009FA404 /* lib */,
 				A890E8CE1AB8E490009FA404 /* TonicLib.xcodeproj */,
 				A890E8C91AB8DFB5009FA404 /* resampler */,
-				A890E8C21AB8DF93009FA404 /* main.cpp */,
 			);
 			path = EliasResamplerDemo;
 			sourceTree = "<group>";
@@ -150,6 +152,9 @@
 		A8EB10631AB8F90600246DA8 /* demo_src */ = {
 			isa = PBXGroup;
 			children = (
+				A890E8C21AB8DF93009FA404 /* main.cpp */,
+				A8080FA71ABE05DC001B817D /* PitchableBufferPlayer.cpp */,
+				A8080FA81ABE05DC001B817D /* PitchableBufferPlayer.h */,
 			);
 			name = demo_src;
 			sourceTree = "<group>";
@@ -234,6 +239,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */,
+				A8080FA91ABE05DC001B817D /* PitchableBufferPlayer.cpp in Sources */,
 				A890E8DC1AB8E4D2009FA404 /* RtAudio.cpp in Sources */,
 				A890E8C31AB8DF93009FA404 /* main.cpp in Sources */,
 			);
@@ -279,6 +285,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					../submodules/Tonic/src,
+					../../../src,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -320,6 +327,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					../submodules/Tonic/src,
+					../../../src,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;

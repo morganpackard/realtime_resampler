@@ -8,6 +8,7 @@
 #include <iostream>
 #include "Tonic.h"
 #include "RtAudio.h"
+#include "PitchableBufferPlayer.h"
 
 using namespace Tonic;
 
@@ -42,7 +43,7 @@ int main(int argc, const char * argv[])
     SampleTable sample = loadAudioFile("/junk from desktop/sounds/think_lc_tambourine.aif");
     //SampleTable sample = loadAudioFile("/junk from desktop/sounds/bass/MINIMOOG/BMM02B.WAV");
 
-    BufferPlayer player;
+    PitchableBufferPlayer player;
     player
       .setBuffer(sample)
       .trigger(ControlTrigger().trigger())
