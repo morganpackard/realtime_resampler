@@ -10,7 +10,7 @@
 
 namespace Tonic { namespace Tonic_{
   
-  PitchableBufferPlayer_::PitchableBufferPlayer_() : resampler( 0 ), currentSample(0), isFinished_(true), playbackRateIsOne(true){
+  PitchableBufferPlayer_::PitchableBufferPlayer_() : resampler( 0 ), currentFrame(0), isFinished_(true), playbackRateIsOne(true){
     doesLoop_ = ControlValue(false);
     trigger_ = ControlTrigger();
     startPosition_ = ControlValue(0);
@@ -24,53 +24,73 @@ namespace Tonic { namespace Tonic_{
     buffer_ = buffer;
     setIsStereoOutput(buffer.channels() == 2);
     samplesPerSynthesisBlock = kSynthesisBlockSize * buffer_.channels();
+    if(resampler == 0){
+      resampler = new RealtimeResampler::Renderer(kSynthesisBlockSize, 1);
+      resampler->setAudioSource(this);
+    }
   }
   
   inline void PitchableBufferPlayer_::computeSynthesisBlock(const SynthesisContext_ &context){
 
-    bool doesLoop = doesLoop_.tick(context).value;
+    mDoesLoop = doesLoop_.tick(context).value;
     bool trigger = trigger_.tick(context).triggered;
-    float startPosition = startPosition_.tick(context).value;
+    mStartSecs = startPosition_.tick(context).value;
     
     if(trigger){
       isFinished_ = false;
-      currentSample = startPosition * sampleRate() * buffer_.channels();
+      currentFrame = mStartSecs * sampleRate() * buffer_.channels();
     }
     
     if(isFinished_){
       outputFrames_.clear();
-    }else if(playbackRateIsOne){
-      int samplesLeftInBuf = (int)buffer_.size() - currentSample;
-      int samplesToCopy = min(samplesPerSynthesisBlock, samplesLeftInBuf);
-      copySamplesToOutputBuffer(currentSample, samplesToCopy);
-      if (samplesToCopy < samplesPerSynthesisBlock) {
-        if(doesLoop){
-          currentSample = startPosition * sampleRate() * buffer_.channels();
+    }else{
+      resampler->render(&outputFrames_[0], kSynthesisBlockSize);
+//      int playbackRateHop = playbackRateFrames_.channels(); // ignore all but the first channel
+//      int outputChannels = outputFrames_.channels();
+//      playbackRate_.tick(playbackRateFrames_, context);
+//      TonicFloat* playbackRateData = &playbackRateFrames_[0];
+//      TonicFloat* inData = buffer_.dataPointer();
+//      TonicFloat* outData = &outputFrames_[0];
+//      size_t bufferFrameCount = buffer_.frames();
+//      for(int i = 0; i < kSynthesisBlockSize; i++){
+//        for (int chan = 0; chan < outputChannels; chan++) {
+//          outData[i * outputChannels + chan] = inData[ ((int)currentFrame) * outputChannels + chan ];
+//        }
+//        currentFrame += (playbackRateData[i * playbackRateHop]);
+//        if(currentFrame >= bufferFrameCount ){
+//          currentFrame -= bufferFrameCount;
+//        }
+//      }
+      
+    }
+    
+  }
+  
+  size_t PitchableBufferPlayer_::getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested){
+  
+    size_t totalFramesCopied = 0;
+    
+    while (totalFramesCopied < numFramesRequested) {
+      size_t framesLeftInBuffer = buffer_.size() * buffer_.channels() - currentFrame;
+      size_t copyOverage = max(0, numFramesRequested - framesLeftInBuffer);
+      size_t framesToCopy = numFramesRequested - copyOverage;
+      memcpy(outputBuffer, &buffer_.dataPointer()[currentFrame * buffer_.channels()], framesToCopy * buffer_.channels() * sizeof(TonicFloat));
+      totalFramesCopied += framesToCopy;
+      currentFrame +=framesToCopy;
+      outputBuffer += framesToCopy;
+      if (currentFrame >= buffer_.frames()) {
+        if(mDoesLoop){
+          currentFrame = mStartSecs * sampleRate() * buffer_.channels();
         }else{
           isFinished_ = true;
           finishedTrigger_.trigger();
-        }
-      }else{
-        currentSample += samplesPerSynthesisBlock;
-      }
-    }else{
-      int playbackRateHop = playbackRateFrames_.channels(); // ignore all but the first channel
-      int outputChannels = outputFrames_.channels();
-      playbackRate_.tick(playbackRateFrames_, context);
-      TonicFloat* playbackRateData = &playbackRateFrames_[0];
-      TonicFloat* inData = buffer_.dataPointer();
-      TonicFloat* outData = &outputFrames_[0];
-      size_t bufferFrameCount = buffer_.frames();
-      for(int i = 0; i < kSynthesisBlockSize; i++){
-        for (int chan = 0; chan < outputChannels; chan++) {
-          outData[i * outputChannels + chan] = inData[ ((int)currentSample) * outputChannels + chan ];
-        }
-        currentSample += (playbackRateData[i * playbackRateHop]);
-        if(currentSample >= bufferFrameCount ){
-          currentSample -= bufferFrameCount;
+          break;
         }
       }
     }
+    
+    return totalFramesCopied;
+
   }
 
 

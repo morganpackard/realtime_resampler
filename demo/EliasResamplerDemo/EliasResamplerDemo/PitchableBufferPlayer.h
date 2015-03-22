@@ -20,13 +20,13 @@ namespace Tonic {
   
   namespace Tonic_ {
 
-    class PitchableBufferPlayer_ : public Generator_{
+    class PitchableBufferPlayer_ : public Generator_, public RealtimeResampler::AudioSource{
       
     protected:
 
         SampleTable buffer_;
         int testVar;
-        float currentSample;
+        int currentFrame;
         int samplesPerSynthesisBlock;
         ControlGenerator doesLoop_;
         ControlGenerator trigger_;
@@ -37,8 +37,8 @@ namespace Tonic {
         Tonic::TonicFrames playbackRateFrames_;
         bool playbackRateIsOne;
         RealtimeResampler::Renderer* resampler;
-
-        void copySamplesToOutputBuffer(int startSample, int numSamples);
+        bool mDoesLoop;
+        int mStartSecs;
 
     public:
         PitchableBufferPlayer_();
@@ -57,12 +57,11 @@ namespace Tonic {
           playbackRateFrames_.resample(kSynthesisBlockSize, playbackRate.isStereoOutput() ? 2 : 1);
           playbackRateIsOne = false;
         }
+        size_t getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested);
 
     };
 
-    inline void PitchableBufferPlayer_::copySamplesToOutputBuffer(int startSample, int numSamples){
-        memcpy(&outputFrames_[0], &buffer_.dataPointer()[startSample], numSamples * sizeof(TonicFloat));
-    }
+
 
   }
   

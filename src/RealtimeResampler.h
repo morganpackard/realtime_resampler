@@ -122,6 +122,16 @@ namespace RealtimeResampler {
         
           size_t                      getInputFrameCount(size_t outputFrameCount);
         
+        
+        
+        
+          /*!
+            Get the number of channels the renderer was configured with.
+          */
+        
+          size_t                      getNumChannels();
+        
+        
           /*!
             Set the AudioSource delegate object. This MUST be called or there will be no data to resample!
           */
@@ -158,6 +168,11 @@ namespace RealtimeResampler {
           */
         
           void                        setDeAllocator(void (void*));
+        
+        private:
+          size_t                      mNumChannels;
+          AudioSource*                mAudioSource;
+        
           
       };
   
