@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		A8080FA91ABE05DC001B817D /* PitchableBufferPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8080FA71ABE05DC001B817D /* PitchableBufferPlayer.cpp */; };
+		A80E461A1AD19A2600F13BA1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A80E46191AD19A2600F13BA1 /* main.cpp */; };
+		A80E46201AD19BA700F13BA1 /* RealtimeResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */; };
 		A890E8C31AB8DF93009FA404 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8C21AB8DF93009FA404 /* main.cpp */; };
 		A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */; };
 		A890E8DC1AB8E4D2009FA404 /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8D91AB8E4D2009FA404 /* RtAudio.cpp */; };
@@ -36,6 +38,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		A80E46151AD19A2600F13BA1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		A890E8BD1AB8DF93009FA404 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -50,6 +61,8 @@
 /* Begin PBXFileReference section */
 		A8080FA71ABE05DC001B817D /* PitchableBufferPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PitchableBufferPlayer.cpp; sourceTree = "<group>"; };
 		A8080FA81ABE05DC001B817D /* PitchableBufferPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PitchableBufferPlayer.h; sourceTree = "<group>"; };
+		A80E46171AD19A2600F13BA1 /* ResamplerTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ResamplerTests; sourceTree = BUILT_PRODUCTS_DIR; };
+		A80E46191AD19A2600F13BA1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A890E8BF1AB8DF93009FA404 /* EliasResamplerDemo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EliasResamplerDemo; sourceTree = BUILT_PRODUCTS_DIR; };
 		A890E8C21AB8DF93009FA404 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RealtimeResampler.cpp; sourceTree = "<group>"; };
@@ -65,6 +78,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A80E46141AD19A2600F13BA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A890E8BC1AB8DF93009FA404 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -80,6 +100,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A80E46181AD19A2600F13BA1 /* ResamplerTests */ = {
+			isa = PBXGroup;
+			children = (
+				A80E46191AD19A2600F13BA1 /* main.cpp */,
+			);
+			path = ResamplerTests;
+			sourceTree = "<group>";
+		};
 		A890E8B61AB8DF93009FA404 = {
 			isa = PBXGroup;
 			children = (
@@ -88,6 +116,7 @@
 				A8EB105D1AB8F7F400246DA8 /* AudioToolbox.framework */,
 				A8EB105A1AB8E77400246DA8 /* Accelerate.framework */,
 				A890E8C11AB8DF93009FA404 /* EliasResamplerDemo */,
+				A80E46181AD19A2600F13BA1 /* ResamplerTests */,
 				A890E8C01AB8DF93009FA404 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				A890E8BF1AB8DF93009FA404 /* EliasResamplerDemo */,
+				A80E46171AD19A2600F13BA1 /* ResamplerTests */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,6 +192,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A80E46161AD19A2600F13BA1 /* ResamplerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A80E461F1AD19A2700F13BA1 /* Build configuration list for PBXNativeTarget "ResamplerTests" */;
+			buildPhases = (
+				A80E46131AD19A2600F13BA1 /* Sources */,
+				A80E46141AD19A2600F13BA1 /* Frameworks */,
+				A80E46151AD19A2600F13BA1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ResamplerTests;
+			productName = ResamplerTests;
+			productReference = A80E46171AD19A2600F13BA1 /* ResamplerTests */;
+			productType = "com.apple.product-type.tool";
+		};
 		A890E8BE1AB8DF93009FA404 /* EliasResamplerDemo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A890E8C61AB8DF93009FA404 /* Build configuration list for PBXNativeTarget "EliasResamplerDemo" */;
@@ -188,6 +235,9 @@
 				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = "Morgan Packard";
 				TargetAttributes = {
+					A80E46161AD19A2600F13BA1 = {
+						CreatedOnToolsVersion = 6.2;
+					};
 					A890E8BE1AB8DF93009FA404 = {
 						CreatedOnToolsVersion = 6.0.1;
 					};
@@ -212,6 +262,7 @@
 			projectRoot = "";
 			targets = (
 				A890E8BE1AB8DF93009FA404 /* EliasResamplerDemo */,
+				A80E46161AD19A2600F13BA1 /* ResamplerTests */,
 			);
 		};
 /* End PBXProject section */
@@ -234,6 +285,15 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A80E46131AD19A2600F13BA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A80E46201AD19BA700F13BA1 /* RealtimeResampler.cpp in Sources */,
+				A80E461A1AD19A2600F13BA1 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A890E8BB1AB8DF93009FA404 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -248,6 +308,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		A80E461B1AD19A2600F13BA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A80E461C1AD19A2600F13BA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		A890E8C41AB8DF93009FA404 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -352,6 +431,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A80E461F1AD19A2700F13BA1 /* Build configuration list for PBXNativeTarget "ResamplerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A80E461B1AD19A2600F13BA1 /* Debug */,
+				A80E461C1AD19A2600F13BA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		A890E8BA1AB8DF93009FA404 /* Build configuration list for PBXProject "EliasResamplerDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

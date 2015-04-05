@@ -35,6 +35,8 @@ namespace Tonic { namespace Tonic_{
     mDoesLoop = doesLoop_.tick(context).value;
     bool trigger = trigger_.tick(context).triggered;
     mStartSecs = startPosition_.tick(context).value;
+    float pitch = playbackRate_.tick(context).value;
+    resampler->setPitch(pitch, pitch, 0);
     
     if(trigger){
       isFinished_ = false;
@@ -45,23 +47,6 @@ namespace Tonic { namespace Tonic_{
       outputFrames_.clear();
     }else{
       resampler->render(&outputFrames_[0], kSynthesisBlockSize);
-//      int playbackRateHop = playbackRateFrames_.channels(); // ignore all but the first channel
-//      int outputChannels = outputFrames_.channels();
-//      playbackRate_.tick(playbackRateFrames_, context);
-//      TonicFloat* playbackRateData = &playbackRateFrames_[0];
-//      TonicFloat* inData = buffer_.dataPointer();
-//      TonicFloat* outData = &outputFrames_[0];
-//      size_t bufferFrameCount = buffer_.frames();
-//      for(int i = 0; i < kSynthesisBlockSize; i++){
-//        for (int chan = 0; chan < outputChannels; chan++) {
-//          outData[i * outputChannels + chan] = inData[ ((int)currentFrame) * outputChannels + chan ];
-//        }
-//        currentFrame += (playbackRateData[i * playbackRateHop]);
-//        if(currentFrame >= bufferFrameCount ){
-//          currentFrame -= bufferFrameCount;
-//        }
-//      }
-      
     }
     
   }

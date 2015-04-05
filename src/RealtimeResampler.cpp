@@ -18,7 +18,8 @@ namespace RealtimeResampler {
     mSourceBufferReadHead(0),
     mSourceFramesLastDelivered(0),
     mSampleRate(sampleRate),
-    mAlloc(&malloc)
+    mAlloc(&malloc),
+    mDealloc(&free)
   {
     mSourceBuffer = (SampleType*)mAlloc(sourceBufferLength * numChannels * sizeof(SampleType));
   }
@@ -101,11 +102,14 @@ namespace RealtimeResampler {
     double glideDuration = duration < mSecondsUntilPitchDestination ? duration : mSecondsUntilPitchDestination;
     double nonGlideDuration = duration - glideDuration;
     nonGlideDuration = nonGlideDuration > 0 ? nonGlideDuration : 0;
-    float slope = ( mPitchDestination - mCurrentPitch ) / glideDuration;
-    float pitchAtEndOfGlide = mCurrentPitch + slope * glideDuration;
-    size_t glideFrames = (mCurrentPitch + pitchAtEndOfGlide) / glideDuration;
-    size_t nonGlideFrames = nonGlideDuration * mPitchDestination;
-    return glideFrames + nonGlideFrames;
+    double glideSourceTime = 0;
+    if (glideDuration > 0) {
+      float slope = (mPitchDestination - mCurrentPitch) / mSecondsUntilPitchDestination;
+      float endPitch = mCurrentPitch + slope * glideDuration;
+      glideSourceTime = glideDuration *  (mCurrentPitch +  endPitch) / 2 ;
+    }
+    double nonGlideSourceTime = nonGlideDuration * mPitchDestination;
+    return (glideSourceTime + nonGlideSourceTime) * mSampleRate;
   }
   
 }

@@ -33,8 +33,7 @@ namespace Tonic {
         ControlGenerator startPosition_;
         ControlTrigger finishedTrigger_;
         bool isFinished_;
-        Generator playbackRate_;
-        Tonic::TonicFrames playbackRateFrames_;
+        ControlGenerator playbackRate_;
         bool playbackRateIsOne;
         RealtimeResampler::Renderer* resampler;
         bool mDoesLoop;
@@ -52,12 +51,12 @@ namespace Tonic {
         bool isFinished(){ return isFinished_; }
         bool isStereoOutput(){ return buffer_.channels() == 2; }
         ControlGenerator finishedTrigger(){ return finishedTrigger_; };
-        void setPlaybackRate(Generator playbackRate){
+        void setPlaybackRate(ControlGenerator playbackRate){
           playbackRate_ = playbackRate;
-          playbackRateFrames_.resample(kSynthesisBlockSize, playbackRate.isStereoOutput() ? 2 : 1);
           playbackRateIsOne = false;
         }
         size_t getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested);
+      
 
     };
 
@@ -93,7 +92,7 @@ namespace Tonic {
     TONIC_MAKE_CTRL_GEN_SETTERS(PitchableBufferPlayer, loop, setDoesLoop)
     TONIC_MAKE_CTRL_GEN_SETTERS(PitchableBufferPlayer, trigger, setTrigger)
     TONIC_MAKE_CTRL_GEN_SETTERS(PitchableBufferPlayer, startPosition, setStartPosition)
-    TONIC_MAKE_GEN_SETTERS(PitchableBufferPlayer, playbackRate, setPlaybackRate)
+    TONIC_MAKE_CTRL_GEN_SETTERS(PitchableBufferPlayer, playbackRate, setPlaybackRate)
 
   };
 }
