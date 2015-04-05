@@ -90,7 +90,13 @@ namespace RealtimeResampler {
             Constructor
           */
         
-          Renderer(float sampleRate, int numChannels);
+          Renderer(float sampleRate, int numChannels, size_t sourceBufferLength = 64);
+        
+          /*!
+            Destructor
+          */
+          
+          ~Renderer();
         
           /*!
             Render samples at the current pitch. Returns the actual number of samples written to the output buffer. 
@@ -158,7 +164,7 @@ namespace RealtimeResampler {
           void                        setLowPassFilter(LPF* interpolator);
         
           /*!
-            Option for custom allocator. This should not be called after the first call to rRenderer::render.
+            Option for custom allocator. This should not be called after the first call to Renderer::render.
           */
         
           void                        setAllocator(void* (size_t));
@@ -171,9 +177,18 @@ namespace RealtimeResampler {
         
         private:
           size_t                      mNumChannels;
+          float                       mSampleRate; // frames per second
           AudioSource*                mAudioSource;
+          float                       mCurrentPitch;
+          float                       mPitchDestination;
+          float                       mSecondsUntilPitchDestination;
+          void*                       (*mAlloc)(size_t); // allocator function
+          void                        (*mDealloc)(void*); // deallocator function
+          SampleType*                 mSourceBuffer; // temporary buffer to hold samples provided by the audiosource
+          size_t                      mSourceBufferLength;
+          size_t                      mSourceFramesLastDelivered;
+          float                       mSourceBufferReadHead; // the next frame to read of the sourceBuffer
         
-          
       };
   
 }
