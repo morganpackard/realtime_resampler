@@ -128,7 +128,13 @@ namespace RealtimeResampler {
         
           size_t                      getInputFrameCount(size_t outputFrameCount);
         
+          /*!
+            Calclulate how many output frames may be rendered using a given number of input frames. 
+            This calculation is based on the currently scheduled pitch and interpolation. One should always call setPitch _before_ getOutputFrameCount
+            rather than after in order, otherwise the value returned by getInputFrameCount will be invalid.
+          */
         
+          size_t                      getOutputFrameCount(size_t inputFrameCount);
         
         
           /*!

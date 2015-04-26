@@ -438,6 +438,7 @@
 				A80E461C1AD19A2600F13BA1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A890E8BA1AB8DF93009FA404 /* Build configuration list for PBXProject "EliasResamplerDemo" */ = {
 			isa = XCConfigurationList;
