@@ -10,6 +10,8 @@
 		A8080FA91ABE05DC001B817D /* PitchableBufferPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8080FA71ABE05DC001B817D /* PitchableBufferPlayer.cpp */; };
 		A80E461A1AD19A2600F13BA1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A80E46191AD19A2600F13BA1 /* main.cpp */; };
 		A80E46201AD19BA700F13BA1 /* RealtimeResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */; };
+		A858C9F81AFC18C900EDBD95 /* LinearInterpolator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A858C9F61AFC18C900EDBD95 /* LinearInterpolator.cpp */; };
+		A858C9F91AFC18C900EDBD95 /* LinearInterpolator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A858C9F61AFC18C900EDBD95 /* LinearInterpolator.cpp */; };
 		A890E8C31AB8DF93009FA404 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8C21AB8DF93009FA404 /* main.cpp */; };
 		A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */; };
 		A890E8DC1AB8E4D2009FA404 /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8D91AB8E4D2009FA404 /* RtAudio.cpp */; };
@@ -63,6 +65,8 @@
 		A8080FA81ABE05DC001B817D /* PitchableBufferPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PitchableBufferPlayer.h; sourceTree = "<group>"; };
 		A80E46171AD19A2600F13BA1 /* ResamplerTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ResamplerTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		A80E46191AD19A2600F13BA1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		A858C9F61AFC18C900EDBD95 /* LinearInterpolator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LinearInterpolator.cpp; sourceTree = "<group>"; };
+		A858C9F71AFC18C900EDBD95 /* LinearInterpolator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinearInterpolator.h; sourceTree = "<group>"; };
 		A890E8BF1AB8DF93009FA404 /* EliasResamplerDemo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EliasResamplerDemo; sourceTree = BUILT_PRODUCTS_DIR; };
 		A890E8C21AB8DF93009FA404 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RealtimeResampler.cpp; sourceTree = "<group>"; };
@@ -146,6 +150,8 @@
 			children = (
 				A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */,
 				A890E8CB1AB8DFF3009FA404 /* RealtimeResampler.h */,
+				A858C9F61AFC18C900EDBD95 /* LinearInterpolator.cpp */,
+				A858C9F71AFC18C900EDBD95 /* LinearInterpolator.h */,
 			);
 			name = resampler;
 			path = ../../../src;
@@ -290,6 +296,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A80E46201AD19BA700F13BA1 /* RealtimeResampler.cpp in Sources */,
+				A858C9F91AFC18C900EDBD95 /* LinearInterpolator.cpp in Sources */,
 				A80E461A1AD19A2600F13BA1 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -298,6 +305,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A858C9F81AFC18C900EDBD95 /* LinearInterpolator.cpp in Sources */,
 				A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */,
 				A8080FA91ABE05DC001B817D /* PitchableBufferPlayer.cpp in Sources */,
 				A890E8DC1AB8E4D2009FA404 /* RtAudio.cpp in Sources */,

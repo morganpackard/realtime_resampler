@@ -14,6 +14,7 @@
 #define __Resampler__RealtimeResampler__
 
 #include <stdio.h>
+#include <string>
 
 namespace RealtimeResampler {
 
@@ -52,7 +53,7 @@ namespace RealtimeResampler {
         /*!
           Interpolate between input frames. It's up to the caller to determine what the output buffer size will be.
         */
-        virtual size_t                process(SampleType* inputBuffer, SampleType* outputBuffer, float* pitchScale, size_t inputbufferSize) = 0;
+        virtual size_t                process(SampleType* inputBuffer, SampleType* outputBuffer, size_t inputbufferSize,  size_t outputbufferSize, float* pitchScale) = 0;
       
       };
     
@@ -90,7 +91,7 @@ namespace RealtimeResampler {
             Constructor
           */
         
-          Renderer(float sampleRate, int numChannels, size_t sourceBufferLength = 64);
+          Renderer(float sampleRate, int numChannels, size_t sourceBufferLength = 64, size_t maxFramesToRender = 64);
         
           /*!
             Destructor
@@ -182,19 +183,30 @@ namespace RealtimeResampler {
           void                        setDeAllocator(void (void*));
         
         private:
+//          /*!
+//            Send text to cout
+//          */
+//          enum                        LogLevel{LOG_DEBUG = 0, LOG_INFO = 1, LOG_WARN = 2, LOG_ERROR = 3};
+//          static void                 log(std::string, LogLevel);
+//          static LogLevel                    sCurrentLogLevel;
+
+
+          void                        calculatePitchForNextFrames(size_t numFrames);
+        
           size_t                      mNumChannels;
           float                       mSampleRate; // frames per second
           AudioSource*                mAudioSource;
           float                       mCurrentPitch;
           float                       mPitchDestination;
           float                       mSecondsUntilPitchDestination;
+          float*                      mPitchBuffer;
           void*                       (*mAlloc)(size_t); // allocator function
           void                        (*mDealloc)(void*); // deallocator function
           SampleType*                 mSourceBuffer; // temporary buffer to hold samples provided by the audiosource
           size_t                      mSourceBufferLength;
-          size_t                      mSourceFramesLastDelivered;
           float                       mSourceBufferReadHead; // the next frame to read of the sourceBuffer
-        
+          Interpolator*               mInterpolator;
+          size_t                      mMaxFramesToRender;
       };
   
 }

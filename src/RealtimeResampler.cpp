@@ -7,26 +7,35 @@
 
 #include "RealtimeResampler.h"
 #include <cstdlib>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
 
 namespace RealtimeResampler {
+
+ // LogLevel Renderer::sCurrentLogLevel = Renderer::LOG_INFO;
   
-  Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength) :
+  Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender) :
     mNumChannels(numChannels),
     mCurrentPitch(1),
     mPitchDestination(1),
     mSecondsUntilPitchDestination(0),
     mSourceBufferReadHead(0),
-    mSourceFramesLastDelivered(0),
+    mSourceBufferLength(sourceBufferLength),
     mSampleRate(sampleRate),
+    mMaxFramesToRender(maxFramesToRender),
     mAlloc(&malloc),
     mDealloc(&free)
   {
     mSourceBuffer = (SampleType*)mAlloc(sourceBufferLength * numChannels * sizeof(SampleType));
+    mPitchBuffer = (float*)mAlloc(maxFramesToRender* sizeof(float));
   }
   
   
   Renderer::~Renderer(){
     mDealloc(mSourceBuffer);
+    mDealloc(mPitchBuffer);
   }
 
   size_t Renderer::getNumChannels(){
@@ -34,11 +43,31 @@ namespace RealtimeResampler {
   }
   
   size_t Renderer::render(SampleType* outputBuffer, size_t numFramesRequested){
-  
-    size_t numFramesRendered = 0;
     
-    size_t sourceFrameRequestCount = getInputFrameCount(numFramesRequested);
-    size_t sourceFrameReturnCount = mAudioSource->getSamples(mSourceBuffer, sourceFrameRequestCount);
+    if (numFramesRequested > mMaxFramesToRender) {
+      printf("Error in Renderer::render: numFramesRequested is larger than mMaxFramesToRender.");
+    }
+    
+    calculatePitchForNextFrames(numFramesRequested);
+    
+    size_t sourceFramesRemainingToResample = getInputFrameCount(numFramesRequested);
+    size_t numFramesRendered = 0;
+    SampleType* writeHead = outputBuffer;
+    
+    while (sourceFramesRemainingToResample > 0) {
+        size_t sourceFramesToFetch = std::min<size_t>(mSourceBufferLength, sourceFramesRemainingToResample);
+        size_t sourceFramesDelivered = mAudioSource->getSamples(mSourceBuffer, sourceFramesToFetch);
+        if (sourceFramesDelivered == sourceFramesToFetch) {
+            sourceFramesRemainingToResample -= sourceFramesDelivered;
+        }else{
+          sourceFramesRemainingToResample = 0;
+        }
+        size_t framesToRender = getOutputFrameCount(sourceFramesDelivered);
+        mInterpolator->process(mSourceBuffer, writeHead, sourceFramesDelivered, framesToRender, mPitchBuffer);
+        
+    }
+    
+    size_t sourceFrameReturnCount = mAudioSource->getSamples(mSourceBuffer, sourceFramesRemainingToResample);
   
 //    for (size_t frame; frame < numFramesRequested; frame++) {
 //      
@@ -142,5 +171,43 @@ namespace RealtimeResampler {
       return outputFramesForSustain + outputFramesForGlide;
     }
   }
+  
+  void Renderer::setInterpolator(RealtimeResampler::Interpolator *interpolator){
+    mInterpolator = interpolator;
+  }
+  
+  
+  void Renderer::calculatePitchForNextFrames(size_t numFrames){
+  
+      float pitchChangePerFrame = (mPitchDestination - mCurrentPitch) / (mSecondsUntilPitchDestination * mSampleRate);
+      float secondsPerFrame = 1.0 / mSampleRate;
+      for (int frame = 0; frame < numFrames; frame++) {
+        mSecondsUntilPitchDestination -= secondsPerFrame;
+        mCurrentPitch += pitchChangePerFrame;
+        if (mSecondsUntilPitchDestination <=0) {
+          mSecondsUntilPitchDestination = 0;
+          pitchChangePerFrame = 0;
+          mCurrentPitch = 0;
+        }
+        mPitchBuffer[frame] = mCurrentPitch;
+      }
+
+  }
+  
+//  void Renderer::log(std::string text, LogLevel level){
+//    
+//    string levelString;
+//    
+//    switch (level) {
+//      case LOG_DEBUG:
+//        levelString = "DEBUG";
+//        break;
+//
+//      default:
+//        break;
+//    }
+//    
+//    cout << text << endl;
+//  }
   
 }
