@@ -28,7 +28,8 @@ namespace RealtimeResampler {
     mAlloc(&malloc),
     mDealloc(&free)
   {
-    mSourceBuffer = (SampleType*)mAlloc(sourceBufferLength * numChannels * sizeof(SampleType));
+    size_t sourceBufferBytes = sourceBufferLength * numChannels * sizeof(SampleType);
+    mSourceBuffer = (SampleType*)mAlloc(sourceBufferBytes);
     mPitchBuffer = (float*)mAlloc(maxFramesToRender* sizeof(float));
   }
   
@@ -67,7 +68,6 @@ namespace RealtimeResampler {
         
     }
     
-    size_t sourceFrameReturnCount = mAudioSource->getSamples(mSourceBuffer, sourceFramesRemainingToResample);
   
 //    for (size_t frame; frame < numFramesRequested; frame++) {
 //      
@@ -179,18 +179,24 @@ namespace RealtimeResampler {
   
   void Renderer::calculatePitchForNextFrames(size_t numFrames){
   
-      float pitchChangePerFrame = (mPitchDestination - mCurrentPitch) / (mSecondsUntilPitchDestination * mSampleRate);
-      float secondsPerFrame = 1.0 / mSampleRate;
-      for (int frame = 0; frame < numFrames; frame++) {
-        mSecondsUntilPitchDestination -= secondsPerFrame;
-        mCurrentPitch += pitchChangePerFrame;
-        if (mSecondsUntilPitchDestination <=0) {
-          mSecondsUntilPitchDestination = 0;
-          pitchChangePerFrame = 0;
-          mCurrentPitch = 0;
-        }
-        mPitchBuffer[frame] = mCurrentPitch;
+    
+    float pitchChangePerFrame;
+    if (mSecondsUntilPitchDestination > 0) {
+      pitchChangePerFrame = (mPitchDestination - mCurrentPitch) / (mSecondsUntilPitchDestination * mSampleRate);
+    }else{
+      pitchChangePerFrame = 0;
+    }
+    float secondsPerFrame = 1.0 / mSampleRate;
+    for (int frame = 0; frame < numFrames; frame++) {
+      mSecondsUntilPitchDestination -= secondsPerFrame;
+      mCurrentPitch += pitchChangePerFrame;
+      if (mSecondsUntilPitchDestination <=0) {
+        mSecondsUntilPitchDestination = 0;
+        pitchChangePerFrame = 0;
+        mCurrentPitch = mPitchDestination;
       }
+      mPitchBuffer[frame] = mCurrentPitch;
+    }
 
   }
   
