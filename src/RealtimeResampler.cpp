@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
@@ -21,22 +22,35 @@ namespace RealtimeResampler {
     mCurrentPitch(1),
     mPitchDestination(1),
     mSecondsUntilPitchDestination(0),
-    mSourceBufferReadHead(0),
-    mSourceBufferLength(sourceBufferLength),
+    mSourceBufferReadHead(sourceBufferLength),
     mSampleRate(sampleRate),
     mMaxFramesToRender(maxFramesToRender),
     mAlloc(&malloc),
     mDealloc(&free)
   {
+    
+    mCurrentSourceBuffer = &mSourceBuffer[0];
+    mNextSourceBuffer = &mSourceBuffer[1];
+  
     size_t sourceBufferBytes = sourceBufferLength * numChannels * sizeof(SampleType);
-    mSourceBuffer = (SampleType*)mAlloc(sourceBufferBytes);
+    for(int i = 0; i < 2; i++){
+      mSourceBuffer[i].data = (SampleType*)mAlloc(sourceBufferBytes);
+      mSourceBuffer[i].length = 0;
+      mSourceBuffer[i].maxLength = sourceBufferLength;
+    }
     mPitchBuffer = (float*)mAlloc(maxFramesToRender* sizeof(float));
   }
   
   
   Renderer::~Renderer(){
-    mDealloc(mSourceBuffer);
+    for(int i = 0; i < 2; i++){
+      mDealloc(mSourceBuffer[i].data);
+    }
     mDealloc(mPitchBuffer);
+  }
+  
+  void Renderer::error(std::string message){
+    printf(message.c_str());
   }
 
   size_t Renderer::getNumChannels(){
@@ -46,67 +60,51 @@ namespace RealtimeResampler {
   size_t Renderer::render(SampleType* outputBuffer, size_t numFramesRequested){
     
     if (numFramesRequested > mMaxFramesToRender) {
-      printf("Error in Renderer::render: numFramesRequested is larger than mMaxFramesToRender.");
+      error("Error in Renderer::render: numFramesRequested is larger than mMaxFramesToRender.");
     }
     
     calculatePitchForNextFrames(numFramesRequested);
     
-    size_t sourceFramesRemainingToResample = getInputFrameCount(numFramesRequested);
     size_t numFramesRendered = 0;
-    SampleType* writeHead = outputBuffer;
     
-    while (sourceFramesRemainingToResample > 0) {
-        size_t sourceFramesToFetch = std::min<size_t>(mSourceBufferLength, sourceFramesRemainingToResample);
-        size_t sourceFramesDelivered = mAudioSource->getSamples(mSourceBuffer, sourceFramesToFetch);
-        if (sourceFramesDelivered == sourceFramesToFetch) {
-            sourceFramesRemainingToResample -= sourceFramesDelivered;
-        }else{
-          sourceFramesRemainingToResample = 0;
-        }
-        size_t framesToRender = getOutputFrameCount(sourceFramesDelivered);
-        mInterpolator->process(mSourceBuffer, writeHead, sourceFramesDelivered, framesToRender, mPitchBuffer);
+    for (int frame = 0; frame < numFramesRequested; frame++) {
+    
+      // If we've reached the end of the current buffer, swap buffers and load more data
+      if (mSourceBufferReadHead >= mCurrentSourceBuffer->maxLength) {
+        swapBuffersAndFillNext();
+      }
+    
+      float interpolationPosition = mSourceBufferReadHead;
+      
+      // The first frame of the interpolated pair
+      int frame1 = (int)interpolationPosition;
+      
+      // The second frame of the interpolated pair.
+      int frame2 = frame1 + 1;
+      
+      // The buffer from which we'll pull data for frame 2.
+      // This may be mCurrentBuffer, or mNextBuffer, depending on whether or not we're on the last frame or not
+      AudioBuffer* frame2Buffer;
+      if (frame2 < mCurrentSourceBuffer->maxLength) {
+        frame2Buffer = mCurrentSourceBuffer;
+      }else{
+        frame2Buffer = mNextSourceBuffer;
+      }
+    
+      // Fill in the data for each channel
+      for (int channel = 0; channel < mNumChannels;  channel++) {
+        // Get the data for the two frames we're interpolatining between
+        float inputframe1 = mCurrentSourceBuffer->data[frame1 * mNumChannels + channel];
+        float inputframe2 = frame2Buffer->data[frame2 * mNumChannels + channel];
         
+        // interpolate between the two points
+        outputBuffer[frame * mNumChannels + channel] = inputframe1 + (inputframe2 - inputframe1) * (interpolationPosition - frame1) ;
+      }
+      
+      numFramesRendered++;
+      mSourceBufferReadHead += mPitchBuffer[frame];
     }
-    
-  
-//    for (size_t frame; frame < numFramesRequested; frame++) {
-//      
-//      // if source read position is greater than length of last source buffer minus 1
-//        // subtract length of last source buffer from source read position
-//        // mSourceFramesLastDelivered = mAudioSource->getSamples
-//      // if mSourceFramesLastDelivered > 0 and source read position is less than length of last source buffer minus 1
-//        // calculate output sample, copy value to output buffer
-//        // increment source read position by current pitch value
-//        // increment numFramesRendered
-//      // else
-//        // write zero to output buffer
-//        // mSourceBufferReadHead = 0
-//      // recalculate pitch
-//      
-//      if(mSourceBufferReadHead > mSourceFramesLastDelivered -1){
-//      
-//        mSourceBufferReadHead -= mSourceFramesLastDelivered;
-//        mSourceFramesLastDelivered = mAudioSource->getSamples(mSourceBuffer, mSourceBufferLength);
-//        
-//      }
-//      if(mSourceFramesLastDelivered > 0 && mSourceBufferReadHead < mSourceFramesLastDelivered - 1){
-//      
-//        for (int channel; channel < mNumChannels; channel++) {
-//            outputBuffer[ frame * mNumChannels + channel] = mSourceBuffer[(int)mSourceBufferReadHead * mNumChannels + channel];
-//        }
-//        
-//        mSourceBufferReadHead += mCurrentPitch;
-//        numFramesRendered++;
-//     
-//       }else{
-//      
-//        for (int channel; channel < mNumChannels; channel++) {
-//          outputBuffer[ frame * mNumChannels + channel] =0;
-//        }
-//        
-//      }
-//    }
-    
+   
     return numFramesRendered;
     
   }
@@ -141,7 +139,7 @@ namespace RealtimeResampler {
       glideSourceTime = glideDuration *  (mCurrentPitch +  endPitch) / 2 ;
     }
     double nonGlideSourceTime = nonGlideDuration * mPitchDestination;
-    return (glideSourceTime + nonGlideSourceTime) * mSampleRate;
+    return ceil( (glideSourceTime + nonGlideSourceTime) * mSampleRate );
   }
   
   
@@ -165,7 +163,7 @@ namespace RealtimeResampler {
       float slope = (mPitchDestination - mCurrentPitch) / mSecondsUntilPitchDestination;
       return inputFrameCount / (mCurrentPitch + slope / 2);
     }else{
-      size_t outputFramesForGlide = mSecondsUntilPitchDestination * mSampleRate;
+      float outputFramesForGlide = mSecondsUntilPitchDestination * mSampleRate;
       size_t inputFramesForSustain = inputFrameCount - inputFramesForGlide;
       size_t outputFramesForSustain = inputFramesForSustain / mPitchDestination;
       return outputFramesForSustain + outputFramesForGlide;
@@ -200,20 +198,16 @@ namespace RealtimeResampler {
 
   }
   
-//  void Renderer::log(std::string text, LogLevel level){
-//    
-//    string levelString;
-//    
-//    switch (level) {
-//      case LOG_DEBUG:
-//        levelString = "DEBUG";
-//        break;
-//
-//      default:
-//        break;
-//    }
-//    
-//    cout << text << endl;
-//  }
+  void Renderer::swapBuffersAndFillNext(){
+    AudioBuffer* newCurrent = mNextSourceBuffer;
+    AudioBuffer* newNext = mCurrentSourceBuffer;
+    mCurrentSourceBuffer = newCurrent;
+    mNextSourceBuffer = newNext;
+    mSourceBufferReadHead -= mCurrentSourceBuffer->maxLength;
+    if (mCurrentSourceBuffer->length == 0) {
+      mCurrentSourceBuffer->length = mAudioSource->getSamples(mCurrentSourceBuffer->data, mCurrentSourceBuffer->maxLength);
+    }
+    mNextSourceBuffer->length = mAudioSource->getSamples(mNextSourceBuffer->data, mNextSourceBuffer->maxLength);
+  }
   
 }

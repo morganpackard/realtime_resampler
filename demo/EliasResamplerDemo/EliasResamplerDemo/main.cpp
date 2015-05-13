@@ -40,14 +40,14 @@ int main(int argc, const char * argv[])
     // --------- MAKE A SYNTH HERE -----------
         
 
-    SampleTable sample = loadAudioFile("/junk from desktop/sounds/think_lc_tambourine.aif");
-    //SampleTable sample = loadAudioFile("/junk from desktop/sounds/bass/MINIMOOG/BMM02B.WAV");
+    //SampleTable sample = loadAudioFile("/junk from desktop/sounds/think_lc_tambourine.aif");
+    SampleTable sample = loadAudioFile("/junk from desktop/sounds/bass/MINIMOOG/BMM02B.WAV");
 
     PitchableBufferPlayer player;
     player
       .setBuffer(sample)
       .trigger(ControlTrigger().trigger())
-      .playbackRate(1.5)
+      .playbackRate( 2 + ControlSineOsc().freq(0.5) )
       .loop(true);
 
 

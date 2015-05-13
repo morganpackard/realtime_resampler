@@ -7,7 +7,6 @@
 //
 
 #include "PitchableBufferPlayer.h"
-#include "LinearInterpolator.h"
 
 using namespace RealtimeResampler;
 
@@ -31,7 +30,7 @@ namespace Tonic { namespace Tonic_{
       delete resampler;
     }
     resampler = new RealtimeResampler::Renderer(kSynthesisBlockSize, buffer_.channels());
-    resampler->setInterpolator(new LinearInterpolator(buffer.channels()));
+   // resampler->setInterpolator(new LinearInterpolator(buffer.channels()));
     resampler->setAudioSource(this);
   }
   
