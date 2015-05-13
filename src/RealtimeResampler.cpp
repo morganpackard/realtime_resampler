@@ -88,6 +88,7 @@ namespace RealtimeResampler {
       if (frame2 < mCurrentSourceBuffer->maxLength) {
         frame2Buffer = mCurrentSourceBuffer;
       }else{
+        frame2 = frame2 % mCurrentSourceBuffer->maxLength;
         frame2Buffer = mNextSourceBuffer;
       }
     
