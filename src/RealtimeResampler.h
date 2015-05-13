@@ -190,7 +190,6 @@ namespace RealtimeResampler {
 
           struct AudioBuffer{
               SampleType*             data;
-              size_t                  maxLength; // todo -- remove this, make it standard
               size_t                  length;
           };
 
@@ -209,6 +208,7 @@ namespace RealtimeResampler {
           AudioBuffer                 mSourceBuffer[2];
           AudioBuffer*                mCurrentSourceBuffer;
           AudioBuffer*                mNextSourceBuffer;
+          size_t                      mMaxSourceBufferLength;
           float                       mSourceBufferReadHead;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;

@@ -8,23 +8,19 @@
 #include "RealtimeResampler.h"
 #include <cstdlib>
 #include <algorithm>
-#include <iostream>
 #include <math.h>
 
-using namespace std;
-
 namespace RealtimeResampler {
-
- // LogLevel Renderer::sCurrentLogLevel = Renderer::LOG_INFO;
   
   Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender) :
     mNumChannels(numChannels),
     mCurrentPitch(1),
     mPitchDestination(1),
     mSecondsUntilPitchDestination(0),
-    mSourceBufferReadHead(sourceBufferLength),
+    mSourceBufferReadHead(sourceBufferLength), // Initialize this to one past maximum to force initial data load
     mSampleRate(sampleRate),
     mMaxFramesToRender(maxFramesToRender),
+    mMaxSourceBufferLength(sourceBufferLength),
     mAlloc(&malloc),
     mDealloc(&free)
   {
@@ -36,7 +32,6 @@ namespace RealtimeResampler {
     for(int i = 0; i < 2; i++){
       mSourceBuffer[i].data = (SampleType*)mAlloc(sourceBufferBytes);
       mSourceBuffer[i].length = 0;
-      mSourceBuffer[i].maxLength = sourceBufferLength;
     }
     mPitchBuffer = (float*)mAlloc(maxFramesToRender* sizeof(float));
   }
@@ -70,7 +65,7 @@ namespace RealtimeResampler {
     for (int frame = 0; frame < numFramesRequested; frame++) {
     
       // If we've reached the end of the current buffer, swap buffers and load more data
-      if (mSourceBufferReadHead >= mCurrentSourceBuffer->maxLength) {
+      if (mSourceBufferReadHead >= mMaxSourceBufferLength) {
         swapBuffersAndFillNext();
       }
     
@@ -85,10 +80,10 @@ namespace RealtimeResampler {
       // The buffer from which we'll pull data for frame 2.
       // This may be mCurrentBuffer, or mNextBuffer, depending on whether or not we're on the last frame or not
       AudioBuffer* frame2Buffer;
-      if (frame2 < mCurrentSourceBuffer->maxLength) {
+      if (frame2 < mMaxSourceBufferLength) {
         frame2Buffer = mCurrentSourceBuffer;
       }else{
-        frame2 = frame2 % mCurrentSourceBuffer->maxLength;
+        frame2 = frame2 % mMaxSourceBufferLength;
         frame2Buffer = mNextSourceBuffer;
       }
     
@@ -204,11 +199,11 @@ namespace RealtimeResampler {
     AudioBuffer* newNext = mCurrentSourceBuffer;
     mCurrentSourceBuffer = newCurrent;
     mNextSourceBuffer = newNext;
-    mSourceBufferReadHead -= mCurrentSourceBuffer->maxLength;
+    mSourceBufferReadHead -= mMaxSourceBufferLength;
     if (mCurrentSourceBuffer->length == 0) {
-      mCurrentSourceBuffer->length = mAudioSource->getSamples(mCurrentSourceBuffer->data, mCurrentSourceBuffer->maxLength);
+      mCurrentSourceBuffer->length = mAudioSource->getSamples(mCurrentSourceBuffer->data, mMaxSourceBufferLength);
     }
-    mNextSourceBuffer->length = mAudioSource->getSamples(mNextSourceBuffer->data, mNextSourceBuffer->maxLength);
+    mNextSourceBuffer->length = mAudioSource->getSamples(mNextSourceBuffer->data, mMaxSourceBufferLength);
   }
   
 }
