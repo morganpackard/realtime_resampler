@@ -55,7 +55,7 @@ namespace Tonic { namespace Tonic_{
     
   }
   
-  size_t PitchableBufferPlayer_::getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested){
+  size_t PitchableBufferPlayer_::getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested, int numChannels){
   
     size_t totalFramesCopied = 0;
     

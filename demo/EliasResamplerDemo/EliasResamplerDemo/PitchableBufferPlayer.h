@@ -55,7 +55,7 @@ namespace Tonic {
           playbackRate_ = playbackRate;
           playbackRateIsOne = false;
         }
-        size_t getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested);
+        size_t getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested, int numChannels);
       
 
     };

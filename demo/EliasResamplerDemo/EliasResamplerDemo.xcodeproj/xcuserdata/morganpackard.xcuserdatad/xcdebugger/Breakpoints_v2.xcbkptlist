@@ -117,30 +117,12 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../../src/RealtimeResampler.cpp"
-            timestampString = "453228450.199743"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "147"
-            endingLineNumber = "147"
-            landmarkName = "Renderer::getOutputFrameCount(size_t inputFrameCount)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "../../src/LinearInterpolator.cpp"
             timestampString = "453157643.419339"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "35"
-            endingLineNumber = "35"
-            landmarkName = "LinearInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, size_t inputbufferSize, size_t outputbufferSize, float* pitchScale)"
-            landmarkType = "5">
+            endingLineNumber = "35">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -155,7 +137,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "82"
             endingLineNumber = "82"
-            landmarkName = "PitchableBufferPlayer_::getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested)"
+            landmarkName = "PitchableBufferPlayer_::getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested, int numChannels)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -170,25 +152,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "24"
-            endingLineNumber = "24"
-            landmarkName = "LinearInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, size_t inputbufferSize, size_t outputbufferSize, float* pitchScale)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../src/RealtimeResampler.cpp"
-            timestampString = "453228450.199743"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "138"
-            endingLineNumber = "138"
-            landmarkName = "Renderer::getInputFrameCount(size_t outputFrameCount)"
-            landmarkType = "5">
+            endingLineNumber = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
