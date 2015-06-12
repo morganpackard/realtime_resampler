@@ -25,10 +25,9 @@ namespace RealtimeResampler {
   
   public:
   
-    /*!
-      Interpolate between input frames. It's up to the caller to determine what the output buffer size will be.
-    */
-    
+  /*!
+    Interpolate between input frames. It's up to the caller to determine what the output buffer size will be.
+  */
   
   protected:
     virtual size_t                process(SampleType* outputBuffer,  size_t outputbufferSize, float* pitchScale) = 0;
@@ -52,12 +51,35 @@ namespace RealtimeResampler {
   };
   
   //////////////////////////////////////////
+  /// Abstract Interpolator Using Four Frames
+  //////////////////////////////////////////
+  
+  /*!
+    More sophisticated interpolation techniques (Cubic, Hermite) rely on more than two frames for interpolation.
+  */
+
+  class FourFrameInterpolator : public Interpolator{
+  protected:
+      size_t process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale);
+      virtual SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample)=0;
+  };
+  
+  //////////////////////////////////////////
   /// Cubic Interpolator
   //////////////////////////////////////////
 
-  class CubicInterpolator : public Interpolator{
+  class CubicInterpolator : public FourFrameInterpolator{
   protected:
-      size_t process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale);
+      SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample);
+  };
+  
+  //////////////////////////////////////////
+  /// Hermite Interpolator
+  //////////////////////////////////////////
+
+  class HermiteInterpolator : public FourFrameInterpolator{
+  protected:
+      SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample);
   };
 
 }

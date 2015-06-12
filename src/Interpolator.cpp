@@ -69,6 +69,110 @@ namespace RealtimeResampler{
     return numFramesRendered;
 
   }
+  
+  //////////////////////////////////////////
+  /// Abstract Interpolator Using Four Frames
+  //////////////////////////////////////////
+
+
+  size_t FourFrameInterpolator::process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale){
+    size_t numFramesRendered = 0;
+    
+    for (int frame = 0; frame < outputbufferSize; frame++) {
+    
+      // If we've reached the end of the current buffer, swap buffers and load more data
+      if (mSourceBufferReadHead - 1 >= mMaxSourceBufferLength) {
+        fillNextBuffer();
+      }
+    
+      float interpolationPosition = mSourceBufferReadHead;
+      
+      int frame0 = mSourceBufferReadHead == 0 ? 0 : (int)interpolationPosition - 1;
+      int frame1 = (int)interpolationPosition;
+      int frame2 = frame1 + 1;
+      int frame3 = frame2 + 1;
+      
+      AudioBuffer* frame0Buffer;
+      AudioBuffer* frame1Buffer;
+      AudioBuffer* frame2Buffer;
+      AudioBuffer* frame3Buffer;
+      
+      if (frame0 < mMaxSourceBufferLength) {
+        frame0Buffer = mCurrentSourceBuffer;
+      }else{
+        frame0 = frame0 % mMaxSourceBufferLength;
+        frame0Buffer = mNextSourceBuffer;
+      }
+      
+      if (frame1 < mMaxSourceBufferLength) {
+        frame1Buffer = mCurrentSourceBuffer;
+      }else{
+        frame1 = frame1 % mMaxSourceBufferLength;
+        frame1Buffer = mNextSourceBuffer;
+      }
+      
+      if (frame2 < mMaxSourceBufferLength) {
+        frame2Buffer = mCurrentSourceBuffer;
+      }else{
+        frame2 = frame2 % mMaxSourceBufferLength;
+        frame2Buffer = mNextSourceBuffer;
+      }
+      
+      if (frame3 < mMaxSourceBufferLength) {
+        frame3Buffer = mCurrentSourceBuffer;
+      }else{
+        frame3 = frame3 % mMaxSourceBufferLength;
+        frame3Buffer = mNextSourceBuffer;
+      }
+    
+      float t = interpolationPosition - (int)interpolationPosition;
+    
+      for (int channel = 0; channel < mNumChannels;  channel++) {
+        // Get the data for frames we're interpolatining between
+        
+        float frame0Sample = frame0Buffer->data[frame0 * mNumChannels + channel];
+        float frame1Sample = frame1Buffer->data[frame1 * mNumChannels + channel];
+        float frame2Sample = frame2Buffer->data[frame2 * mNumChannels + channel];
+        float frame3Sample = frame3Buffer->data[frame3 * mNumChannels + channel];
+
+        outputBuffer[frame * mNumChannels + channel] = buildSample(t, frame0Sample, frame1Sample, frame2Sample, frame3Sample);
+        
+      }
+      numFramesRendered++;
+      mSourceBufferReadHead += pitchScale[frame];
+      
+    }
+     
+    return numFramesRendered;
+   
+  }
+  
+  //////////////////////////////////////////
+  /// Cubic Interpolator
+  //////////////////////////////////////////
+
+
+  SampleType CubicInterpolator::buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample){
+    float a0, a1, a2, a3;
+    a0 = frame3Sample - frame2Sample - frame0Sample + frame1Sample;
+    a1 = frame0Sample - frame1Sample - a0;
+    a2 = frame2Sample - frame0Sample;
+    a3 = frame1Sample;
+    return (a0 * (t * t * t)) + (a1 * (t * t)) + (a2 * t) + (a3);
+  }
+  
+  //////////////////////////////////////////
+  /// Hermite Interpolator
+  //////////////////////////////////////////
+
+  SampleType HermiteInterpolator::buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample){
+    float c0 = frame1Sample;
+    float c1 = .5F * (frame2Sample - frame0Sample);
+    float c2 = frame0Sample - (2.5F * frame1Sample) + (2 * frame2Sample) - (.5F * frame3Sample);
+    float c3 = (.5F * (frame3Sample - frame0Sample)) + (1.5F * (frame1Sample - frame2Sample));
+    return (((((c3 * t) + c2) * t) + c1) * t) + c0;
+  }
+  
 
 
 }
