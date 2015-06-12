@@ -17,10 +17,11 @@
 #include <string>
 #include <cstdlib>
 
+
 namespace RealtimeResampler {
 
       typedef float SampleType;
-      class Renderer;
+      class Interpolator;
   
       struct AudioBuffer{
         SampleType*             data;
@@ -48,30 +49,7 @@ namespace RealtimeResampler {
         virtual size_t                getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels) = 0;
         
       };
-    
-      //////////////////////////////////////////
-      /// Abstract Interpolator delegate class.
-      //////////////////////////////////////////
   
-      class Interpolator{
-      friend class Renderer;
-      
-      public:
-      
-        /*!
-          Interpolate between input frames. It's up to the caller to determine what the output buffer size will be.
-        */
-        virtual size_t                process(SampleType* inputBuffer, SampleType* outputBuffer, size_t inputbufferSize,  size_t outputbufferSize, float* pitchScale) = 0;
-      
-      protected:
-        Renderer*                     mRenderer;
-        AudioBuffer*                  mCurrentBuffer;
-        AudioBuffer*                  mNextBuffer;
-        size_t                        mMaxSourceBufferLength;
-        float                         mSourceBufferReadHead;
-      
-      };
-    
       //////////////////////////////////////////
       /// Abstract Low Pass Filter delegate class.
       //////////////////////////////////////////
@@ -213,6 +191,7 @@ namespace RealtimeResampler {
           AudioBuffer                 mSourceBuffer[2]; // TODO -- remove and move to interpolator?
           AudioBuffer*                mCurrentSourceBuffer; // TODO -- remove and move to interpolator?
           AudioBuffer*                mNextSourceBuffer; // TODO -- remove and move to interpolator?
+          size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
       };

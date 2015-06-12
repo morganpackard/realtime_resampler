@@ -1,16 +1,29 @@
 //
-//  LinearInterpolator.cpp
+//  Interpolator.cpp
 //  EliasResamplerDemo
 //
 //  Created by Morgan Packard on 6/12/15.
 //  Copyright (c) 2015 Morgan Packard. All rights reserved.
 //
 
-#include "LinearInterpolator.h"
+#include "Interpolator.h"
 
-namespace RealtimeResampler {
+namespace RealtimeResampler{
+
+  //////////////////////////////////////////
+  /// Abstract Interpolator delegate class.
+  //////////////////////////////////////////
+
+  void Interpolator::fillNextBuffer(){
+    mRenderer->swapBuffersAndFillNext();
+  }
   
-  size_t  LinearInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, size_t inputbufferSize,  size_t outputbufferSize, float* pitchScale){
+  
+  //////////////////////////////////////////
+  /// Linear Interpolator
+  //////////////////////////////////////////
+
+  size_t  LinearInterpolator::process(SampleType* outputBuffer,  size_t outputbufferSize, float* pitchScale){
 
     size_t numFramesRendered = 0;
     
@@ -18,7 +31,7 @@ namespace RealtimeResampler {
     
       // If we've reached the end of the current buffer, swap buffers and load more data
       if (mSourceBufferReadHead >= mMaxSourceBufferLength) {
-        swapBuffersAndFillNext();
+        fillNextBuffer();
       }
     
       float interpolationPosition = mSourceBufferReadHead;
@@ -50,10 +63,12 @@ namespace RealtimeResampler {
       }
       
       numFramesRendered++;
-      mSourceBufferReadHead += mPitchBuffer[frame];
+      mSourceBufferReadHead += pitchScale[frame];
     }
-
+    
+    return numFramesRendered;
 
   }
+
 
 }
