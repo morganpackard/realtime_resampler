@@ -12,17 +12,15 @@
 
 namespace RealtimeResampler {
   
-  Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender) :
+  Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender, void* (*allocFn)(size_t), void (*freeFn)(void*) ) :
     mNumChannels(numChannels),
     mCurrentPitch(1),
     mPitchDestination(1),
     mSecondsUntilPitchDestination(0),
-    mSourceBufferReadHead(sourceBufferLength), // Initialize this to one past maximum to force initial data load
     mSampleRate(sampleRate),
     mMaxFramesToRender(maxFramesToRender),
-    mMaxSourceBufferLength(sourceBufferLength),
-    mAlloc(&malloc),
-    mDealloc(&free)
+    mMalloc(allocFn),
+    mDealloc(freeFn)
   {
     
     mCurrentSourceBuffer = &mSourceBuffer[0];
@@ -30,10 +28,10 @@ namespace RealtimeResampler {
   
     size_t sourceBufferBytes = sourceBufferLength * numChannels * sizeof(SampleType);
     for(int i = 0; i < 2; i++){
-      mSourceBuffer[i].data = (SampleType*)mAlloc(sourceBufferBytes);
+      mSourceBuffer[i].data = (SampleType*)mMalloc(sourceBufferBytes);
       mSourceBuffer[i].length = 0;
     }
-    mPitchBuffer = (float*)mAlloc(maxFramesToRender* sizeof(float));
+    mPitchBuffer = (float*)mMalloc(maxFramesToRender* sizeof(float));
   }
   
   
@@ -60,46 +58,7 @@ namespace RealtimeResampler {
     
     calculatePitchForNextFrames(numFramesRequested);
     
-    size_t numFramesRendered = 0;
-    
-    for (int frame = 0; frame < numFramesRequested; frame++) {
-    
-      // If we've reached the end of the current buffer, swap buffers and load more data
-      if (mSourceBufferReadHead >= mMaxSourceBufferLength) {
-        swapBuffersAndFillNext();
-      }
-    
-      float interpolationPosition = mSourceBufferReadHead;
-      
-      // The first frame of the interpolated pair
-      int frame1 = (int)interpolationPosition;
-      
-      // The second frame of the interpolated pair.
-      int frame2 = frame1 + 1;
-      
-      // The buffer from which we'll pull data for frame 2.
-      // This may be mCurrentBuffer, or mNextBuffer, depending on whether or not we're on the last frame or not
-      AudioBuffer* frame2Buffer;
-      if (frame2 < mMaxSourceBufferLength) {
-        frame2Buffer = mCurrentSourceBuffer;
-      }else{
-        frame2 = frame2 % mMaxSourceBufferLength;
-        frame2Buffer = mNextSourceBuffer;
-      }
-    
-      // Fill in the data for each channel
-      for (int channel = 0; channel < mNumChannels;  channel++) {
-        // Get the data for the two frames we're interpolatining between
-        float inputframe1 = mCurrentSourceBuffer->data[frame1 * mNumChannels + channel];
-        float inputframe2 = frame2Buffer->data[frame2 * mNumChannels + channel];
-        
-        // interpolate between the two points
-        outputBuffer[frame * mNumChannels + channel] = inputframe1 + (inputframe2 - inputframe1) * (interpolationPosition - frame1) ;
-      }
-      
-      numFramesRendered++;
-      mSourceBufferReadHead += mPitchBuffer[frame];
-    }
+
    
     return numFramesRendered;
     
@@ -113,14 +72,6 @@ namespace RealtimeResampler {
       mCurrentPitch = start;
       mPitchDestination = end;
       mSecondsUntilPitchDestination = glideDuration;
-  }
-  
-  void Renderer::setAllocator( void* (*alloc)(size_t) ){
-    mAlloc = alloc;
-  }
-  
-  void Renderer::setDeAllocator( void (*deallocArg)(void*) ){
-    mDealloc = deallocArg;
   }
   
   size_t Renderer::getInputFrameCount(size_t outputFrameCount){
@@ -168,6 +119,9 @@ namespace RealtimeResampler {
   
   void Renderer::setInterpolator(RealtimeResampler::Interpolator *interpolator){
     mInterpolator = interpolator;
+    mInterpolator->mRenderer = this;
+    mInterpolator->mSourceBufferReadHead = sourceBufferLength); // Initialize this to one past maximum to force initial data load
+    mMaxSourceBufferLength = sourceBufferLength;
   }
   
   
@@ -199,11 +153,14 @@ namespace RealtimeResampler {
     AudioBuffer* newNext = mCurrentSourceBuffer;
     mCurrentSourceBuffer = newCurrent;
     mNextSourceBuffer = newNext;
+    mInterpolator->mCurrentBuffer = mCurrentSourceBuffer;
+    mInterpolator->mNextBuffer = mNextSourceBuffer;
+    
     mSourceBufferReadHead -= mMaxSourceBufferLength;
     if (mCurrentSourceBuffer->length == 0) {
-      mCurrentSourceBuffer->length = mAudioSource->getSamples(mCurrentSourceBuffer->data, mMaxSourceBufferLength);
+      mCurrentSourceBuffer->length = mAudioSource->getSamples(mCurrentSourceBuffer->data, mMaxSourceBufferLength, mNumChannels);
     }
-    mNextSourceBuffer->length = mAudioSource->getSamples(mNextSourceBuffer->data, mMaxSourceBufferLength);
+    mNextSourceBuffer->length = mAudioSource->getSamples(mNextSourceBuffer->data, mMaxSourceBufferLength, mNumChannels);
   }
   
 }

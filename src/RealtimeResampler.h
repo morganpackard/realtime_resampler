@@ -15,10 +15,17 @@
 
 #include <stdio.h>
 #include <string>
+#include <cstdlib>
 
 namespace RealtimeResampler {
 
       typedef float SampleType;
+      class Renderer;
+  
+      struct AudioBuffer{
+        SampleType*             data;
+        size_t                  length;
+      };
   
       //////////////////////////////////////////
       /// Abstract AudioSource delegate class.
@@ -38,15 +45,16 @@ namespace RealtimeResampler {
          getSamples must return the actual number of frames written to the buffer, which may be less than numFramesRequested.
         */
         
-        virtual size_t                getSamples(SampleType* outputBuffer, size_t numFramesRequested) = 0;
+        virtual size_t                getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels) = 0;
         
       };
     
       //////////////////////////////////////////
       /// Abstract Interpolator delegate class.
       //////////////////////////////////////////
-    
+  
       class Interpolator{
+      friend class Renderer;
       
       public:
       
@@ -54,6 +62,13 @@ namespace RealtimeResampler {
           Interpolate between input frames. It's up to the caller to determine what the output buffer size will be.
         */
         virtual size_t                process(SampleType* inputBuffer, SampleType* outputBuffer, size_t inputbufferSize,  size_t outputbufferSize, float* pitchScale) = 0;
+      
+      protected:
+        Renderer*                     mRenderer;
+        AudioBuffer*                  mCurrentBuffer;
+        AudioBuffer*                  mNextBuffer;
+        size_t                        mMaxSourceBufferLength;
+        float                         mSourceBufferReadHead;
       
       };
     
@@ -78,7 +93,7 @@ namespace RealtimeResampler {
       //////////////////////////////////////////
 
       class Renderer{
-      
+      friend class Interpolator;
         public:
         
           /*!
@@ -91,7 +106,16 @@ namespace RealtimeResampler {
             Constructor
           */
         
-          Renderer(float sampleRate, int numChannels, size_t sourceBufferLength = 64, size_t maxFramesToRender = 64);
+          // TODO -- consider creating an initializer struct instead of all these arguments;
+        
+          Renderer(
+            float sampleRate,
+            int numChannels,
+            size_t sourceBufferLength = 64,
+            size_t maxFramesToRender = 64,
+            void* (*allocFn)(size_t) = &malloc,
+            void (*freeFn)(void*) = &free
+          );
         
           /*!
             Destructor
@@ -169,50 +193,30 @@ namespace RealtimeResampler {
           */
         
           void                        setLowPassFilter(LPF* interpolator);
-        
-          /*!
-            Option for custom allocator. This should not be called after the first call to Renderer::render.
-          */
-        
-          void                        setAllocator(void* (size_t));
-          
-          /*!
-            Option for custom deallocator.
-          */
-        
-          void                        setDeAllocator(void (void*));
-        
+
         
         private:
         
-        
           void                        error(std::string message); // todo -- don't use std::string. Use error codes instead.
-
-          struct AudioBuffer{
-              SampleType*             data;
-              size_t                  length;
-          };
-
           void                        calculatePitchForNextFrames(size_t numFrames);
           void                        swapBuffersAndFillNext();
         
-          size_t                      mNumChannels;
+          int                         mNumChannels;
           float                       mSampleRate; // frames per second
           AudioSource*                mAudioSource;
           float                       mCurrentPitch;
           float                       mPitchDestination;
           float                       mSecondsUntilPitchDestination;
           float*                      mPitchBuffer;
-          void*                       (*mAlloc)(size_t); // allocator function
+          void*                       (*mMalloc)(size_t); // allocator function
           void                        (*mDealloc)(void*); // deallocator function
-          AudioBuffer                 mSourceBuffer[2];
-          AudioBuffer*                mCurrentSourceBuffer;
-          AudioBuffer*                mNextSourceBuffer;
-          size_t                      mMaxSourceBufferLength;
-          float                       mSourceBufferReadHead;
+          AudioBuffer                 mSourceBuffer[2]; // TODO -- remove and move to interpolator?
+          AudioBuffer*                mCurrentSourceBuffer; // TODO -- remove and move to interpolator?
+          AudioBuffer*                mNextSourceBuffer; // TODO -- remove and move to interpolator?
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
       };
+  
   
 }
 
