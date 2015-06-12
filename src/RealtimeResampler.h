@@ -178,6 +178,7 @@ namespace RealtimeResampler {
           void                        error(std::string message); // todo -- don't use std::string. Use error codes instead.
           void                        calculatePitchForNextFrames(size_t numFrames);
           void                        swapBuffersAndFillNext();
+          size_t                      fillSourceBuffer(AudioBuffer* buffer);
         
           int                         mNumChannels;
           float                       mSampleRate; // frames per second
@@ -188,9 +189,7 @@ namespace RealtimeResampler {
           float*                      mPitchBuffer;
           void*                       (*mMalloc)(size_t); // allocator function
           void                        (*mDealloc)(void*); // deallocator function
-          AudioBuffer                 mSourceBuffer[2]; // TODO -- remove and move to interpolator?
-          AudioBuffer*                mCurrentSourceBuffer; // TODO -- remove and move to interpolator?
-          AudioBuffer*                mNextSourceBuffer; // TODO -- remove and move to interpolator?
+          AudioBuffer                 mSourceBuffer[2];
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;

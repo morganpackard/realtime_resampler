@@ -29,9 +29,9 @@ namespace RealtimeResampler {
       Interpolate between input frames. It's up to the caller to determine what the output buffer size will be.
     */
     
-    virtual size_t                process(SampleType* outputBuffer,  size_t outputbufferSize, float* pitchScale) = 0;
   
   protected:
+    virtual size_t                process(SampleType* outputBuffer,  size_t outputbufferSize, float* pitchScale) = 0;
     void                          fillNextBuffer(); // Access a protected function of Renderer from a subclass.
     Renderer*                     mRenderer;
     AudioBuffer*                  mCurrentSourceBuffer;
@@ -47,6 +47,16 @@ namespace RealtimeResampler {
   //////////////////////////////////////////
 
   class LinearInterpolator : public Interpolator{
+  protected:
+      size_t process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale);
+  };
+  
+  //////////////////////////////////////////
+  /// Cubic Interpolator
+  //////////////////////////////////////////
+
+  class CubicInterpolator : public Interpolator{
+  protected:
       size_t process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale);
   };
 

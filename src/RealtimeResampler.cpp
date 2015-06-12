@@ -25,9 +25,6 @@ namespace RealtimeResampler {
     mSourceBufferLength(sourceBufferLength)
   {
     
-    mCurrentSourceBuffer = &mSourceBuffer[0];
-    mNextSourceBuffer = &mSourceBuffer[1];
-  
     size_t sourceBufferBytes = sourceBufferLength * numChannels * sizeof(SampleType);
     for(int i = 0; i < 2; i++){
       mSourceBuffer[i].data = (SampleType*)mMalloc(sourceBufferBytes);
@@ -122,12 +119,12 @@ namespace RealtimeResampler {
     mInterpolator->mSourceBufferReadHead = mSourceBufferLength; // Initialize this to one past maximum to force initial data load
     mInterpolator->mMaxSourceBufferLength = mSourceBufferLength;
     mInterpolator->mNumChannels = mNumChannels;
+    mInterpolator->mCurrentSourceBuffer = &mSourceBuffer[0];
+    mInterpolator->mNextSourceBuffer = &mSourceBuffer[1];
   }
   
   
   void Renderer::calculatePitchForNextFrames(size_t numFrames){
-  
-    
     float pitchChangePerFrame;
     if (mSecondsUntilPitchDestination > 0) {
       pitchChangePerFrame = (mPitchDestination - mCurrentPitch) / (mSecondsUntilPitchDestination * mSampleRate);
@@ -145,22 +142,22 @@ namespace RealtimeResampler {
       }
       mPitchBuffer[frame] = mCurrentPitch;
     }
-
   }
   
   void Renderer::swapBuffersAndFillNext(){
-    AudioBuffer* newCurrent = mNextSourceBuffer;
-    AudioBuffer* newNext = mCurrentSourceBuffer;
-    mCurrentSourceBuffer = newCurrent;
-    mNextSourceBuffer = newNext;
-    mInterpolator->mCurrentSourceBuffer = mCurrentSourceBuffer;
-    mInterpolator->mNextSourceBuffer = mNextSourceBuffer;
-    
+    AudioBuffer* newCurrent = mInterpolator->mNextSourceBuffer;
+    AudioBuffer* newNext = mInterpolator->mCurrentSourceBuffer;
+    mInterpolator->mCurrentSourceBuffer = newCurrent;
+    mInterpolator->mNextSourceBuffer = newNext;
     mInterpolator->mSourceBufferReadHead -= mInterpolator->mMaxSourceBufferLength;
-    if (mCurrentSourceBuffer->length == 0) {
-      mCurrentSourceBuffer->length = mAudioSource->getSamples(mCurrentSourceBuffer->data, mInterpolator->mMaxSourceBufferLength, mNumChannels);
+    if (newCurrent->length == 0) {
+      newCurrent->length = mAudioSource->getSamples(newCurrent->data, mInterpolator->mMaxSourceBufferLength, mNumChannels);
     }
-    mNextSourceBuffer->length = mAudioSource->getSamples(mNextSourceBuffer->data, mInterpolator->mMaxSourceBufferLength, mNumChannels);
+    newNext->length = mAudioSource->getSamples(newNext->data, mInterpolator->mMaxSourceBufferLength, mNumChannels);
+  }
+  
+  size_t Renderer::fillSourceBuffer(AudioBuffer* buffer){
+    return mAudioSource->getSamples(buffer->data, mInterpolator->mMaxSourceBufferLength, mNumChannels);
   }
   
 }

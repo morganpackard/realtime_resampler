@@ -134,44 +134,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../src/Interpolator.cpp"
-            timestampString = "455830040.461525"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "30"
-            endingLineNumber = "30"
-            landmarkName = "LinearInterpolator::process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../src/Interpolator.cpp"
             timestampString = "455830072.043794"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "69"
             endingLineNumber = "69"
             landmarkName = "LinearInterpolator::process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../src/RealtimeResampler.cpp"
-            timestampString = "455830161.391799"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "123"
-            endingLineNumber = "123"
-            landmarkName = "Renderer::setInterpolator(RealtimeResampler::Interpolator *interpolator)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
