@@ -49,8 +49,8 @@ int main(int argc, const char * argv[])
     player
       .setBuffer(sample)
       .trigger(ControlTrigger().trigger())
-      .playbackRate( 0.1 )
-      .loop(true);
+      .playbackRate( 1 )
+      .loop(false);
 
 
     synth.setOutputGen(player);

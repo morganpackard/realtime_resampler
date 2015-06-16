@@ -38,6 +38,7 @@ namespace Tonic {
         RealtimeResampler::Renderer* resampler;
         bool mDoesLoop;
         int mStartSecs;
+        size_t calculateFramesLeftInBuffer();
 
     public:
         PitchableBufferPlayer_();
