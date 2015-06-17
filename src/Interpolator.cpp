@@ -32,6 +32,8 @@ namespace RealtimeResampler{
       // If we've reached the end of the current buffer, swap buffers and load more data
       if (mSourceBufferReadHead >= mMaxSourceBufferLength) {
         fillNextBuffer();
+      }else if ((int)mSourceBufferReadHead >= mCurrentSourceBuffer->length){
+        break;
       }
     
       float interpolationPosition = mSourceBufferReadHead;

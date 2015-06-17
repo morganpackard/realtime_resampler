@@ -153,9 +153,6 @@ namespace RealtimeResampler {
       newCurrent->length = mAudioSource->getSamples(newCurrent->data, mInterpolator->mMaxSourceBufferLength, mNumChannels);
     }
     newNext->length = mAudioSource->getSamples(newNext->data, mInterpolator->mMaxSourceBufferLength, mNumChannels);
-    if(newNext->length < mInterpolator->mMaxSourceBufferLength){
-      printf("Renderer::swapBuffersAndFillNext newNext->length is less than number requested\n");
-    }
   }
   
   size_t Renderer::fillSourceBuffer(AudioBuffer* buffer){

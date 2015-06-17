@@ -16,8 +16,10 @@ using namespace RealtimeResampler;
 static const float kSampleRate = 44100;
 
 #define TEST_EQ(a, b, error){ int lineNumber = __LINE__;    \
-if(a != b){                     \
-  std::cout << "Test failed at line " << lineNumber << ". " << error << " Expected " << b << " got " <<  a << std::endl; \
+auto actual = a; \
+auto expected = b; \
+if(actual != expected){                     \
+  std::cout << "Test failed at line " << lineNumber << ". " << error << " Expected " << expected << " got " <<  actual << std::endl; \
 }}  
 
 #define TEST_TRUE(value, error){ int lineNumber = __LINE__;    \
@@ -29,7 +31,7 @@ int main(int argc, const char * argv[]) {
   
     static const int kNumChannels = 2;
   
-    auto renderer = Renderer(kSampleRate,  kNumChannels, kSampleRate * 10);
+    auto renderer = Renderer(kSampleRate,  kNumChannels, 64);
     renderer.setInterpolator(new LinearInterpolator());
   
     ///////////////////////////////////////
@@ -94,6 +96,8 @@ int main(int argc, const char * argv[]) {
     // Test Renderer returns fewer frames when audio source provides fewer
     ///////////////////////////////////////
   
+    renderer.setPitch(1, 1, 0);
+  
     class AudioSourceImpl : public AudioSource{
     public:
       size_t numFramesToProvide;
@@ -110,7 +114,11 @@ int main(int argc, const char * argv[]) {
   
     audioSource.numFramesToProvide = 64;
   
-    TEST_EQ(renderer.render(destinationBuffer, 100), 100, "The renderer should render 100 frames") ;
+    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames") ;
+  
+    audioSource.numFramesToProvide = 60;
+    
+    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 60 frames") ;
   
     return 0;
 }
