@@ -9,20 +9,28 @@
 #include <iostream>
 #include "RealtimeResampler.h"
 #include <stdio.h>
-using namespace std;
+#include "Interpolator.h"
+
+using namespace RealtimeResampler;
 
 static const float kSampleRate = 44100;
 
 #define TEST_EQ(a, b, error){ int lineNumber = __LINE__;    \
 if(a != b){                     \
-  cout << "Test failed at line " << lineNumber << ". " << error << " Expected " << b << " got " <<  a << endl; \
-}}                               \
+  std::cout << "Test failed at line " << lineNumber << ". " << error << " Expected " << b << " got " <<  a << std::endl; \
+}}  
+
+#define TEST_TRUE(value, error){ int lineNumber = __LINE__;    \
+if(!(value)){                     \
+  std::cout << "Test failed at line " << lineNumber << ". " << error << " Expected value to be true" << std::endl; \
+}}                              \
 
 int main(int argc, const char * argv[]) {
   
+    static const int kNumChannels = 2;
   
-    auto renderer = RealtimeResampler::Renderer(kSampleRate,  2, kSampleRate * 10);
-  
+    auto renderer = Renderer(kSampleRate,  kNumChannels, kSampleRate * 10);
+    renderer.setInterpolator(new LinearInterpolator());
   
     ///////////////////////////////////////
     // Test Renderer::getInputFrameCount
@@ -30,17 +38,16 @@ int main(int argc, const char * argv[]) {
   
     renderer.setPitch(1, 1, 0);
   
-    TEST_EQ( renderer.getInputFrameCount(100), 100 , "InputFramecount at pitch == 1 failed")
+    TEST_TRUE( abs(renderer.getInputFrameCount(100) - 100.0f) <= 1 , "InputFramecount at pitch == 1 failed")
   
     
     renderer.setPitch(2, 2, 0);
   
-    TEST_EQ( renderer.getInputFrameCount(100), 200 , "InputFramecount at pitch == 2 failed")
-  
+    TEST_TRUE( abs(renderer.getInputFrameCount(100) - 200.0f) <= 1 , "InputFramecount at pitch == 2 failed")
   
     renderer.setPitch(1, 2, 0);
   
-    TEST_EQ( renderer.getInputFrameCount(100), 200 , "InputFramecount at pitch == 2 with instant glide failed")
+    TEST_TRUE( abs(renderer.getInputFrameCount(100) - 200.0f) <= 1 , "InputFramecount at pitch == 2 with instant glide failed")
   
     renderer.setPitch(1, 2, 1);
     
@@ -83,5 +90,38 @@ int main(int argc, const char * argv[]) {
     TEST_EQ( renderer.getOutputFrameCount(kSampleRate * 1.5), kSampleRate  , "getOutputFrameCount at pitch == 3 with two second glide failed")
   
   
+    ///////////////////////////////////////
+    // Test Renderer returns fewer frames when audio source provides fewer
+    ///////////////////////////////////////
+  
+    class AudioSourceImpl : public AudioSource{
+    public:
+      size_t numFramesToProvide;
+      size_t getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels){
+          return numFramesToProvide;
+      }
+    };
+  
+    AudioSourceImpl audioSource;
+  
+    SampleType* destinationBuffer = (SampleType*)malloc(sizeof(SampleType) * kNumChannels * 1000 );
+  
+    renderer.setAudioSource(&audioSource);
+  
+    audioSource.numFramesToProvide = 64;
+  
+    TEST_EQ(renderer.render(destinationBuffer, 100), 100, "The renderer should render 100 frames") ;
+  
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+

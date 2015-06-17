@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <math.h>
 #include "Interpolator.h"
+#include <cassert>
 
 namespace RealtimeResampler {
   
@@ -51,9 +52,7 @@ namespace RealtimeResampler {
   
   size_t Renderer::render(SampleType* outputBuffer, size_t numFramesRequested){
     
-    if (numFramesRequested > mMaxFramesToRender) {
-      error("Error in Renderer::render: numFramesRequested is larger than mMaxFramesToRender.");
-    }
+    assert(numFramesRequested <= mMaxFramesToRender);
     
     calculatePitchForNextFrames(numFramesRequested);
     return mInterpolator->process(outputBuffer, numFramesRequested, mPitchBuffer);
@@ -77,8 +76,8 @@ namespace RealtimeResampler {
     nonGlideDuration = nonGlideDuration > 0 ? nonGlideDuration : 0;
     double glideSourceTime = 0;
     if (glideDuration > 0) {
-      float slope = (mPitchDestination - mCurrentPitch) / mSecondsUntilPitchDestination;
-      float endPitch = mCurrentPitch + slope * glideDuration;
+      double slope = (mPitchDestination - mCurrentPitch) / mSecondsUntilPitchDestination;
+      double endPitch = mCurrentPitch + slope * glideDuration;
       glideSourceTime = glideDuration *  (mCurrentPitch +  endPitch) / 2 ;
     }
     double nonGlideSourceTime = nonGlideDuration * mPitchDestination;

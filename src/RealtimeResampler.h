@@ -104,6 +104,7 @@ namespace RealtimeResampler {
           /*!
             Render samples at the current pitch. Returns the actual number of samples written to the output buffer. 
             If the AudioSource has no more data to supply, the number of frames written may be less than the number of frames requested.
+            numFramesRequested MUST NOT exceed maxFramesToRender (64 by default)
           */
         
           size_t                      render(SampleType* outputBuffer, size_t numFramesRequested);
