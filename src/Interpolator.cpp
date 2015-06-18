@@ -85,7 +85,7 @@ namespace RealtimeResampler{
       // If we've reached the end of the current buffer, swap buffers and load more data
       if (mSourceBufferReadHead - 1 >= mMaxSourceBufferLength) {
         fillNextBuffer();
-      }else if ((int)mSourceBufferReadHead >= mCurrentSourceBuffer->length){
+      }else if (mCurrentSourceBuffer->length < mMaxSourceBufferLength && (int)mSourceBufferReadHead >= mCurrentSourceBuffer->length){
         break;
       }
     
@@ -144,7 +144,6 @@ namespace RealtimeResampler{
       }
       numFramesRendered++;
       mSourceBufferReadHead += pitchScale[frame];
-      
     }
      
     return numFramesRendered;
