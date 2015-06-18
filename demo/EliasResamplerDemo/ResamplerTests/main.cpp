@@ -34,6 +34,10 @@ int main(int argc, const char * argv[]) {
     auto renderer = Renderer(kSampleRate,  kNumChannels, 64);
     renderer.setInterpolator(new LinearInterpolator());
   
+    Renderer testRenderer(kSampleRate,  kNumChannels, 64);
+  
+    testRenderer = renderer;
+  
     ///////////////////////////////////////
     // Test Renderer::getInputFrameCount
     ///////////////////////////////////////
@@ -96,29 +100,60 @@ int main(int argc, const char * argv[]) {
     // Test Renderer returns fewer frames when audio source provides fewer
     ///////////////////////////////////////
   
+    
+  
     renderer.setPitch(1, 1, 0);
   
     class AudioSourceImpl : public AudioSource{
     public:
       size_t numFramesToProvide;
+      SampleType* valueToWrite;
+      int readHead;
       size_t getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels){
-          return numFramesToProvide;
+        for (int i = 0; i < numFramesToProvide * numChannels; i++) {
+            outputBuffer[i] = valueToWrite[readHead++];
+        }
+        return numFramesToProvide;
       }
     };
   
+    const int kNumFramesInAudioSourceBuffer = 1000;
     AudioSourceImpl audioSource;
+    audioSource.valueToWrite = (SampleType*)malloc(kNumFramesInAudioSourceBuffer * kNumChannels * sizeof(SampleType));
   
     SampleType* destinationBuffer = (SampleType*)malloc(sizeof(SampleType) * kNumChannels * 1000 );
   
+    renderer = Renderer(kSampleRate,  kNumChannels, 64);
+    renderer.setInterpolator(new LinearInterpolator());
     renderer.setAudioSource(&audioSource);
   
     audioSource.numFramesToProvide = 64;
   
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames") ;
   
+    renderer = Renderer(kSampleRate,  kNumChannels, 64);
+    renderer.setInterpolator(new LinearInterpolator());
+    renderer.setAudioSource(&audioSource);
+  
     audioSource.numFramesToProvide = 60;
     
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 60 frames") ;
+  
+    
+    renderer = Renderer(kSampleRate,  kNumChannels, 64);
+    renderer.setInterpolator(new CubicInterpolator());
+    renderer.setAudioSource(&audioSource);
+  
+    audioSource.numFramesToProvide = 60;
+  
+    for(int i = 0; i < kNumFramesInAudioSourceBuffer; i++){
+      audioSource.valueToWrite[i * kNumChannels] = (i % (64 * 2) < 64) ? 0 : 1;
+    }
+    
+    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 60 frames") ;
+  
+  
+    std::cout << "\n ======== Tests Completed =========== \n\n";
   
     return 0;
 }

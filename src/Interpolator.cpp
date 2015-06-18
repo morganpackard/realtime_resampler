@@ -23,7 +23,7 @@ namespace RealtimeResampler{
   /// Linear Interpolator
   //////////////////////////////////////////
 
-  size_t  LinearInterpolator::process(SampleType* outputBuffer,  size_t outputbufferSize, float* pitchScale){
+  size_t  LinearInterpolator::process(SampleType* outputBuffer,  size_t outputbufferSize, SampleType* pitchScale){
 
     size_t numFramesRendered = 0;
     
@@ -46,7 +46,7 @@ namespace RealtimeResampler{
       
       // The buffer from which we'll pull data for frame 2.
       // This may be mCurrentBuffer, or mNextBuffer, depending on whether or not we're on the last frame or not
-      AudioBuffer* frame2Buffer;
+      Buffer* frame2Buffer;
       if (frame2 < mMaxSourceBufferLength) {
         frame2Buffer = mCurrentSourceBuffer;
       }else{
@@ -77,7 +77,7 @@ namespace RealtimeResampler{
   //////////////////////////////////////////
 
 
-  size_t FourFrameInterpolator::process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale){
+  size_t FourFrameInterpolator::process(SampleType* outputBuffer, size_t outputbufferSize, SampleType* pitchScale){
     size_t numFramesRendered = 0;
     
     for (int frame = 0; frame < outputbufferSize; frame++) {
@@ -85,6 +85,8 @@ namespace RealtimeResampler{
       // If we've reached the end of the current buffer, swap buffers and load more data
       if (mSourceBufferReadHead - 1 >= mMaxSourceBufferLength) {
         fillNextBuffer();
+      }else if ((int)mSourceBufferReadHead >= mCurrentSourceBuffer->length){
+        break;
       }
     
       float interpolationPosition = mSourceBufferReadHead;
@@ -94,10 +96,10 @@ namespace RealtimeResampler{
       int frame2 = frame1 + 1;
       int frame3 = frame2 + 1;
       
-      AudioBuffer* frame0Buffer;
-      AudioBuffer* frame1Buffer;
-      AudioBuffer* frame2Buffer;
-      AudioBuffer* frame3Buffer;
+      Buffer* frame0Buffer;
+      Buffer* frame1Buffer;
+      Buffer* frame2Buffer;
+      Buffer* frame3Buffer;
       
       if (frame0 < mMaxSourceBufferLength) {
         frame0Buffer = mCurrentSourceBuffer;

@@ -23,9 +23,27 @@ namespace RealtimeResampler {
       typedef float SampleType;
       class Interpolator;
   
-      struct AudioBuffer{
+      struct Buffer{
+        Buffer(size_t bufferSize, void* (*allocFn)(size_t), void (*deallocFn)(void*)){
+          data = (SampleType*)(*allocFn)(bufferSize);
+          mDealloc = deallocFn;
+          mBufferSize = bufferSize;
+          mAllocFn = allocFn;
+        }
+        Buffer(const Buffer &other): mAllocFn(other.mAllocFn), mDealloc(other.mDealloc), mBufferSize(other.mBufferSize){
+          data = (SampleType*)(*other.mAllocFn)(mBufferSize);
+        }
+        Buffer& operator= (const Buffer& other){
+          mBufferSize = other.mBufferSize; mAllocFn = other.mAllocFn; mDealloc = other.mDealloc;
+          data = (SampleType*)(*other.mAllocFn)(mBufferSize);
+          return *this;
+        }
+        ~Buffer(){  mDealloc(data); }
         SampleType*             data;
         size_t                  length;
+        size_t                  mBufferSize;
+        void*                   (*mAllocFn)(size_t);
+        void                    (*mDealloc)(void*); // deallocator function
       };
   
       //////////////////////////////////////////
@@ -94,6 +112,13 @@ namespace RealtimeResampler {
             void* (*allocFn)(size_t) = &malloc,
             void (*freeFn)(void*) = &free
           );
+        
+          /*!
+            Copy Constructor
+          */
+        
+          Renderer(const Renderer &source);
+        
         
           /*!
             Destructor
@@ -176,24 +201,28 @@ namespace RealtimeResampler {
         
         private:
         
+          //                          methods
           void                        error(std::string message); // todo -- don't use std::string. Use error codes instead.
           void                        calculatePitchForNextFrames(size_t numFrames);
           void                        swapBuffersAndFillNext();
-          size_t                      fillSourceBuffer(AudioBuffer* buffer);
+          size_t                      fillSourceBuffer(Buffer* buffer);
         
+          //                          variables
           int                         mNumChannels;
           float                       mSampleRate; // frames per second
           AudioSource*                mAudioSource;
           float                       mCurrentPitch;
           float                       mPitchDestination;
           float                       mSecondsUntilPitchDestination;
-          float*                      mPitchBuffer;
+          Buffer                      mPitchBuffer;
           void*                       (*mMalloc)(size_t); // allocator function
           void                        (*mDealloc)(void*); // deallocator function
-          AudioBuffer                 mSourceBuffer[2];
+          Buffer                      mSourceBuffer1;
+          Buffer                      mSourceBuffer2;
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
+          bool                        mIsInitialRender; // Is this the first render of the current stream? If so, make sure to load source data
       };
   
   

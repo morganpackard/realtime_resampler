@@ -31,7 +31,7 @@ namespace Tonic { namespace Tonic_{
       delete resampler;
     }
     resampler = new RealtimeResampler::Renderer(kSynthesisBlockSize, buffer_.channels());
-    resampler->setInterpolator(new CubicInterpolator());
+    resampler->setInterpolator(new LinearInterpolator());
     resampler->setAudioSource(this);
     printf("PitchableBufferPlayer_::setBuffer buffer size: %zu\n", buffer_.frames());
   }
@@ -54,9 +54,9 @@ namespace Tonic { namespace Tonic_{
     }else{
       
       size_t framesRendered = resampler->render(&outputFrames_[0], min(kSynthesisBlockSize, calculateFramesLeftInBuffer()));
-      if(framesRendered < kSynthesisBlockSize){
-        printf("PitchableBufferPlayer_::computeSynthesisBlock frames rendered: %zu\n", framesRendered);
-      }
+//      if(framesRendered < kSynthesisBlockSize){
+//        printf("PitchableBufferPlayer_::computeSynthesisBlock frames rendered: %zu\n", framesRendered);
+//      }
     }
     
   }

@@ -50,7 +50,7 @@ int main(int argc, const char * argv[])
       .setBuffer(sample)
       .trigger(ControlTrigger().trigger())
       .playbackRate( 1 )
-      .loop(false);
+      .loop(true);
 
 
     synth.setOutputGen(player);

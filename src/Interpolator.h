@@ -30,11 +30,11 @@ namespace RealtimeResampler {
   */
   
   protected:
-    virtual size_t                process(SampleType* outputBuffer,  size_t outputbufferSize, float* pitchScale) = 0;
+    virtual size_t                process(SampleType* outputBuffer,  size_t outputbufferSize, SampleType* pitchScale) = 0;
     void                          fillNextBuffer(); // Access a protected function of Renderer from a subclass.
     Renderer*                     mRenderer;
-    AudioBuffer*                  mCurrentSourceBuffer;
-    AudioBuffer*                  mNextSourceBuffer;
+    Buffer*                       mCurrentSourceBuffer;
+    Buffer*                       mNextSourceBuffer;
     size_t                        mMaxSourceBufferLength;
     float                         mSourceBufferReadHead;
     int                           mNumChannels;
@@ -47,7 +47,7 @@ namespace RealtimeResampler {
 
   class LinearInterpolator : public Interpolator{
   protected:
-      size_t process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale);
+      size_t process(SampleType* outputBuffer, size_t outputbufferSize, SampleType* pitchScale);
   };
   
   //////////////////////////////////////////
@@ -60,7 +60,7 @@ namespace RealtimeResampler {
 
   class FourFrameInterpolator : public Interpolator{
   protected:
-      size_t process(SampleType* outputBuffer, size_t outputbufferSize, float* pitchScale);
+      size_t process(SampleType* outputBuffer, size_t outputbufferSize, SampleType* pitchScale);
       virtual SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample)=0;
   };
   
