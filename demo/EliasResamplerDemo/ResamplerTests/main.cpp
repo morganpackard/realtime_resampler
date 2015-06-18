@@ -123,6 +123,8 @@ int main(int argc, const char * argv[]) {
   
     SampleType* destinationBuffer = (SampleType*)malloc(sizeof(SampleType) * kNumChannels * 1000 );
   
+    // Test linear interpolator with AudioSource returning as many samples as requested
+  
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
     renderer.setInterpolator(new LinearInterpolator());
     renderer.setAudioSource(&audioSource);
@@ -130,6 +132,8 @@ int main(int argc, const char * argv[]) {
     audioSource.numFramesToProvide = 64;
   
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames") ;
+  
+    // Test linear interpolator with AudioSource returning fewer samples than requested
   
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
     renderer.setInterpolator(new LinearInterpolator());
@@ -139,7 +143,8 @@ int main(int argc, const char * argv[]) {
     
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 60 frames") ;
   
-    
+    // Test cubic interpolator with AudioSource returning fewer samples than requested
+  
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
     renderer.setInterpolator(new CubicInterpolator());
     renderer.setAudioSource(&audioSource);
