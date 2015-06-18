@@ -27,8 +27,8 @@ namespace RealtimeResampler {
     mDealloc(freeFn),
     mSourceBufferLength(sourceBufferLength),
     mIsInitialRender(true),
-    mSourceBuffer1(sourceBufferLength * numChannels * sizeof(SampleType), allocFn, freeFn),
-    mSourceBuffer2(sourceBufferLength * numChannels * sizeof(SampleType), allocFn, freeFn),
+    mSourceBuffer1(sourceBufferLength * numChannels * sizeof(SampleType), maxFramesToRender * sizeof(SampleType), allocFn, freeFn),
+    mSourceBuffer2(sourceBufferLength * numChannels * sizeof(SampleType),maxFramesToRender * sizeof(SampleType), allocFn, freeFn),
     mPitchBuffer(maxFramesToRender * sizeof(SampleType), allocFn, freeFn)
   {
   
@@ -48,11 +48,20 @@ namespace RealtimeResampler {
   size_t Renderer::render(SampleType* outputBuffer, size_t numFramesRequested){
     
     assert(numFramesRequested <= mMaxFramesToRender);
+    
     if (mIsInitialRender) {
       swapBuffersAndFillNext();
       mIsInitialRender = false;
     }
     calculatePitchForNextFrames(numFramesRequested);
+    
+    size_t numFramesRendered = 0;
+    SampleType* writeHead = outputBuffer;
+    
+//    while (numFramesRendered < numFramesRequested) {
+//        numFramesRendered += mInterpolator->process(outputBuffer, numFramesRequested, mPitchBuffer.data);
+//    }
+//    
     return mInterpolator->process(outputBuffer, numFramesRequested, mPitchBuffer.data);
     
   }
@@ -116,8 +125,8 @@ namespace RealtimeResampler {
     mInterpolator->mSourceBufferReadHead = mSourceBufferLength;
     mInterpolator->mMaxSourceBufferLength = mSourceBufferLength;
     mInterpolator->mNumChannels = mNumChannels;
-    mInterpolator->mCurrentSourceBuffer = &mSourceBuffer1;
-    mInterpolator->mNextSourceBuffer = &mSourceBuffer2;
+    mInterpolator->mCurrentSourceBuffer = &mSourceBuffer1.audioBuffer;
+    mInterpolator->mNextSourceBuffer = &mSourceBuffer2.audioBuffer;
   }
   
   

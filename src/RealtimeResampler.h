@@ -201,6 +201,18 @@ namespace RealtimeResampler {
         
         private:
         
+          /*!
+            InputBuffer class groups input audio data and interpolation positions (pitch data) in to one object.
+          */
+        
+          struct InputBuffer{
+            InputBuffer(size_t audioBufferSize, size_t pitchBufferSize, void* (*allocFn)(size_t), void (*deallocFn)(void*)):
+              audioBuffer(audioBufferSize, allocFn, deallocFn),
+              interpolationPositionBuffer(pitchBufferSize, allocFn, deallocFn) {}
+            Buffer audioBuffer;
+            Buffer interpolationPositionBuffer;
+          };
+        
           //                          methods
           void                        error(std::string message); // todo -- don't use std::string. Use error codes instead.
           void                        calculatePitchForNextFrames(size_t numFrames);
@@ -214,11 +226,11 @@ namespace RealtimeResampler {
           float                       mCurrentPitch;
           float                       mPitchDestination;
           float                       mSecondsUntilPitchDestination;
-          Buffer                      mPitchBuffer;
+          Buffer                      mPitchBuffer; // The pitch at each frame. In other words, the factor by which to advance the source buffer read head
           void*                       (*mMalloc)(size_t); // allocator function
           void                        (*mDealloc)(void*); // deallocator function
-          Buffer                      mSourceBuffer1;
-          Buffer                      mSourceBuffer2;
+          InputBuffer                 mSourceBuffer1;
+          InputBuffer                 mSourceBuffer2;
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
