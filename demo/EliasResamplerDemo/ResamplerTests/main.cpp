@@ -29,6 +29,8 @@ if(!(value)){                     \
 
 int main(int argc, const char * argv[]) {
   
+    
+  
     static const int kNumChannels = 2;
   
     auto renderer = Renderer(kSampleRate,  kNumChannels, 64);

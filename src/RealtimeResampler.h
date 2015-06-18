@@ -23,6 +23,9 @@ namespace RealtimeResampler {
       typedef float SampleType;
       class Interpolator;
   
+//      static void* (*mallocFn)(size_t); TODO -- use these static functions instead of passing parameters.
+//      static void (*freeFn)(void*);
+//  
       struct Buffer{
         Buffer(size_t bufferSize, void* (*allocFn)(size_t), void (*deallocFn)(void*)){
           data = (SampleType*)(*allocFn)(bufferSize);
@@ -201,18 +204,6 @@ namespace RealtimeResampler {
         
         private:
         
-          /*!
-            InputBuffer class groups input audio data and interpolation positions (pitch data) in to one object.
-          */
-        
-          struct InputBuffer{
-            InputBuffer(size_t audioBufferSize, size_t pitchBufferSize, void* (*allocFn)(size_t), void (*deallocFn)(void*)):
-              audioBuffer(audioBufferSize, allocFn, deallocFn),
-              interpolationPositionBuffer(pitchBufferSize, allocFn, deallocFn) {}
-            Buffer audioBuffer;
-            Buffer interpolationPositionBuffer;
-          };
-        
           //                          methods
           void                        error(std::string message); // todo -- don't use std::string. Use error codes instead.
           void                        calculatePitchForNextFrames(size_t numFrames);
@@ -227,10 +218,15 @@ namespace RealtimeResampler {
           float                       mPitchDestination;
           float                       mSecondsUntilPitchDestination;
           Buffer                      mPitchBuffer; // The pitch at each frame. In other words, the factor by which to advance the source buffer read head
+          Buffer                      mInterpolationPositionBuffer; // The pitch at each frame. In other words, the factor by which to advance the source buffer read head
           void*                       (*mMalloc)(size_t); // allocator function
           void                        (*mDealloc)(void*); // deallocator function
-          InputBuffer                 mSourceBuffer1;
-          InputBuffer                 mSourceBuffer2;
+          Buffer*                     mCurrentSourceBuffer;
+          Buffer*                     mNextSourceBuffer;
+          double                      mSourceBufferReadHead;
+          Buffer                      mSourceBuffer1;
+          Buffer                      mSourceBuffer2;
+          float                       mCurrentSourceBufferReadHead;
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
