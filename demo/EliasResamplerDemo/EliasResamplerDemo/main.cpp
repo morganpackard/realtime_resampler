@@ -49,7 +49,7 @@ int main(int argc, const char * argv[])
     player
       .setBuffer(sample)
       .trigger(ControlTrigger().trigger())
-      .playbackRate( 1 )
+      .playbackRate( 1.0001 )
       .loop(true);
 
 

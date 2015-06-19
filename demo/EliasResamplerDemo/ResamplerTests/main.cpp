@@ -170,7 +170,7 @@ int main(int argc, const char * argv[]) {
     const int kNumFramesInAudioSourceBuffer = 1000;
     audioSource.valueToWrite = (SampleType*)malloc(kNumFramesInAudioSourceBuffer * kNumChannels * sizeof(SampleType));
     for (int i = 0; i < kNumFramesInAudioSourceBuffer * kNumChannels; i++ ) {
-        audioSource.valueToWrite[i] = i %2;//sin(i / 100.0f);
+        audioSource.valueToWrite[i] = sin(i / 100.0f);
     }
     audioSource.valueToWriteLength = kNumFramesInAudioSourceBuffer * kNumChannels;
     auto sourceFramesWrapper = BufferTestWrapper(audioSource.valueToWrite, 100);

@@ -24,14 +24,13 @@ namespace RealtimeResampler{
   
   void LinearInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int mNumChannels){
     
-    
     for (int i = 0; i < numFrames; i++) {
     
+      int integerPartOfInterpolationBuffer = (int)interpolationBuffer[i];
+      SampleType interpolationCoefficient = interpolationBuffer[i] - integerPartOfInterpolationBuffer;
+    
       // The first frame of the interpolated pair
-      int frame1 = (int)interpolationBuffer[i] * mNumChannels;
-      
-      // The fractional part of the interpolation position
-      SampleType interpolationCoefficient = interpolationBuffer[i] - frame1;
+      int frame1 = integerPartOfInterpolationBuffer * mNumChannels;
       
       // The second frame of the interpolated pair.
       int frame2 = frame1 + mNumChannels;
