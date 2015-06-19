@@ -82,11 +82,12 @@ namespace RealtimeResampler {
           //  - make sure we're not rendering more frames than requested
           while(
             interpPosition < mCurrentSourceBuffer->length
-            && ((++interpolatedFramesToRender + numFramesRendered) < numFramesRequested)
+            && ((interpolatedFramesToRender + numFramesRendered) < numFramesRequested)
           ){
             size_t pitchBufferPosition = numFramesRendered + interpolatedFramesToRender;
-            interpPosition += mPitchBuffer.data[pitchBufferPosition];
             mInterpolationPositionBuffer.data[interpolatedFramesToRender] = interpPosition;
+            interpPosition += mPitchBuffer.data[pitchBufferPosition];
+            interpolatedFramesToRender++;
           }
           
           // render the interpolated data
