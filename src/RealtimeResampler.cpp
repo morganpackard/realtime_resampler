@@ -35,8 +35,6 @@ namespace RealtimeResampler {
     mPitchBuffer(maxFramesToRender * sizeof(SampleType), allocFn, freeFn),
     mInterpolationPositionBuffer(maxFramesToRender * sizeof(SampleType), allocFn, freeFn)
   {
-    mSourceBuffer1.length = sourceBufferLength;
-    mSourceBuffer2.length = sourceBufferLength;
   
   }
   
@@ -64,9 +62,6 @@ namespace RealtimeResampler {
           // load the source data if necessary
           if(mSourceBufferReadHead >= mCurrentSourceBuffer->length){
             swapBuffersAndFillNext();
-            if(mCurrentSourceBuffer->length == 0){
-              break;
-            }
           }
         
           // how many frames to render in this pass
@@ -113,6 +108,11 @@ namespace RealtimeResampler {
           
           // update the source buffer read head
           mSourceBufferReadHead = interpPosition;
+      
+          // if the current sourceBuffer is not full, that means the audiosource didn't supply enough samples
+          if (mCurrentSourceBuffer->length < mSourceBufferLength) {
+            break;
+          }
         
     }
     
@@ -206,7 +206,7 @@ namespace RealtimeResampler {
   }
   
   void Renderer::swapBuffersAndFillNext(){
-    mSourceBufferReadHead -= mCurrentSourceBuffer->length;
+    mSourceBufferReadHead -= mSourceBufferLength;
     Buffer* newCurrent = mNextSourceBuffer;
     Buffer* newNext = mCurrentSourceBuffer;
     mCurrentSourceBuffer = newCurrent;
