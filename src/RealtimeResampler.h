@@ -31,12 +31,17 @@ namespace RealtimeResampler {
         Buffer(size_t bufferSize){
           data = (SampleType*)(*mallocFn)(bufferSize);
           mBufferSize = bufferSize;
+          length = 0;
         }
         Buffer(const Buffer &other): mBufferSize(other.mBufferSize){
           data = (SampleType*)(mallocFn)(mBufferSize);
+          mBufferSize = other.mBufferSize;
+          length = other.length;
+
         }
         Buffer& operator= (const Buffer& other){
           mBufferSize = other.mBufferSize;
+          length = other.length;
           data = (SampleType*)(mallocFn)(mBufferSize);
           return *this;
         }

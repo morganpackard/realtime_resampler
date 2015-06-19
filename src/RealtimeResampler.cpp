@@ -63,56 +63,56 @@ namespace RealtimeResampler {
     
     while (numFramesRendered < numFramesRequested) {
         
-          // load the source data if necessary
-          if(mSourceBufferReadHead >= currentBuffer->length){
-            swapBuffersAndFillNext();
-            currentBuffer = mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
-          }
-        
-          // how many frames to render in this pass
-          size_t interpolatedFramesToRender = 0;
+      // load the source data if necessary
+      if(mSourceBufferReadHead >= currentBuffer->length){
+        swapBuffersAndFillNext();
+        currentBuffer = mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
+      }
+    
+      // how many frames to render in this pass
+      size_t interpolatedFramesToRender = 0;
+  
+      // last calculated interpolation position. Initalize it to be the last position read
+      // this may be in the middle of a source buffer
+      float interpPosition = mSourceBufferReadHead;
       
-          // last calculated interpolation position. Initalize it to be the last position read
-          // this may be in the middle of a source buffer
-          float interpPosition = mSourceBufferReadHead;
-          
-          // build the interpolation position buffer
-          //  - keep track of how big it is
-          //  - make sure we're not using more frames than are currently in the source buffer
-          //  - make sure we're not rendering more frames than requested
-          while(
-            interpPosition < currentBuffer->length
-            && ((interpolatedFramesToRender + numFramesRendered) < numFramesRequested)
-          ){
-            size_t pitchBufferPosition = numFramesRendered + interpolatedFramesToRender;
-            mInterpolationPositionBuffer.data[interpolatedFramesToRender] = interpPosition;
-            interpPosition += mPitchBuffer.data[pitchBufferPosition];
-            interpolatedFramesToRender++;
-          }
-          
-          // render the interpolated data
-          
-          // start where we left off
-          SampleType* writeHead = outputBuffer + numFramesRendered * mNumChannels;
-          SampleType* readHead = currentBuffer->data + (int)mSourceBufferReadHead;
-          
-          // interpolate [interpolatedFramesToRender] frames starting at readHead, writing to writehead
-          // and using interpolationBuffer for frame position and interpolation coefficient
-          for(int channel = 0; channel < mNumChannels; channel++){
-            mInterpolator->process(readHead + channel, writeHead + channel, mInterpolationPositionBuffer.data, interpolatedFramesToRender, mNumChannels);
-          }
+      // build the interpolation position buffer
+      //  - keep track of how big it is
+      //  - make sure we're not using more frames than are currently in the source buffer
+      //  - make sure we're not rendering more frames than requested
+      while(
+        interpPosition < currentBuffer->length
+        && ((interpolatedFramesToRender + numFramesRendered) < numFramesRequested)
+      ){
+        size_t pitchBufferPosition = numFramesRendered + interpolatedFramesToRender;
+        mInterpolationPositionBuffer.data[interpolatedFramesToRender] = interpPosition;
+        interpPosition += mPitchBuffer.data[pitchBufferPosition];
+        interpolatedFramesToRender++;
+      }
       
-          // increment our total frame count
-          numFramesRendered += interpolatedFramesToRender;
-          
-          // update the source buffer read head
-          mSourceBufferReadHead = interpPosition;
+      // render the interpolated data
       
-          // if the current sourceBuffer is not full, that means the audiosource didn't supply enough samples
-          if (currentBuffer->length < mSourceBufferLength) {
-            break;
-          }
-        
+      // start where we left off
+      SampleType* writeHead = outputBuffer + numFramesRendered * mNumChannels;
+      SampleType* readHead = currentBuffer->data + (int)mSourceBufferReadHead;
+      
+      // interpolate [interpolatedFramesToRender] frames starting at readHead, writing to writehead
+      // and using interpolationBuffer for frame position and interpolation coefficient
+      for(int channel = 0; channel < mNumChannels; channel++){
+        mInterpolator->process(readHead + channel, writeHead + channel, mInterpolationPositionBuffer.data, interpolatedFramesToRender, mNumChannels);
+      }
+  
+      // increment our total frame count
+      numFramesRendered += interpolatedFramesToRender;
+      
+      // update the source buffer read head
+      mSourceBufferReadHead = interpPosition;
+  
+      // if the current sourceBuffer is not full, that means the audiosource didn't supply enough samples
+      if (currentBuffer->length < mSourceBufferLength) {
+        break;
+      }
+      
     }
     
     return numFramesRendered;
