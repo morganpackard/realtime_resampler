@@ -19,6 +19,9 @@ namespace RealtimeResampler {
   void* (*mallocFn)(size_t) = malloc;
   void (*freeFn)(void*) = free;
   
+  
+  const int Renderer::BUFFER_PADDING = 2;
+  
   Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender ) :
     mNumChannels(numChannels),
     mCurrentPitch(1),
@@ -27,8 +30,8 @@ namespace RealtimeResampler {
     mSampleRate(sampleRate),
     mMaxFramesToRender(maxFramesToRender),
     mSourceBufferLength(sourceBufferLength),
-    mSourceBuffer1(sourceBufferLength * numChannels * sizeof(SampleType)),
-    mSourceBuffer2(sourceBufferLength * numChannels * sizeof(SampleType)),
+    mSourceBuffer1(( sourceBufferLength + BUFFER_PADDING ) * numChannels * sizeof(SampleType)),
+    mSourceBuffer2((sourceBufferLength + BUFFER_PADDING ) * numChannels * sizeof(SampleType)),
     mBufferSwapState(0),
     mSourceBufferReadHead(sourceBufferLength),
     mPitchBuffer(maxFramesToRender * sizeof(SampleType)),
@@ -176,7 +179,6 @@ namespace RealtimeResampler {
   
   void Renderer::calculatePitchForNextFrames(size_t numFrames){
     double pitchChangePerFrame;
-    double interpPosition = 0;
     if (mSecondsUntilPitchDestination > 0) {
       pitchChangePerFrame = (mPitchDestination - mCurrentPitch) / (mSecondsUntilPitchDestination * mSampleRate);
     }else{
@@ -204,6 +206,14 @@ namespace RealtimeResampler {
       currentBuffer->length = mAudioSource->getSamples(currentBuffer->data, mSourceBufferLength, mNumChannels);
     }
     nextBuffer->length = mAudioSource->getSamples(nextBuffer->data, mSourceBufferLength, mNumChannels);
+    
+    // zero out the end of the buffer in case it's shorter than we requested
+    memset(nextBuffer->data + nextBuffer->length * mNumChannels, 0, (mSourceBufferLength - nextBuffer->length) * mNumChannels * sizeof(SampleType) );
+    
+    // copy the last bit of the next buffer on to the end of the current buffer to handle interpolation between the end of the
+    // current and the beginning of the next.
+    memcpy(currentBuffer->data + currentBuffer->length * mNumChannels, nextBuffer->data, BUFFER_PADDING * mNumChannels * sizeof(SampleType));
+    
   }
 
   

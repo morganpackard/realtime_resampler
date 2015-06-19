@@ -210,6 +210,7 @@ namespace RealtimeResampler {
           double                      mSourceBufferReadHead;
           Buffer                      mSourceBuffer1;
           Buffer                      mSourceBuffer2;
+          const static int            BUFFER_PADDING; //we need to copy the last bit of the next buffer on to the end of the current buffer
           float                       mCurrentSourceBufferReadHead;
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;

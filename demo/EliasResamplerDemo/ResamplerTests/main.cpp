@@ -42,8 +42,8 @@ static void* debugMallocFn(size_t size){
 
 int main(int argc, const char * argv[]) {
   
-    mallocFn = debugMallocFn;
-    freeFn = debugFreeFn;
+//    mallocFn = debugMallocFn;
+//    freeFn = debugFreeFn;
   
     static const int kNumChannels = 2;
   
