@@ -101,8 +101,6 @@ namespace RealtimeResampler {
 
           memcpy(writeHead, readHead, interpolatedFramesToRender * sizeof(SampleType) * mNumChannels);
       
-          printf("interpolatedFramesToRender: %i\n", interpolatedFramesToRender);
-          
           // increment our total frame count
           numFramesRendered += interpolatedFramesToRender;
           

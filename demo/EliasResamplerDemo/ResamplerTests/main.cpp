@@ -112,9 +112,9 @@ int main(int argc, const char * argv[]) {
       SampleType* valueToWrite;
       int readHead;
       size_t getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels){
-        for (int i = 0; i < numFramesToProvide * numChannels; i++) {
-            outputBuffer[i] = valueToWrite[readHead++];
-        }
+//        for (int i = 0; i < numFramesToProvide * numChannels; i++) {
+//            outputBuffer[i] = valueToWrite[readHead++];
+//        }
         return numFramesToProvide;
       }
     };
@@ -145,20 +145,15 @@ int main(int argc, const char * argv[]) {
     
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 60 frames") ;
   
-    // Test cubic interpolator with AudioSource returning fewer samples than requested
-  
+//    // Test one octave up. Should return half as many samples as supplied
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
-    renderer.setInterpolator(new CubicInterpolator());
+    renderer.setInterpolator(new LinearInterpolator());
     renderer.setAudioSource(&audioSource);
+    renderer.setPitch(2, 2, 0);
   
     audioSource.numFramesToProvide = 60;
-  
-    for(int i = 0; i < kNumFramesInAudioSourceBuffer; i++){
-      audioSource.valueToWrite[i * kNumChannels] = (i % (64 * 2) < 64) ? 0 : 1;
-    }
     
-    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 60 frames") ;
-  
+    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide / 2, "The renderer should render 30 frames") ;
   
     std::cout << "\n ======== Tests Completed =========== \n\n";
   
