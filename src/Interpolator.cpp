@@ -39,7 +39,7 @@ namespace RealtimeResampler{
       SampleType sample1 = inputBuffer[frame1];
       SampleType sample2 = inputBuffer[frame2];
       
-      outputBuffer[i] = sample1 + (sample2 - sample1) * interpolationCoefficient ;
+      outputBuffer[i * mNumChannels] = sample1 + (sample2 - sample1) * interpolationCoefficient ;
       
     }
   }

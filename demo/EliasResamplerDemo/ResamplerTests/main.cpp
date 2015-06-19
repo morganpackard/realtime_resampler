@@ -170,17 +170,26 @@ int main(int argc, const char * argv[]) {
     const int kNumFramesInAudioSourceBuffer = 1000;
     audioSource.valueToWrite = (SampleType*)malloc(kNumFramesInAudioSourceBuffer * kNumChannels * sizeof(SampleType));
     for (int i = 0; i < kNumFramesInAudioSourceBuffer * kNumChannels; i++ ) {
-        audioSource.valueToWrite[i] = sin(i / 100.0f);
+        audioSource.valueToWrite[i] = i %2;//sin(i / 100.0f);
     }
     audioSource.valueToWriteLength = kNumFramesInAudioSourceBuffer * kNumChannels;
     auto sourceFramesWrapper = BufferTestWrapper(audioSource.valueToWrite, 100);
-  
     
     TEST_EQ(sourceFramesWrapper, sourceFramesWrapper, "The source frames should equal itself");
   
+  
+  
+  
     // set up destination buffer
-    SampleType* destinationBuffer = (SampleType*)malloc(sizeof(SampleType) * kNumChannels * 1000 );
+    const int kNumFramesInDestinationBuffer = kNumFramesInAudioSourceBuffer * 2;
+    SampleType* destinationBuffer = (SampleType*)malloc(sizeof(SampleType) * kNumChannels * kNumFramesInDestinationBuffer );
     auto destinationFramesWrapper = BufferTestWrapper(destinationBuffer, 100);
+  
+    auto wipeDestinationBuffer = [=](){ memset(destinationBuffer, 0, sizeof(SampleType) * kNumChannels * kNumFramesInDestinationBuffer); };
+    wipeDestinationBuffer();
+  
+  
+  
   
     // Test linear interpolator with AudioSource returning as many samples as requested
   
@@ -188,14 +197,17 @@ int main(int argc, const char * argv[]) {
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
     renderer.setInterpolator(new LinearInterpolator());
     renderer.setAudioSource(&audioSource);
-    audioSource.readHead = 0;
   
+    audioSource.readHead = 0;
     audioSource.numFramesToProvide = 64;
   
-    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames");
+    sourceFramesWrapper.mSamples = 64 * kNumChannels;
+    destinationFramesWrapper.mSamples = 64 * kNumChannels;
   
-
-    TEST_EQ(sourceFramesWrapper, destinationFramesWrapper, "The output frames should be the same as the input frames");
+    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames");
+    TEST_EQ(destinationFramesWrapper, sourceFramesWrapper, "The output frames should be the same as the input frames");
+  
+  
   
   
     // Test linear interpolator with AudioSource returning fewer samples than requested
@@ -207,6 +219,9 @@ int main(int argc, const char * argv[]) {
     audioSource.numFramesToProvide = 60;
     
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 60 frames") ;
+  
+  
+  
   
     // Test one octave up. Should return half as many samples as supplied
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
