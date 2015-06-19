@@ -10,6 +10,8 @@
 #include "RealtimeResampler.h"
 #include <stdio.h>
 #include "Interpolator.h"
+#include <cmath>
+#include <iomanip>
 
 using namespace RealtimeResampler;
 
@@ -18,7 +20,7 @@ static const float kSampleRate = 44100;
 #define TEST_EQ(a, b, error){ int lineNumber = __LINE__;    \
 auto actual = a; \
 auto expected = b; \
-if(actual != expected){                     \
+if(!(actual == expected)){                     \
   std::cout << "Test failed at line " << lineNumber << ". " << error << " Expected " << expected << " got " <<  actual << std::endl; \
 }}  
 
@@ -26,6 +28,52 @@ if(actual != expected){                     \
 if(!(value)){                     \
   std::cout << "Test failed at line " << lineNumber << ". " << error << " Expected value to be true" << std::endl; \
 }}  
+
+
+// Audio source for test data
+
+class AudioSourceImpl : public AudioSource{
+public:
+  size_t numFramesToProvide;
+  size_t valueToWriteLength;
+  SampleType* valueToWrite;
+  int readHead;
+  size_t getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels){
+    for (int i = 0; i < numFramesToProvide * numChannels; i++) {
+        outputBuffer[i] = valueToWrite[readHead++];
+    }
+    if (readHead > valueToWriteLength) {
+      printf("AudioSourceImpl error -- eadHead > valueToWriteLength)\n");
+    }
+    return numFramesToProvide;
+  }
+};
+
+// Wrapper object to test equality with audio buffers
+
+class BufferTestWrapper{
+public:
+  BufferTestWrapper(SampleType* buffer, size_t samples):mBuffer(buffer),mSamples(samples){};
+  bool operator==(const BufferTestWrapper& rhs) const{
+     return (mSamples == rhs.mSamples)
+     && ( memcmp(mBuffer, rhs.mBuffer, mSamples * sizeof(SampleType)) == 0 );
+  }
+
+  size_t mSamples;
+  SampleType* mBuffer;
+};
+
+std::ostream& operator<<(std::ostream &strm, const BufferTestWrapper& wrapper) {
+  for (int i = 0; i < wrapper.mSamples; i++) {
+      if (i % 8 == 0) {
+        strm << std::endl;
+      }
+      strm  << std::setprecision(8) << wrapper.mBuffer[i] << " ";
+
+  }
+  return strm << std::endl;
+}
+
 
 static void debugFreeFn(void* ptr){
   std::cout << "debugFreeFn on ptr: " << ptr << std::endl;
@@ -116,38 +164,27 @@ int main(int argc, const char * argv[]) {
     // Test Renderer returns fewer frames when audio source provides fewer
     ///////////////////////////////////////
   
-    
   
-    renderer.setPitch(1, 1, 0);
-  
-    class AudioSourceImpl : public AudioSource{
-    public:
-      size_t numFramesToProvide;
-      size_t valueToWriteLength;
-      SampleType* valueToWrite;
-      int readHead;
-      size_t getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels){
-        for (int i = 0; i < numFramesToProvide * numChannels; i++) {
-            outputBuffer[i] = 0;//valueToWrite[readHead++];
-            
-            //printf("AudioSourceImpl wrting to outputBuffer[%i]\n", i);
-        }
-        if (readHead > valueToWriteLength) {
-          printf("AudioSourceImpl error -- eadHead > valueToWriteLength)\n");
-        }
-        return numFramesToProvide;
-      }
-    };
-  
-    const int kNumFramesInAudioSourceBuffer = 1000;
+    // set up source for test audio data
     AudioSourceImpl audioSource;
+    const int kNumFramesInAudioSourceBuffer = 1000;
     audioSource.valueToWrite = (SampleType*)malloc(kNumFramesInAudioSourceBuffer * kNumChannels * sizeof(SampleType));
+    for (int i = 0; i < kNumFramesInAudioSourceBuffer * kNumChannels; i++ ) {
+        audioSource.valueToWrite[i] = sin(i / 100.0f);
+    }
     audioSource.valueToWriteLength = kNumFramesInAudioSourceBuffer * kNumChannels;
+    auto sourceFramesWrapper = BufferTestWrapper(audioSource.valueToWrite, 100);
   
+    
+    TEST_EQ(sourceFramesWrapper, sourceFramesWrapper, "The source frames should equal itself");
+  
+    // set up destination buffer
     SampleType* destinationBuffer = (SampleType*)malloc(sizeof(SampleType) * kNumChannels * 1000 );
+    auto destinationFramesWrapper = BufferTestWrapper(destinationBuffer, 100);
   
     // Test linear interpolator with AudioSource returning as many samples as requested
   
+    renderer.setPitch(1, 1, 0);
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
     renderer.setInterpolator(new LinearInterpolator());
     renderer.setAudioSource(&audioSource);
@@ -155,7 +192,11 @@ int main(int argc, const char * argv[]) {
   
     audioSource.numFramesToProvide = 64;
   
-    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames") ;
+    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames");
+  
+
+    TEST_EQ(sourceFramesWrapper, destinationFramesWrapper, "The output frames should be the same as the input frames");
+  
   
     // Test linear interpolator with AudioSource returning fewer samples than requested
   
