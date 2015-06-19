@@ -23,30 +23,27 @@ namespace RealtimeResampler {
       typedef float SampleType;
       class Interpolator;
   
-//      static void* (*mallocFn)(size_t); TODO -- use these static functions instead of passing parameters.
-//      static void (*freeFn)(void*);
-//  
+      // allocator / deallocator are malloc and free by default, but can be overridden
+      extern void* (*mallocFn)(size_t);
+      extern void (*freeFn)(void*);
+  
       struct Buffer{
-        Buffer(size_t bufferSize, void* (*allocFn)(size_t), void (*deallocFn)(void*)){
-          data = (SampleType*)(*allocFn)(bufferSize);
-          mDealloc = deallocFn;
+        Buffer(size_t bufferSize){
+          data = (SampleType*)(*mallocFn)(bufferSize);
           mBufferSize = bufferSize;
-          mAllocFn = allocFn;
         }
-        Buffer(const Buffer &other): mAllocFn(other.mAllocFn), mDealloc(other.mDealloc), mBufferSize(other.mBufferSize){
-          data = (SampleType*)(*other.mAllocFn)(mBufferSize);
+        Buffer(const Buffer &other): mBufferSize(other.mBufferSize){
+          data = (SampleType*)(mallocFn)(mBufferSize);
         }
         Buffer& operator= (const Buffer& other){
-          mBufferSize = other.mBufferSize; mAllocFn = other.mAllocFn; mDealloc = other.mDealloc;
-          data = (SampleType*)(*other.mAllocFn)(mBufferSize);
+          mBufferSize = other.mBufferSize;
+          data = (SampleType*)(mallocFn)(mBufferSize);
           return *this;
         }
-        ~Buffer(){  mDealloc(data); }
+        ~Buffer(){  freeFn(data); }
         SampleType*             data;
         size_t                  length;
         size_t                  mBufferSize;
-        void*                   (*mAllocFn)(size_t);
-        void                    (*mDealloc)(void*); // deallocator function
       };
   
       //////////////////////////////////////////
@@ -111,17 +108,8 @@ namespace RealtimeResampler {
             float sampleRate,
             int numChannels,
             size_t sourceBufferLength = 64,
-            size_t maxFramesToRender = 64,
-            void* (*allocFn)(size_t) = &malloc,
-            void (*freeFn)(void*) = &free
+            size_t maxFramesToRender = 64
           );
-        
-          /*!
-            Copy Constructor
-          */
-        
-          Renderer(const Renderer &source);
-        
         
           /*!
             Destructor
@@ -204,13 +192,12 @@ namespace RealtimeResampler {
         
         private:
         
-          //                          methods
+          //                          -methods-
           void                        error(std::string message); // todo -- don't use std::string. Use error codes instead.
           void                        calculatePitchForNextFrames(size_t numFrames);
           void                        swapBuffersAndFillNext();
-          size_t                      fillSourceBuffer(Buffer* buffer);
         
-          //                          variables
+          //                          -variables-
           int                         mNumChannels;
           float                       mSampleRate; // frames per second
           AudioSource*                mAudioSource;
@@ -219,10 +206,7 @@ namespace RealtimeResampler {
           float                       mSecondsUntilPitchDestination;
           Buffer                      mPitchBuffer; // The pitch at each frame. In other words, the factor by which to advance the source buffer read head
           Buffer                      mInterpolationPositionBuffer; // The pitch at each frame. In other words, the factor by which to advance the source buffer read head
-          void*                       (*mMalloc)(size_t); // allocator function
-          void                        (*mDealloc)(void*); // deallocator function
-          Buffer*                     mCurrentSourceBuffer;
-          Buffer*                     mNextSourceBuffer;
+          bool                        mBufferSwapState;
           double                      mSourceBufferReadHead;
           Buffer                      mSourceBuffer1;
           Buffer                      mSourceBuffer2;
@@ -230,7 +214,6 @@ namespace RealtimeResampler {
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
-          bool                        mIsInitialRender; // Is this the first render of the current stream? If so, make sure to load source data
       };
   
   

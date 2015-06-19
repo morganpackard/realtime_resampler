@@ -14,14 +14,38 @@ namespace RealtimeResampler{
   /// Abstract Interpolator delegate class.
   //////////////////////////////////////////
 
-  void Interpolator::fillNextBuffer(){
-    mRenderer->swapBuffersAndFillNext();
-  }
+
   
   
   //////////////////////////////////////////
   /// Linear Interpolator
   //////////////////////////////////////////
+  
+  
+  void LinearInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int mNumChannels){
+    
+    
+    for (int i = 0; i < numFrames; i++) {
+    
+      // The first frame of the interpolated pair
+      int frame1 = (int)interpolationBuffer[i] * mNumChannels;
+      
+      // The fractional part of the interpolation position
+      SampleType interpolationCoefficient = interpolationBuffer[i] - frame1;
+      
+      // The second frame of the interpolated pair.
+      int frame2 = frame1 + mNumChannels;
+      
+      SampleType sample1 = inputBuffer[frame1];
+      SampleType sample2 = inputBuffer[frame2];
+      
+      outputBuffer[i] = sample1 + (sample2 - sample1) * interpolationCoefficient ;
+      
+    }
+  }
+  
+  
+  /*
 
   size_t  LinearInterpolator::process(SampleType* outputBuffer,  size_t outputbufferSize, SampleType* pitchScale){
 
@@ -71,6 +95,7 @@ namespace RealtimeResampler{
     return numFramesRendered;
 
   }
+  
   
   //////////////////////////////////////////
   /// Abstract Interpolator Using Four Frames
@@ -175,7 +200,7 @@ namespace RealtimeResampler{
     float c3 = (.5F * (frame3Sample - frame0Sample)) + (1.5F * (frame1Sample - frame2Sample));
     return (((((c3 * t) + c2) * t) + c1) * t) + c0;
   }
-  
+   */
 
 
 }

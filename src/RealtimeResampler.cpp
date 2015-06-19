@@ -15,25 +15,24 @@
 #include <iostream>// TODO remove this
 
 namespace RealtimeResampler {
+
+  void* (*mallocFn)(size_t) = malloc;
+  void (*freeFn)(void*) = free;
   
-  Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender, void* (*allocFn)(size_t), void (*freeFn)(void*) ) :
+  Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender ) :
     mNumChannels(numChannels),
     mCurrentPitch(1),
     mPitchDestination(1),
     mSecondsUntilPitchDestination(0),
     mSampleRate(sampleRate),
     mMaxFramesToRender(maxFramesToRender),
-    mMalloc(allocFn),
-    mDealloc(freeFn),
     mSourceBufferLength(sourceBufferLength),
-    mIsInitialRender(true),
-    mSourceBuffer1(sourceBufferLength * numChannels * sizeof(SampleType), allocFn, freeFn),
-    mSourceBuffer2(sourceBufferLength * numChannels * sizeof(SampleType), allocFn, freeFn),
-    mCurrentSourceBuffer(&mSourceBuffer1),
-    mNextSourceBuffer(&mSourceBuffer2),
+    mSourceBuffer1(sourceBufferLength * numChannels * sizeof(SampleType)),
+    mSourceBuffer2(sourceBufferLength * numChannels * sizeof(SampleType)),
+    mBufferSwapState(0),
     mSourceBufferReadHead(sourceBufferLength),
-    mPitchBuffer(maxFramesToRender * sizeof(SampleType), allocFn, freeFn),
-    mInterpolationPositionBuffer(maxFramesToRender * sizeof(SampleType), allocFn, freeFn)
+    mPitchBuffer(maxFramesToRender * sizeof(SampleType)),
+    mInterpolationPositionBuffer(maxFramesToRender * sizeof(SampleType))
   {
   
   }
@@ -57,11 +56,14 @@ namespace RealtimeResampler {
     
     calculatePitchForNextFrames(numFramesRequested);
     
+    Buffer* currentBuffer = mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
+    
     while (numFramesRendered < numFramesRequested) {
         
           // load the source data if necessary
-          if(mSourceBufferReadHead >= mCurrentSourceBuffer->length){
+          if(mSourceBufferReadHead >= currentBuffer->length){
             swapBuffersAndFillNext();
+            currentBuffer = mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
           }
         
           // how many frames to render in this pass
@@ -76,7 +78,7 @@ namespace RealtimeResampler {
           //  - make sure we're not using more frames than are currently in the source buffer
           //  - make sure we're not rendering more frames than requested
           while(
-            interpPosition < mCurrentSourceBuffer->length
+            interpPosition < currentBuffer->length
             && ((interpolatedFramesToRender + numFramesRendered) < numFramesRequested)
           ){
             size_t pitchBufferPosition = numFramesRendered + interpolatedFramesToRender;
@@ -89,17 +91,13 @@ namespace RealtimeResampler {
           
           // start where we left off
           SampleType* writeHead = outputBuffer + numFramesRendered * mNumChannels;
-          SampleType* readHead = mCurrentSourceBuffer->data + (int)mSourceBufferReadHead;
+          SampleType* readHead = currentBuffer->data + (int)mSourceBufferReadHead;
           
           // interpolate [interpolatedFramesToRender] frames starting at readHead, writing to writehead
           // and using interpolationBuffer for frame position and interpolation coefficient
-          /*
-          for(int channel = 0; i < mNumChannels; channel++){
-            interpolate(readHead + channel, writeHead + channel, interpolationBuffer, interpolatedFramesToRender, mNumChannels);
+          for(int channel = 0; channel < mNumChannels; channel++){
+            mInterpolator->process(readHead + channel, writeHead + channel, mInterpolationPositionBuffer.data, interpolatedFramesToRender, mNumChannels);
           }
-          */
-
-          memcpy(writeHead, readHead, interpolatedFramesToRender * sizeof(SampleType) * mNumChannels);
       
           // increment our total frame count
           numFramesRendered += interpolatedFramesToRender;
@@ -108,7 +106,7 @@ namespace RealtimeResampler {
           mSourceBufferReadHead = interpPosition;
       
           // if the current sourceBuffer is not full, that means the audiosource didn't supply enough samples
-          if (mCurrentSourceBuffer->length < mSourceBufferLength) {
+          if (currentBuffer->length < mSourceBufferLength) {
             break;
           }
         
@@ -173,12 +171,6 @@ namespace RealtimeResampler {
   
   void Renderer::setInterpolator(RealtimeResampler::Interpolator *interpolator){
     mInterpolator = interpolator;
-    mInterpolator->mRenderer = this;
-    mInterpolator->mSourceBufferReadHead = mSourceBufferLength;
-    mInterpolator->mMaxSourceBufferLength = mSourceBufferLength;
-    mInterpolator->mNumChannels = mNumChannels;
-//    mInterpolator->mCurrentSourceBuffer = &mSourceBuffer1.audioBuffer;
-//    mInterpolator->mNextSourceBuffer = &mSourceBuffer2.audioBuffer;
   }
   
   
@@ -205,18 +197,14 @@ namespace RealtimeResampler {
   
   void Renderer::swapBuffersAndFillNext(){
     mSourceBufferReadHead -= mSourceBufferLength;
-    Buffer* newCurrent = mNextSourceBuffer;
-    Buffer* newNext = mCurrentSourceBuffer;
-    mCurrentSourceBuffer = newCurrent;
-    mNextSourceBuffer = newNext;
-    if (mCurrentSourceBuffer->length == 0) {
-      mCurrentSourceBuffer->length = mAudioSource->getSamples(mCurrentSourceBuffer->data, mSourceBufferLength, mNumChannels);
+    mBufferSwapState = !mBufferSwapState;
+    Buffer* currentBuffer = mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
+    Buffer* nextBuffer =  !mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
+    if (currentBuffer->length == 0) {
+      currentBuffer->length = mAudioSource->getSamples(currentBuffer->data, mSourceBufferLength, mNumChannels);
     }
-    newNext->length = mAudioSource->getSamples(newNext->data, mSourceBufferLength, mNumChannels);
+    nextBuffer->length = mAudioSource->getSamples(nextBuffer->data, mSourceBufferLength, mNumChannels);
   }
-  
-  size_t Renderer::fillSourceBuffer(Buffer* buffer){
-    return mAudioSource->getSamples(buffer->data, mInterpolator->mMaxSourceBufferLength, mNumChannels);
-  }
+
   
 }

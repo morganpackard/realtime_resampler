@@ -30,15 +30,7 @@ namespace RealtimeResampler {
   */
   
   protected:
-    virtual size_t                process(SampleType* outputBuffer,  size_t outputbufferSize, SampleType* pitchScale) = 0;
-    void                          fillNextBuffer(); // Access a protected function of Renderer from a subclass.
-    Renderer*                     mRenderer;
-    Buffer*                       mCurrentSourceBuffer;
-    Buffer*                       mNextSourceBuffer;
-    size_t                        mMaxSourceBufferLength;
-    float                         mSourceBufferReadHead;
-    int                           mNumChannels;
-  
+    virtual void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int mNumChannels) = 0;
   };
 
   //////////////////////////////////////////
@@ -47,40 +39,40 @@ namespace RealtimeResampler {
 
   class LinearInterpolator : public Interpolator{
   protected:
-      size_t process(SampleType* outputBuffer, size_t outputbufferSize, SampleType* pitchScale);
+    void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int mNumChannels);
   };
-  
-  //////////////////////////////////////////
-  /// Abstract Interpolator Using Four Frames
-  //////////////////////////////////////////
-  
-  /*!
-    More sophisticated interpolation techniques (Cubic, Hermite) rely on more than two frames for interpolation.
-  */
-
-  class FourFrameInterpolator : public Interpolator{
-  protected:
-      size_t process(SampleType* outputBuffer, size_t outputbufferSize, SampleType* pitchScale);
-      virtual SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample)=0;
-  };
-  
-  //////////////////////////////////////////
-  /// Cubic Interpolator
-  //////////////////////////////////////////
-
-  class CubicInterpolator : public FourFrameInterpolator{
-  protected:
-      SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample);
-  };
-  
-  //////////////////////////////////////////
-  /// Hermite Interpolator
-  //////////////////////////////////////////
-
-  class HermiteInterpolator : public FourFrameInterpolator{
-  protected:
-      SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample);
-  };
+//  
+//  //////////////////////////////////////////
+//  /// Abstract Interpolator Using Four Frames
+//  //////////////////////////////////////////
+//  
+//  /*!
+//    More sophisticated interpolation techniques (Cubic, Hermite) rely on more than two frames for interpolation.
+//  */
+//
+//  class FourFrameInterpolator : public Interpolator{
+//  protected:
+//      size_t process(SampleType* outputBuffer, size_t outputbufferSize, SampleType* pitchScale);
+//      virtual SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample)=0;
+//  };
+//  
+//  //////////////////////////////////////////
+//  /// Cubic Interpolator
+//  //////////////////////////////////////////
+//
+//  class CubicInterpolator : public FourFrameInterpolator{
+//  protected:
+//      SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample);
+//  };
+//  
+//  //////////////////////////////////////////
+//  /// Hermite Interpolator
+//  //////////////////////////////////////////
+//
+//  class HermiteInterpolator : public FourFrameInterpolator{
+//  protected:
+//      SampleType buildSample(float t, SampleType frame0Sample, SampleType frame1Sample, SampleType frame2Sample, SampleType frame3Sample);
+//  };
 
 }
 

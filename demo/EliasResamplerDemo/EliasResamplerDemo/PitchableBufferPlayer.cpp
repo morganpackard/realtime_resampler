@@ -31,7 +31,7 @@ namespace Tonic { namespace Tonic_{
       delete resampler;
     }
     resampler = new RealtimeResampler::Renderer(kSynthesisBlockSize, buffer_.channels());
-    resampler->setInterpolator(new CubicInterpolator());
+    resampler->setInterpolator(new LinearInterpolator());
     resampler->setAudioSource(this);
     printf("PitchableBufferPlayer_::setBuffer buffer size: %zu\n", buffer_.frames());
   }
@@ -52,8 +52,11 @@ namespace Tonic { namespace Tonic_{
     if(isFinished_){
       outputFrames_.clear();
     }else{
-      
-      size_t framesRendered = resampler->render(&outputFrames_[0], min(kSynthesisBlockSize, calculateFramesLeftInBuffer()));
+    
+    
+    if(mDoesLoop)
+    
+    size_t framesRendered = resampler->render(&outputFrames_[0], kSynthesisBlockSize);
 //      if(framesRendered < kSynthesisBlockSize){
 //        printf("PitchableBufferPlayer_::computeSynthesisBlock frames rendered: %zu\n", framesRendered);
 //      }
@@ -72,7 +75,7 @@ namespace Tonic { namespace Tonic_{
     while (totalFramesCopied < numFramesRequested) {
       size_t framesLeftInBuffer = calculateFramesLeftInBuffer();
       size_t copyOverage = max(0, numFramesRequested - framesLeftInBuffer);
-      size_t framesToCopy = numFramesRequested - copyOverage;
+      size_t framesToCopy = numFramesRequested - totalFramesCopied - copyOverage;
       size_t bytesToCopy = framesToCopy * buffer_.channels() * sizeof(TonicFloat);
       memcpy(outputBuffer, &buffer_.dataPointer()[currentFrame * buffer_.channels()], bytesToCopy);
       totalFramesCopied += framesToCopy;

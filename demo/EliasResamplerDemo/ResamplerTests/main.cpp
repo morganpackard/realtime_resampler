@@ -25,11 +25,25 @@ if(actual != expected){                     \
 #define TEST_TRUE(value, error){ int lineNumber = __LINE__;    \
 if(!(value)){                     \
   std::cout << "Test failed at line " << lineNumber << ". " << error << " Expected value to be true" << std::endl; \
-}}                              \
+}}  
+
+static void debugFreeFn(void* ptr){
+  std::cout << "debugFreeFn on ptr: " << ptr << std::endl;
+  free(ptr);
+};
+
+static void* debugMallocFn(size_t size){
+  void* ptr = malloc(size);
+  std::cout << "debugMallocFn of ptr: " << ptr << std::endl;
+  return ptr;
+};
+
+
 
 int main(int argc, const char * argv[]) {
   
-    
+    mallocFn = debugMallocFn;
+    freeFn = debugFreeFn;
   
     static const int kNumChannels = 2;
   
@@ -109,12 +123,18 @@ int main(int argc, const char * argv[]) {
     class AudioSourceImpl : public AudioSource{
     public:
       size_t numFramesToProvide;
+      size_t valueToWriteLength;
       SampleType* valueToWrite;
       int readHead;
       size_t getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels){
-//        for (int i = 0; i < numFramesToProvide * numChannels; i++) {
-//            outputBuffer[i] = valueToWrite[readHead++];
-//        }
+        for (int i = 0; i < numFramesToProvide * numChannels; i++) {
+            outputBuffer[i] = 0;//valueToWrite[readHead++];
+            
+            //printf("AudioSourceImpl wrting to outputBuffer[%i]\n", i);
+        }
+        if (readHead > valueToWriteLength) {
+          printf("AudioSourceImpl error -- eadHead > valueToWriteLength)\n");
+        }
         return numFramesToProvide;
       }
     };
@@ -122,6 +142,7 @@ int main(int argc, const char * argv[]) {
     const int kNumFramesInAudioSourceBuffer = 1000;
     AudioSourceImpl audioSource;
     audioSource.valueToWrite = (SampleType*)malloc(kNumFramesInAudioSourceBuffer * kNumChannels * sizeof(SampleType));
+    audioSource.valueToWriteLength = kNumFramesInAudioSourceBuffer * kNumChannels;
   
     SampleType* destinationBuffer = (SampleType*)malloc(sizeof(SampleType) * kNumChannels * 1000 );
   
@@ -130,6 +151,7 @@ int main(int argc, const char * argv[]) {
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
     renderer.setInterpolator(new LinearInterpolator());
     renderer.setAudioSource(&audioSource);
+    audioSource.readHead = 0;
   
     audioSource.numFramesToProvide = 64;
   
@@ -145,7 +167,7 @@ int main(int argc, const char * argv[]) {
     
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 60 frames") ;
   
-//    // Test one octave up. Should return half as many samples as supplied
+    // Test one octave up. Should return half as many samples as supplied
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
     renderer.setInterpolator(new LinearInterpolator());
     renderer.setAudioSource(&audioSource);
