@@ -30,7 +30,7 @@ namespace RealtimeResampler {
   */
   
   protected:
-    virtual void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int mNumChannels) = 0;
+    virtual void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop) = 0;
   };
 
   //////////////////////////////////////////
@@ -39,7 +39,7 @@ namespace RealtimeResampler {
 
   class LinearInterpolator : public Interpolator{
   protected:
-    void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int mNumChannels);
+    void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop);
   };
 //  
 //  //////////////////////////////////////////

@@ -60,7 +60,7 @@ namespace RealtimeResampler {
     calculatePitchForNextFrames(numFramesRequested);
     
     Buffer* currentBuffer = mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
-    
+     
     while (numFramesRendered < numFramesRequested) {
         
       // load the source data if necessary
@@ -75,17 +75,20 @@ namespace RealtimeResampler {
       // last calculated interpolation position. Initalize it to be the last position read
       // this may be in the middle of a source buffer
       float interpPosition = mSourceBufferReadHead;
+     
+      int interpPositionOffset = (int)mSourceBufferReadHead;
       
       // build the interpolation position buffer
       //  - keep track of how big it is
       //  - make sure we're not using more frames than are currently in the source buffer
       //  - make sure we're not rendering more frames than requested
+      //  - when we build the mInterpolationPositionBuffer, compensate for the fact that readhead has an offset. this could be optimized better.
       while(
-        interpPosition < currentBuffer->length
+        (interpPosition) < currentBuffer->length
         && ((interpolatedFramesToRender + numFramesRendered) < numFramesRequested)
       ){
         size_t pitchBufferPosition = numFramesRendered + interpolatedFramesToRender;
-        mInterpolationPositionBuffer.data[interpolatedFramesToRender] = interpPosition;
+        mInterpolationPositionBuffer.data[interpolatedFramesToRender] = interpPosition - interpPositionOffset;
         interpPosition += mPitchBuffer.data[pitchBufferPosition];
         interpolatedFramesToRender++;
       }
@@ -94,7 +97,7 @@ namespace RealtimeResampler {
       
       // start where we left off
       SampleType* writeHead = outputBuffer + numFramesRendered * mNumChannels;
-      SampleType* readHead = currentBuffer->data + (int)mSourceBufferReadHead;
+      SampleType* readHead = currentBuffer->data + ((int)mSourceBufferReadHead) * mNumChannels;
       
       // interpolate [interpolatedFramesToRender] frames starting at readHead, writing to writehead
       // and using interpolationBuffer for frame position and interpolation coefficient
@@ -104,6 +107,8 @@ namespace RealtimeResampler {
   
       // increment our total frame count
       numFramesRendered += interpolatedFramesToRender;
+      
+     // printf("interpolatedFramesToRender: %i\n", interpolatedFramesToRender);
       
       // update the source buffer read head
       mSourceBufferReadHead = interpPosition;

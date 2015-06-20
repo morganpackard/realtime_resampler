@@ -22,7 +22,7 @@ namespace RealtimeResampler{
   //////////////////////////////////////////
   
   
-  void LinearInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int mNumChannels){
+  void LinearInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop){
     
     for (int i = 0; i < numFrames; i++) {
     
@@ -30,15 +30,15 @@ namespace RealtimeResampler{
       SampleType interpolationCoefficient = interpolationBuffer[i] - integerPartOfInterpolationBuffer;
     
       // The first frame of the interpolated pair
-      int frame1 = integerPartOfInterpolationBuffer * mNumChannels;
+      int sampleIndex1 = integerPartOfInterpolationBuffer * hop;
       
       // The second frame of the interpolated pair.
-      int frame2 = frame1 + mNumChannels;
+      int sampleIndex2 = sampleIndex1 + hop;
       
-      SampleType sample1 = inputBuffer[frame1];
-      SampleType sample2 = inputBuffer[frame2];
+      SampleType sample1 = inputBuffer[sampleIndex1];
+      SampleType sample2 = inputBuffer[sampleIndex2];
       
-      outputBuffer[i * mNumChannels] = sample1 + (sample2 - sample1) * interpolationCoefficient ;
+      outputBuffer[i * hop] = sample1 + (sample2 - sample1) * interpolationCoefficient ;
       
     }
   }
