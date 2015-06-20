@@ -196,27 +196,14 @@ int main(int argc, const char * argv[]) {
     // Test linear interpolator with AudioSource returning as many samples as requested
   
     renderer = Renderer(kSampleRate,  kNumChannels, 64);
-    renderer.setPitch(3, 1, 0.0001);
     renderer.setInterpolator(new LinearInterpolator());
     renderer.setAudioSource(&audioSource);
   
     audioSource.readHead = 0;
     audioSource.numFramesToProvide = 64;
   
-    sourceFramesWrapper.mSamples = 64 * kNumChannels;
-  
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames");
     TEST_EQ(destinationFramesWrapper, sourceFramesWrapper, "The output frames should be the same as the input frames");
-  
-    renderer.render(destinationBuffer + 64 * kNumChannels, 64);
-    renderer.render(destinationBuffer + 64 * 2 * kNumChannels, 64);
-  
-    
-    destinationFramesWrapper.mSamples = 64 * kNumChannels * 3;
-  
-    cout << "sourceFramesWrapper" << sourceFramesWrapper << endl;
-    cout << "destinationFramesWrapper" << destinationFramesWrapper << endl;
-  
   
     // Test linear interpolator with AudioSource returning fewer samples than requested
   
