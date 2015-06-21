@@ -93,6 +93,8 @@ namespace RealtimeResampler {
         interpolatedFramesToRender++;
       }
       
+      printf("Renderer::render interpolatedFramesToRender: %lu\n", interpolatedFramesToRender);
+      
       // render the interpolated data
       
       // start where we left off
@@ -115,6 +117,8 @@ namespace RealtimeResampler {
   
       // if the current sourceBuffer is not full, that means the audiosource didn't supply enough samples
       if (currentBuffer->length < mSourceBufferLength) {
+        
+        printf("Renderer::render currentBuffer->length < mSourceBufferLength. Breaking\n");
         break;
       }
       
@@ -212,6 +216,9 @@ namespace RealtimeResampler {
       currentBuffer->length = mAudioSource->getSamples(currentBuffer->start, mSourceBufferLength, mNumChannels);
     }
     nextBuffer->length = mAudioSource->getSamples(nextBuffer->start, mSourceBufferLength, mNumChannels);
+    
+    
+    printf("Renderer::swapBuffersAndFillNext nextBuffer->length: %lu\n", nextBuffer->length);
     
     // zero out the end of the buffer in case it's shorter than we requested
     memset(nextBuffer->start + nextBuffer->length * mNumChannels, 0, (mSourceBufferLength - nextBuffer->length) * mNumChannels * sizeof(SampleType) );
