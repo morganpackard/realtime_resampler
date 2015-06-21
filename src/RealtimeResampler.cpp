@@ -215,6 +215,8 @@ namespace RealtimeResampler {
     if (currentBuffer->length == 0) {
       currentBuffer->length = mAudioSource->getSamples(currentBuffer->start, mSourceBufferLength, mNumChannels);
     }
+    
+    printf("Renderer::swapBuffersAndFillNext mAudioSource: %p\n", mAudioSource);
     nextBuffer->length = mAudioSource->getSamples(nextBuffer->start, mSourceBufferLength, mNumChannels);
     
     
