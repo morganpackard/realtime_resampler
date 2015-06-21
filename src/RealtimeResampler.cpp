@@ -30,14 +30,14 @@ namespace RealtimeResampler {
     mSampleRate(sampleRate),
     mMaxFramesToRender(maxFramesToRender),
     mSourceBufferLength(sourceBufferLength),
-    mSourceBuffer1(( sourceBufferLength + BUFFER_PADDING ) * numChannels * sizeof(SampleType)),
-    mSourceBuffer2((sourceBufferLength + BUFFER_PADDING ) * numChannels * sizeof(SampleType)),
+    mSourceBuffer1(( sourceBufferLength + BUFFER_PADDING ) * numChannels),
+    mSourceBuffer2((sourceBufferLength + BUFFER_PADDING ) * numChannels),
     mBufferSwapState(0),
     mSourceBufferReadHead(sourceBufferLength),
-    mPitchBuffer(maxFramesToRender * sizeof(SampleType)),
-    mInterpolationPositionBuffer(maxFramesToRender * sizeof(SampleType))
+    mPitchBuffer(maxFramesToRender),
+    mInterpolationPositionBuffer(maxFramesToRender)
   {
-  
+    mSourceBuffer1.data[36] = 0.5;
   }
   
   Renderer::~Renderer(){

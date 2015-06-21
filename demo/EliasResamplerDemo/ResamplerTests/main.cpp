@@ -42,7 +42,7 @@ public:
   size_t getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels){
     for (int i = 0; i < numFramesToProvide * numChannels; i++) {
         outputBuffer[i] = valueToWrite[readHead++];
-    }
+}
     if (readHead > valueToWriteLength) {
       printf("AudioSourceImpl error -- eadHead > valueToWriteLength)\n");
     }
@@ -102,6 +102,16 @@ int main(int argc, const char * argv[]) {
     Renderer testRenderer(kSampleRate,  kNumChannels, 64);
   
     testRenderer = renderer;
+  
+    ///////////////////////////////////////
+    // Test Buffer class
+    ///////////////////////////////////////
+  
+    const size_t kTestBufferSize = 132;
+  
+    Buffer buf(kTestBufferSize);
+  
+    buf.data[kTestBufferSize -1 ] = 0;
   
     ///////////////////////////////////////
     // Test Renderer::getInputFrameCount

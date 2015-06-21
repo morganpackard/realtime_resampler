@@ -28,27 +28,28 @@ namespace RealtimeResampler {
       extern void (*freeFn)(void*);
   
       struct Buffer{
-        Buffer(size_t bufferSize){
-          data = (SampleType*)(*mallocFn)(bufferSize);
-          mBufferSize = bufferSize;
+        Buffer(size_t numSamples){
+          size_t bytes = numSamples * sizeof(SampleType);
+          data = (SampleType*)(*mallocFn)(bytes);
+          mNumSamples = numSamples;
           length = 0;
         }
-        Buffer(const Buffer &other): mBufferSize(other.mBufferSize){
-          data = (SampleType*)(mallocFn)(mBufferSize);
-          mBufferSize = other.mBufferSize;
+        Buffer(const Buffer &other): mNumSamples(other.mNumSamples){
+          data = (SampleType*)(mallocFn)(mNumSamples * sizeof(SampleType));
+          mNumSamples = other.mNumSamples;
           length = other.length;
 
         }
         Buffer& operator= (const Buffer& other){
-          mBufferSize = other.mBufferSize;
+          mNumSamples = other.mNumSamples;
           length = other.length;
-          data = (SampleType*)(mallocFn)(mBufferSize);
+          data = (SampleType*)(mallocFn)(mNumSamples * sizeof(SampleType));
           return *this;
         }
         ~Buffer(){  freeFn(data); }
         SampleType*             data;
         size_t                  length;
-        size_t                  mBufferSize;
+        size_t                  mNumSamples;
       };
   
       //////////////////////////////////////////
