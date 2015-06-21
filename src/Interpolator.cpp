@@ -50,22 +50,27 @@ namespace RealtimeResampler{
   
   void CubicInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop){
     
+    SampleType frame0Sample, frame1Sample, frame2Sample, frame3Sample;
     
-//    SampleType frame0Sample, frame1Sample, frame2Sample, frame3Sample;
-//    
-//    for (int i = 0; i < numFrames; i++) {
-//    
-//    
-//      SampleType a0, a1, a2, a3;
-//      a0 = frame3Sample - frame2Sample - frame0Sample + frame1Sample;
-//      a1 = frame0Sample - frame1Sample - a0;
-//      a2 = frame2Sample - frame0Sample;
-//      a3 = frame1Sample;
-//      return (a0 * (t * t * t)) + (a1 * (t * t)) + (a2 * t) + (a3);
-//      
-//      outputBuffer[i * hop] = sample1 + (sample2 - sample1) * interpolationCoefficient ;
-//      
-//    }
+    SampleType a0, a1, a2, a3;
+    
+    for (int i = 0; i < numFrames; i++) {
+    
+      int interpPosition = (int)interpolationBuffer[i];
+      SampleType t = interpolationBuffer[i] - interpPosition;
+    
+      frame0Sample = inputBuffer[ (interpPosition - 1) * hop];
+      frame1Sample = inputBuffer[ (interpPosition)  * hop];
+      frame2Sample = inputBuffer[ (interpPosition + 1) * hop];
+      frame3Sample = inputBuffer[ (interpPosition + 2) * hop];
+    
+      a0 = frame3Sample - frame2Sample - frame0Sample + frame1Sample;
+      a1 = frame0Sample - frame1Sample - a0;
+      a2 = frame2Sample - frame0Sample;
+      a3 = frame1Sample;
+      
+      outputBuffer[i * hop] = (a0 * (t * t * t)) + (a1 * (t * t)) + (a2 * t) + (a3);
+    }
   }
   
   

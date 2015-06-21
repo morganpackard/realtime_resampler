@@ -14,7 +14,7 @@
 #define __Resampler__RealtimeResampler__
 
 #include <stdio.h>
-#include <string>
+#include <string> // TODO remove this
 #include <cstdlib>
 
 
@@ -27,29 +27,65 @@ namespace RealtimeResampler {
       extern void* (*mallocFn)(size_t);
       extern void (*freeFn)(void*);
   
-      struct Buffer{
-        Buffer(size_t numSamples){
-          size_t bytes = numSamples * sizeof(SampleType);
-          data = (SampleType*)(*mallocFn)(bytes);
-          mNumSamples = numSamples;
-          length = 0;
+      /*!
+        Memory-managed audio buffer class class. Handles allocation and deallocation. 
+        Note frontPadding and backPadding. They are used when you want to permit "peaking" ahead and behind the
+        boundaries of the buffer. In ther words, you can keep a few frames from the previous buffer before postion
+        zero, and a few frames from the next buffer after "official" end of the buffer. This allows us to pass the same
+        data to different interpolation functions which may have different needs with regard to looking back past the two 
+        samples being interpolated.
+        
+        Also used as a general-purpose heap-allocated float array.
+       
+      */
+  
+      class Buffer{
+      public:
+        // constructor
+        Buffer(size_t numSamples, size_t frontPadding=0, size_t backPadding=0):
+          mNumSamples(frontPadding + numSamples + backPadding),
+          mFrontPadding(frontPadding),
+          length(0)
+        {
+          init();
         }
-        Buffer(const Buffer &other): mNumSamples(other.mNumSamples){
-          data = (SampleType*)(mallocFn)(mNumSamples * sizeof(SampleType));
-          mNumSamples = other.mNumSamples;
-          length = other.length;
-
+        
+        // copy constructor
+        Buffer(const Buffer &other):
+          mNumSamples(other.mNumSamples),
+          mFrontPadding(other.mFrontPadding),
+          length(other.length)
+        {
+          init();
         }
+        
+        // assignment operator
         Buffer& operator= (const Buffer& other){
           mNumSamples = other.mNumSamples;
           length = other.length;
-          data = (SampleType*)(mallocFn)(mNumSamples * sizeof(SampleType));
+          mFrontPadding = other.mFrontPadding;
+          init();
           return *this;
         }
-        ~Buffer(){  freeFn(data); }
-        SampleType*             data;
+        ~Buffer(){  freeFn(mData); }
         size_t                  length;
         size_t                  mNumSamples;
+        size_t                  mFrontPadding;
+        
+        // mData, offset by frontPadding. The "official" start of the buffer
+        SampleType*             start;
+        
+      private:
+        
+        void                    init(){
+          size_t bytes = (mNumSamples + mFrontPadding) * sizeof(SampleType);
+          mData = (SampleType*)(*mallocFn)(bytes);
+          start = mData + mFrontPadding;
+          memset(mData, 0, bytes);
+        }
+      
+        // All of the memory owned by this object
+        SampleType*             mData;
       };
   
       //////////////////////////////////////////
@@ -216,7 +252,8 @@ namespace RealtimeResampler {
           double                      mSourceBufferReadHead;
           Buffer                      mSourceBuffer1;
           Buffer                      mSourceBuffer2;
-          const static int            BUFFER_PADDING; //we need to copy the last bit of the next buffer on to the end of the current buffer
+          const static int            BUFFER_BACK_PADDING; //we need to copy the first bit of the next buffer on to the end of the current buffer
+          const static int            BUFFER_FRONT_PADDING; //we need to copy the last bit of the previous buffer on to the end of the current buffer
           float                       mCurrentSourceBufferReadHead;
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;

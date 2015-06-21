@@ -49,7 +49,7 @@ int main(int argc, const char * argv[])
     player
       .setBuffer(sample)
       .trigger(ControlTrigger().trigger())
-      .playbackRate( ControlRampedValue().value(2).target(3).length(10.1))
+      .playbackRate( 1.5)
       .loop(true);
 
 
