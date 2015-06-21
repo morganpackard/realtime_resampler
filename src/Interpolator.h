@@ -41,6 +41,17 @@ namespace RealtimeResampler {
   protected:
     void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop);
   };
+ 
+  //////////////////////////////////////////
+  /// Cubic Interpolator
+  //////////////////////////////////////////
+
+  class CubicInterpolator : public Interpolator{
+  protected:
+    void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop);
+  };
+  
+  
 //  
 //  //////////////////////////////////////////
 //  /// Abstract Interpolator Using Four Frames

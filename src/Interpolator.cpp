@@ -43,6 +43,31 @@ namespace RealtimeResampler{
     }
   }
   
+  //////////////////////////////////////////
+  /// Cubic Interpolator
+  //////////////////////////////////////////
+  
+  
+  void CubicInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop){
+    
+    
+//    SampleType frame0Sample, frame1Sample, frame2Sample, frame3Sample;
+//    
+//    for (int i = 0; i < numFrames; i++) {
+//    
+//    
+//      SampleType a0, a1, a2, a3;
+//      a0 = frame3Sample - frame2Sample - frame0Sample + frame1Sample;
+//      a1 = frame0Sample - frame1Sample - a0;
+//      a2 = frame2Sample - frame0Sample;
+//      a3 = frame1Sample;
+//      return (a0 * (t * t * t)) + (a1 * (t * t)) + (a2 * t) + (a3);
+//      
+//      outputBuffer[i * hop] = sample1 + (sample2 - sample1) * interpolationCoefficient ;
+//      
+//    }
+  }
+  
   
   /*
 
