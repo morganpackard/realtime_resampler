@@ -242,6 +242,20 @@ int main(int argc, const char * argv[]) {
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames");
     TEST_EQ(destinationFramesWrapper, sourceFramesWrapper, "The output frames should be the same as the input frames");
   
+    
+  
+    // Test hermite interpolator with AudioSource returning as many samples as requested
+  
+    renderer = Renderer(kSampleRate,  kNumChannels, 64);
+    renderer.setInterpolator(new HermiteInterpolator());
+    renderer.setAudioSource(&audioSource);
+  
+    audioSource.readHead = 0;
+    audioSource.numFramesToProvide = 64;
+  
+    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.numFramesToProvide, "The renderer should render 64 frames");
+    TEST_EQ(destinationFramesWrapper, sourceFramesWrapper, "The output frames should be the same as the input frames");
+  
   
     std::cout << "\n ======== Tests Completed =========== \n\n";
   

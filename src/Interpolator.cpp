@@ -52,7 +52,6 @@ namespace RealtimeResampler{
     
     SampleType frame0Sample, frame1Sample, frame2Sample, frame3Sample;
     
-    SampleType a0, a1, a2, a3;
     
     for (int i = 0; i < numFrames; i++) {
     
@@ -64,6 +63,8 @@ namespace RealtimeResampler{
       frame2Sample = inputBuffer[ (interpPosition + 1) * hop];
       frame3Sample = inputBuffer[ (interpPosition + 2) * hop];
     
+      SampleType a0, a1, a2, a3;
+    
       a0 = frame3Sample - frame2Sample - frame0Sample + frame1Sample;
       a1 = frame0Sample - frame1Sample - a0;
       a2 = frame2Sample - frame0Sample;
@@ -72,6 +73,30 @@ namespace RealtimeResampler{
       outputBuffer[i * hop] = (a0 * (t * t * t)) + (a1 * (t * t)) + (a2 * t) + (a3);
     }
   }
+  
+  void HermiteInterpolator::process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop){
+  
+    SampleType frame0Sample, frame1Sample, frame2Sample, frame3Sample;
+    
+    for (int i = 0; i < numFrames; i++) {
+    
+      int interpPosition = (int)interpolationBuffer[i];
+      SampleType t = interpolationBuffer[i] - interpPosition;
+      
+      frame0Sample = inputBuffer[ (interpPosition - 1) * hop];
+      frame1Sample = inputBuffer[ (interpPosition)  * hop];
+      frame2Sample = inputBuffer[ (interpPosition + 1) * hop];
+      frame3Sample = inputBuffer[ (interpPosition + 2) * hop];
+    
+      float c0 = frame1Sample;
+      float c1 = .5F * (frame2Sample - frame0Sample);
+      float c2 = frame0Sample - (2.5F * frame1Sample) + (2 * frame2Sample) - (.5F * frame3Sample);
+      float c3 = (.5F * (frame3Sample - frame0Sample)) + (1.5F * (frame1Sample - frame2Sample));
+      outputBuffer[i * hop] = (((((c3 * t) + c2) * t) + c1) * t) + c0;
+
+    }
+  }
+
   
   
   /*

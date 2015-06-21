@@ -50,6 +50,15 @@ namespace RealtimeResampler {
   protected:
     void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop);
   };
+ 
+  //////////////////////////////////////////
+  /// Hermite Interpolator
+  //////////////////////////////////////////
+
+  class HermiteInterpolator : public Interpolator{
+  protected:
+    void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop);
+  };
   
   
 //  
