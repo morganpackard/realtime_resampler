@@ -20,7 +20,7 @@ namespace Tonic { namespace Tonic_{
   }
   
   PitchableBufferPlayer_::~PitchableBufferPlayer_(){
-    
+    delete resampler;
   }
   
   void  PitchableBufferPlayer_::setBuffer(SampleTable buffer){
@@ -31,7 +31,7 @@ namespace Tonic { namespace Tonic_{
       delete resampler;
     }
     resampler = new RealtimeResampler::Renderer(kSynthesisBlockSize, buffer_.channels());
-    resampler->setInterpolator(new HermiteInterpolator());
+    resampler->setInterpolator(new LinearInterpolator());
     resampler->setAudioSource(this);
     printf("PitchableBufferPlayer_::setBuffer buffer size: %zu\n", buffer_.frames());
   }
@@ -52,14 +52,15 @@ namespace Tonic { namespace Tonic_{
     if(isFinished_){
       outputFrames_.clear();
     }else{
-    
-    
-    if(mDoesLoop)
-    
-    size_t framesRendered = resampler->render(&outputFrames_[0], kSynthesisBlockSize);
-//      if(framesRendered < kSynthesisBlockSize){
-//        printf("PitchableBufferPlayer_::computeSynthesisBlock frames rendered: %zu\n", framesRendered);
-//      }
+      size_t framesRendered = resampler->render(&outputFrames_[0], kSynthesisBlockSize);
+      if(framesRendered < kSynthesisBlockSize){
+      
+        printf("PitchableBufferPlayer_::computeSynthesisBlock recieved fewer frames than requested\n");
+
+        void* start = &outputFrames_[0] + (isStereoOutput() ? 1 : 2) * (kSynthesisBlockSize - framesRendered);
+        size_t bytes = (kSynthesisBlockSize - framesRendered) * sizeof(TonicFloat);
+        memset(start, 0, bytes);
+      }
     }
     
   }
@@ -90,6 +91,10 @@ namespace Tonic { namespace Tonic_{
           break;
         }
       }
+    }
+    
+    if(totalFramesCopied < numFramesRequested){
+      printf("PitchableBufferPlayer_::getSamples returning fewer frames than requested\n");
     }
     
     return totalFramesCopied;

@@ -43,6 +43,12 @@ namespace RealtimeResampler {
   Renderer::~Renderer(){
   }
   
+  
+  void Renderer::reset(){
+      mSourceBuffer1.length = 0;
+      mSourceBuffer2.length = 0;
+  }
+  
   void Renderer::error(std::string message){
     printf(message.c_str());
   }
@@ -115,11 +121,11 @@ namespace RealtimeResampler {
   
       // if the current sourceBuffer is not full, that means the audiosource didn't supply enough samples
       if (currentBuffer->length < mSourceBufferLength) {
+        reset();
         break;
       }
       
     }
-    
     return numFramesRendered;
     
   }
