@@ -26,7 +26,7 @@ namespace Tonic {
 
         SampleTable buffer_;
         int testVar;
-        int currentFrame;
+        size_t currentFrame;
         int samplesPerSynthesisBlock;
         ControlGenerator doesLoop_;
         ControlGenerator trigger_;

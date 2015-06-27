@@ -37,7 +37,6 @@ namespace Tonic { namespace Tonic_{
   }
   
   inline void PitchableBufferPlayer_::computeSynthesisBlock(const SynthesisContext_ &context){
-
     mDoesLoop = doesLoop_.tick(context).value;
     bool trigger = trigger_.tick(context).triggered;
     mStartSecs = startPosition_.tick(context).value;
@@ -54,8 +53,9 @@ namespace Tonic { namespace Tonic_{
     }else{
       size_t framesRendered = resampler->render(&outputFrames_[0], kSynthesisBlockSize);
       if(framesRendered < kSynthesisBlockSize){
-      
-        printf("PitchableBufferPlayer_::computeSynthesisBlock recieved fewer frames than requested\n");
+        
+        isFinished_ = true;
+        finishedTrigger_.trigger();
 
         void* start = &outputFrames_[0] + (isStereoOutput() ? 1 : 2) * (kSynthesisBlockSize - framesRendered);
         size_t bytes = (kSynthesisBlockSize - framesRendered) * sizeof(TonicFloat);
@@ -71,6 +71,8 @@ namespace Tonic { namespace Tonic_{
   
   size_t PitchableBufferPlayer_::getSamples(RealtimeResampler::SampleType* outputBuffer, size_t numFramesRequested, int numChannels){
   
+    memset(outputBuffer, 0, numFramesRequested * numChannels * sizeof(TonicFloat));
+  
     size_t totalFramesCopied = 0;
     
     while (totalFramesCopied < numFramesRequested) {
@@ -79,6 +81,14 @@ namespace Tonic { namespace Tonic_{
       size_t framesToCopy = numFramesRequested - totalFramesCopied - copyOverage;
       size_t bytesToCopy = framesToCopy * buffer_.channels() * sizeof(TonicFloat);
       memcpy(outputBuffer, &buffer_.dataPointer()[currentFrame * buffer_.channels()], bytesToCopy);
+      
+      
+//      printf("PitchableBufferPlayer_::getSamples copying %lu frames starting at %lu\n", framesToCopy, currentFrame);
+      
+      if(totalFramesCopied > 0){
+          printf("PitchableBufferPlayer_::getSamples totalFramesCopied: %lu. framesToCopy: %lu\n", totalFramesCopied, framesToCopy);
+      }
+      
       totalFramesCopied += framesToCopy;
       currentFrame +=framesToCopy;
       outputBuffer += framesToCopy;
@@ -86,8 +96,6 @@ namespace Tonic { namespace Tonic_{
         if(mDoesLoop){
           currentFrame = mStartSecs * sampleRate() * buffer_.channels();
         }else{
-          isFinished_ = true;
-          finishedTrigger_.trigger();
           break;
         }
       }

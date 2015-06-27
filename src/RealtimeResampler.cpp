@@ -58,6 +58,8 @@ namespace RealtimeResampler {
   }
   
   size_t Renderer::render(SampleType* outputBuffer, size_t numFramesRequested){
+  
+    memset(outputBuffer, 0, numFramesRequested * mNumChannels * sizeof(SampleType));
     
     assert(numFramesRequested <= mMaxFramesToRender);
     
@@ -210,7 +212,7 @@ namespace RealtimeResampler {
   
   void Renderer::swapBuffersAndFillNext(){
   
-    mSourceBufferReadHead -= mSourceBufferLength;
+    mSourceBufferReadHead = fmax(0, mSourceBufferReadHead - mSourceBufferLength);
     mBufferSwapState = !mBufferSwapState;
     Buffer* currentBuffer = mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
     Buffer* nextBuffer =  !mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
