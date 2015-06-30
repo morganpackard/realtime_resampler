@@ -409,6 +409,23 @@ int main(int argc, const char * argv[]) {
     renderer.render(destinationBuffer, BLOCK_SIZE);
     TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE), BufferTestWrapper(testBuffer ,  BLOCK_SIZE), "Buffer mismatch");
   
+    
+    
+    ///////////////////////////////////////
+    // Debug hermite interpolator
+     ///////////////////////////////////////
+  
+     
+    audioSource.loop = false;
+    audioSource.setSourceBuffer(testBuffer, kNumFramesInAudioSourceBuffer);
+  
+    renderer = Renderer(kSampleRate,  kNumChannels, BLOCK_SIZE);
+    renderer.setAudioSource(&audioSource);
+    renderer.setInterpolator(new CubicInterpolator());
+    renderer.render(destinationBuffer, BLOCK_SIZE);
+    renderer.render(destinationBuffer, BLOCK_SIZE);
+    renderer.render(destinationBuffer, BLOCK_SIZE);
+  
     std::cout << "\n ======== Tests Completed =========== \n\n";
   
     return 0;

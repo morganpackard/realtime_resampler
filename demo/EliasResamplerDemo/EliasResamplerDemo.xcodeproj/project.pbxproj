@@ -15,6 +15,8 @@
 		A890E8C31AB8DF93009FA404 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8C21AB8DF93009FA404 /* main.cpp */; };
 		A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */; };
 		A890E8DC1AB8E4D2009FA404 /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8D91AB8E4D2009FA404 /* RtAudio.cpp */; };
+		A8B36C821B3F474D00B0C562 /* RealtimeResamplerFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8B36C801B3F474D00B0C562 /* RealtimeResamplerFilter.cpp */; };
+		A8B36C831B3F474D00B0C562 /* RealtimeResamplerFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8B36C801B3F474D00B0C562 /* RealtimeResamplerFilter.cpp */; };
 		A8EB10591AB8E70400246DA8 /* libTonic-OSX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A890E8D41AB8E490009FA404 /* libTonic-OSX.a */; };
 		A8EB105B1AB8E77400246DA8 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8EB105A1AB8E77400246DA8 /* Accelerate.framework */; };
 		A8EB105E1AB8F7F400246DA8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8EB105D1AB8F7F400246DA8 /* AudioToolbox.framework */; };
@@ -75,6 +77,8 @@
 		A890E8D91AB8E4D2009FA404 /* RtAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RtAudio.cpp; sourceTree = "<group>"; };
 		A890E8DA1AB8E4D2009FA404 /* RtAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtAudio.h; sourceTree = "<group>"; };
 		A890E8DB1AB8E4D2009FA404 /* RtError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtError.h; sourceTree = "<group>"; };
+		A8B36C801B3F474D00B0C562 /* RealtimeResamplerFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RealtimeResamplerFilter.cpp; sourceTree = "<group>"; };
+		A8B36C811B3F474D00B0C562 /* RealtimeResamplerFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RealtimeResamplerFilter.h; sourceTree = "<group>"; };
 		A8EB105A1AB8E77400246DA8 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		A8EB105D1AB8F7F400246DA8 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		A8EB105F1AB8F7FA00246DA8 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -152,6 +156,8 @@
 				A890E8CB1AB8DFF3009FA404 /* RealtimeResampler.h */,
 				A83B28881B2B571800197C5F /* Interpolator.cpp */,
 				A83B28891B2B571800197C5F /* Interpolator.h */,
+				A8B36C801B3F474D00B0C562 /* RealtimeResamplerFilter.cpp */,
+				A8B36C811B3F474D00B0C562 /* RealtimeResamplerFilter.h */,
 			);
 			name = resampler;
 			path = ../../../src;
@@ -295,6 +301,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8B36C831B3F474D00B0C562 /* RealtimeResamplerFilter.cpp in Sources */,
 				A83B288B1B2B571800197C5F /* Interpolator.cpp in Sources */,
 				A80E46201AD19BA700F13BA1 /* RealtimeResampler.cpp in Sources */,
 				A80E461A1AD19A2600F13BA1 /* main.cpp in Sources */,
@@ -305,6 +312,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8B36C821B3F474D00B0C562 /* RealtimeResamplerFilter.cpp in Sources */,
 				A83B288A1B2B571800197C5F /* Interpolator.cpp in Sources */,
 				A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */,
 				A8080FA91ABE05DC001B817D /* PitchableBufferPlayer.cpp in Sources */,

@@ -231,7 +231,7 @@ namespace RealtimeResampler {
     // copy the end of the current buffer into the "hidden" frames below index zero of the next buffer
     int bufferFrontSampleCount = BUFFER_FRONT_PADDING * mNumChannels;
     void* nextBufferHiddenFramesStart = nextBuffer->start - bufferFrontSampleCount;
-    void* currentBufCopyStartPoint = currentBuffer->start + currentBuffer->length - bufferFrontSampleCount;
+    void* currentBufCopyStartPoint = currentBuffer->start + currentBuffer->length * mNumChannels - bufferFrontSampleCount;
     memcpy(nextBufferHiddenFramesStart, currentBufCopyStartPoint, bufferFrontSampleCount * sizeof(SampleType));
     
   }

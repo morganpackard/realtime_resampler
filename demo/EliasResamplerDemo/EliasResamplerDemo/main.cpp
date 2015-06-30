@@ -44,21 +44,15 @@ int main(int argc, const char * argv[])
     //SampleTable sample = loadAudioFile("/junk from desktop/sounds/bass/MINIMOOG/BMM02B.WAV");
     //SampleTable sample = loadAudioFile("/junk from desktop/sounds/sampler patches/BRASS_SECTION_CRESC_GK.EXS/BSACN     -LR");
   
-    //SampleTable sample = loadAudioFile("/Users/morganpackard/Data/clients/elias/sounds/sine_test_up.wav");
-    SampleTable sample = SampleTable();
-    sample.resize(1000, 2);
-    auto dataPointer = sample.dataPointer();
-  
-    for(int i = 0; i < 1000; i++){
-      dataPointer[i * 2] = (i % 100 ) / 101.0f;
-    }
+    SampleTable sample = loadAudioFile("/Users/morganpackard/Data/clients/elias/sounds/sine_test_up.wav");
+
 
     PitchableBufferPlayer player;
     player
       .setBuffer(sample)
       .trigger( ControlTrigger().trigger() )
-      .trigger( ControlMetro().bpm(60) )
-      .playbackRate( 1 )
+      .trigger( ControlMetro().bpm(10) )
+      .playbackRate( 1.2 )
       .loop(false);
 
 
