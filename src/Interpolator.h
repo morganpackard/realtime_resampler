@@ -41,6 +41,36 @@ namespace RealtimeResampler {
   protected:
     void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop);
   };
+  
+  
+      /*
+  
+    according to the elephant paper:
+    
+    http://yehar.com/blog/wp-content/uploads/2009/08/deip.pdf
+    
+     4-point Hermite, and Watte tri-linear are the best interpolators for un-oversampled data 
+     
+     It is outside the scope of this paper to make guesses of the most profitable oversampling
+ratio. Also, it shall only be commented that using polynomial interpolators
+with unoversampled input is a choice that can only be made when the quality is not
+that important but speed is essential, the most useful interpolators in that case being
+linear and 4-point Hermite, and Watte tri-linear, which is somewhere between those
+two in both quality and computational complexity.
+  
+  */
+  
+  
+  
+  //////////////////////////////////////////
+  /// Watte tri-linear Interpolator
+  //////////////////////////////////////////
+  
+  class WattTrilinearInterpolator : public Interpolator{
+  protected:
+    void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop);
+  };
+  
  
   //////////////////////////////////////////
   /// Cubic Interpolator

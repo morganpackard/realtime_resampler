@@ -31,7 +31,7 @@ namespace Tonic { namespace Tonic_{
       delete resampler;
     }
     resampler = new RealtimeResampler::Renderer(kSynthesisBlockSize, buffer_.channels(), 1000, 1000);
-    resampler->setInterpolator(new HermiteInterpolator());
+    resampler->setInterpolator(new WattTrilinearInterpolator());
     resampler->setAudioSource(this);
     printf("PitchableBufferPlayer_::setBuffer buffer size: %zu\n", buffer_.frames());
   }
