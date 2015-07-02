@@ -230,6 +230,13 @@ namespace RealtimeResampler {
           */
         
           void                        setLowPassFilter(LPF* interpolator);
+        
+          
+          /*!
+            Clear the internal buffers.
+          */
+        
+          void                        reset();
 
         
         private:
@@ -238,7 +245,6 @@ namespace RealtimeResampler {
           void                        error(std::string message); // todo -- don't use std::string. Use error codes instead.
           void                        calculatePitchForNextFrames(size_t numFrames);
           void                        swapBuffersAndFillNext();
-          void                        reset();
         
           //                          -variables-
           int                         mNumChannels;
@@ -253,8 +259,6 @@ namespace RealtimeResampler {
           double                      mSourceBufferReadHead;
           Buffer                      mSourceBuffer1;
           Buffer                      mSourceBuffer2;
-          const static int            BUFFER_BACK_PADDING; //we need to copy the first bit of the next buffer on to the end of the current buffer
-          const static int            BUFFER_FRONT_PADDING; //we need to copy the last bit of the previous buffer on to the end of the current buffer
           float                       mCurrentSourceBufferReadHead;
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;

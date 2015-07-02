@@ -9,7 +9,7 @@
 #include <iostream>
 #include "RealtimeResampler.h"
 #include <stdio.h>
-#include "Interpolator.h"
+#include "RealtimeResamplerInterpolator.h"
 #include <cmath>
 #include <iomanip>
 
@@ -263,22 +263,6 @@ int main(int argc, const char * argv[]) {
     
     TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.getbufferLength() / 2, "The renderer should render 30 frames") ;
   
-  
-    ///////////////////////////////////////
-    // Test cubic interpolator with AudioSource returning as many samples as requested
-    ///////////////////////////////////////
-  
-    renderer = Renderer(kSampleRate,  kNumChannels, 64);
-    renderer.setInterpolator(new CubicInterpolator());
-    renderer.setAudioSource(&audioSource);
-  
-
-    audioSource.setSourceBuffer(testBuffer, 64);
-  
-    TEST_EQ(renderer.render(destinationBuffer, 64), audioSource.getbufferLength(), "The renderer should render 64 frames");
-    TEST_EQ(destinationFramesWrapper, sourceFramesWrapper, "The output frames should be the same as the input frames");
-  
-    
     ///////////////////////////////////////
     // Test hermite interpolator with AudioSource returning as many samples as requested
      ///////////////////////////////////////
@@ -409,22 +393,6 @@ int main(int argc, const char * argv[]) {
     renderer.render(destinationBuffer, BLOCK_SIZE);
     TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE), BufferTestWrapper(testBuffer ,  BLOCK_SIZE), "Buffer mismatch");
   
-    
-    
-    ///////////////////////////////////////
-    // Debug hermite interpolator
-     ///////////////////////////////////////
-  
-     
-    audioSource.loop = false;
-    audioSource.setSourceBuffer(testBuffer, kNumFramesInAudioSourceBuffer);
-  
-    renderer = Renderer(kSampleRate,  kNumChannels, BLOCK_SIZE);
-    renderer.setAudioSource(&audioSource);
-    renderer.setInterpolator(new CubicInterpolator());
-    renderer.render(destinationBuffer, BLOCK_SIZE);
-    renderer.render(destinationBuffer, BLOCK_SIZE);
-    renderer.render(destinationBuffer, BLOCK_SIZE);
   
     std::cout << "\n ======== Tests Completed =========== \n\n";
   
