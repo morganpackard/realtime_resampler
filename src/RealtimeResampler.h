@@ -22,6 +22,7 @@ namespace RealtimeResampler {
 
       typedef float SampleType;
       class Interpolator;
+      class Filter;
   
       // allocator / deallocator are malloc and free by default, but can be overridden
       extern void* (*mallocFn)(size_t);
@@ -36,6 +37,8 @@ namespace RealtimeResampler {
         samples being interpolated.
         
         Also used as a general-purpose heap-allocated float array.
+        
+        Copy and assignment constructors do NOT copy audio data. Data must be explicitly copied.
        
       */
   
@@ -108,22 +111,6 @@ namespace RealtimeResampler {
         
         virtual size_t                getSamples(SampleType* outputBuffer, size_t numFramesRequested, int numChannels) = 0;
         
-      };
-  
-      //////////////////////////////////////////
-      /// Abstract Low Pass Filter delegate class.
-      //////////////////////////////////////////
-    
-      class LPF{
-      
-      public:
-        
-          /*!
-            Filter a buffer.
-          */
-        
-          virtual void                process(SampleType* inputBuffer, SampleType* outputBuffer, float* pitchScale, size_t inputbufferSize) = 0;
-      
       };
 
       //////////////////////////////////////////
@@ -229,7 +216,7 @@ namespace RealtimeResampler {
             "Manually" set the low pass filter. This should not be called after the first call to rRenderer::render.
           */
         
-          void                        setLowPassFilter(LPF* interpolator);
+          void                        setLowPassFilter(Filter* filter);
         
           
           /*!
@@ -263,6 +250,9 @@ namespace RealtimeResampler {
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
+          const static int            BUFFER_BACK_PADDING; //we need to copy the first bit of the next buffer on to the end of the current buffer
+          const static int            BUFFER_FRONT_PADDING; //we need to copy the last bit of the previous buffer on to the end of the current buffer
+
       };
   
   
