@@ -17,12 +17,12 @@ namespace RealtimeResampler {
     {}
   
     IIRFilter::Biquad::Biquad(size_t maxBufferFrames, int numChannels):
-      mSourceCopy(maxBufferFrames * numChannels),
+      mSourceCopy((maxBufferFrames + Renderer::BUFFER_FRONT_PADDING) * numChannels),
       mNumChannels(numChannels)
     {}
   
-    void IIRFilter::Biquad::filter(SampleType* buffer, size_t numFrames){
-      
+    void IIRFilter::Biquad::filter(Buffer& buffer, size_t numFrames){
+        memcpy(mSourceCopy.mData, buffer.mData, buffer.mNumSamples * mNumChannels * sizeof(SampleType));
     }
     
     LPF12::LPF12(float sampleRate, size_t maxBufferFrames, int numChannels):
@@ -31,7 +31,7 @@ namespace RealtimeResampler {
     {}
   
     
-    void LPF12::process(SampleType* buffer, float pitchFactor, size_t numFrames){
+    void LPF12::process(Buffer& buffer, float pitchFactor, size_t numFrames){
       mBiquad.filter(buffer, numFrames);
     }
 

@@ -30,6 +30,7 @@ namespace RealtimeResampler {
   
       /*!
         Memory-managed audio buffer class class. Handles allocation and deallocation. 
+       
         Note frontPadding and backPadding. They are used when you want to permit "peaking" ahead and behind the
         boundaries of the buffer. In ther words, you can keep a few frames from the previous buffer before postion
         zero, and a few frames from the next buffer after "official" end of the buffer. This allows us to pass the same
@@ -42,8 +43,7 @@ namespace RealtimeResampler {
        
       */
   
-      class Buffer{
-      public:
+      struct Buffer{
         // constructor
         Buffer(size_t numSamples, size_t frontPadding=0, size_t backPadding=0):
           mNumSamples(frontPadding + numSamples + backPadding),
@@ -77,8 +77,6 @@ namespace RealtimeResampler {
         
         // mData, offset by frontPadding. The "official" start of the buffer
         SampleType*             start;
-        
-      private:
         
         void                    init(){
           size_t bytes = (mNumSamples + mFrontPadding) * sizeof(SampleType);
@@ -224,8 +222,10 @@ namespace RealtimeResampler {
           */
         
           void                        reset();
-
         
+          const static int            BUFFER_BACK_PADDING; //we need to copy the first bit of the next buffer on to the end of the current buffer
+          const static int            BUFFER_FRONT_PADDING; //we need to copy the last bit of the previous buffer on to the end of the current buffer
+
         private:
         
           //                          -methods-
@@ -250,8 +250,6 @@ namespace RealtimeResampler {
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
-          const static int            BUFFER_BACK_PADDING; //we need to copy the first bit of the next buffer on to the end of the current buffer
-          const static int            BUFFER_FRONT_PADDING; //we need to copy the last bit of the previous buffer on to the end of the current buffer
 
       };
   

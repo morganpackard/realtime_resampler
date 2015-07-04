@@ -20,7 +20,7 @@ namespace RealtimeResampler {
   void (*freeFn)(void*) = free;
   
   const int Renderer::BUFFER_BACK_PADDING = 2;
-  const int Renderer::BUFFER_FRONT_PADDING = 1;
+  const int Renderer::BUFFER_FRONT_PADDING = 2;
   
   Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender ) :
     mNumChannels(numChannels),

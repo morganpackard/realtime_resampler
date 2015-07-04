@@ -28,7 +28,7 @@ namespace RealtimeResampler {
       size_t                    mMaxBufferFrames;
       size_t                    mBufferFrontPadding;
       int                       mNumChannels;
-      virtual void              process(SampleType* buffer, float pitchFactor, size_t numFrames) = 0;
+      virtual void              process(Buffer& buffer, float pitchFactor, size_t numFrames) = 0;
       int                       getBufferFrontPadding(){return mBufferFrontPadding;}
     
   };
@@ -44,7 +44,7 @@ namespace RealtimeResampler {
         int                     mNumChannels;
         Buffer                  mSourceCopy;
         float                   mCoeficients[5];
-        void                    filter(SampleType* buffer, size_t numFrames);
+        void                    filter(Buffer& buffer, size_t numFrames);
 
       };
     
@@ -56,7 +56,7 @@ namespace RealtimeResampler {
     
       LPF12(float sampleRate, size_t maxBufferFrames, int numChannels);
     
-      virtual void              process(SampleType* buffer, float pitchFactor, size_t numFrames);
+      virtual void              process(Buffer& buffer, float pitchFactor, size_t numFrames);
     
     protected:
     
