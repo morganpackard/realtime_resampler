@@ -263,6 +263,9 @@ namespace RealtimeResampler {
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
+          const static int            BUFFER_BACK_PADDING; //we need to copy the first bit of the next buffer on to the end of the current buffer
+          const static int            BUFFER_FRONT_PADDING; //we need to copy the last bit of the previous buffer on to the end of the current buffer
+
       };
   
   

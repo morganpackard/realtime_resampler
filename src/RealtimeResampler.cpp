@@ -19,6 +19,9 @@ namespace RealtimeResampler {
   void* (*mallocFn)(size_t) = malloc;
   void (*freeFn)(void*) = free;
   
+  const int Renderer::BUFFER_BACK_PADDING = 2;
+  const int Renderer::BUFFER_FRONT_PADDING = 1;
+  
   Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender ) :
     mNumChannels(numChannels),
     mCurrentPitch(1),
@@ -27,8 +30,8 @@ namespace RealtimeResampler {
     mSampleRate(sampleRate),
     mMaxFramesToRender(maxFramesToRender),
     mSourceBufferLength(sourceBufferLength),
-    mSourceBuffer1(0, 0),
-    mSourceBuffer2(0, 0),
+    mSourceBuffer1( sourceBufferLength * numChannels, BUFFER_FRONT_PADDING * numChannels, BUFFER_BACK_PADDING * numChannels),
+    mSourceBuffer2( sourceBufferLength * numChannels, BUFFER_FRONT_PADDING * numChannels, BUFFER_BACK_PADDING * numChannels),
     mBufferSwapState(0),
     mSourceBufferReadHead(sourceBufferLength),
     mPitchBuffer(maxFramesToRender),
@@ -183,10 +186,8 @@ namespace RealtimeResampler {
   
   void Renderer::setInterpolator(RealtimeResampler::Interpolator *interpolator){
     mInterpolator = interpolator;
-    int frontPadding = mInterpolator->getBufferFrontPadding();
-    int backPadding = mInterpolator->getBufferBackPadding();
-    mSourceBuffer1 = Buffer( mSourceBufferLength * mNumChannels, frontPadding * mNumChannels, backPadding * mNumChannels);
-    mSourceBuffer2= Buffer( mSourceBufferLength * mNumChannels, frontPadding * mNumChannels, backPadding * mNumChannels);
+    mSourceBuffer1 = Buffer( mSourceBufferLength * mNumChannels, BUFFER_FRONT_PADDING * mNumChannels, BUFFER_BACK_PADDING * mNumChannels);
+    mSourceBuffer2= Buffer( mSourceBufferLength * mNumChannels, BUFFER_FRONT_PADDING * mNumChannels, BUFFER_BACK_PADDING * mNumChannels);
   }
   
   
@@ -226,10 +227,10 @@ namespace RealtimeResampler {
     
     // copy the first couple frames of the next buffer on to the end of the current buffer to handle interpolation between the end of the
     // current and the beginning of the next.
-    memcpy(currentBuffer->start + currentBuffer->length * mNumChannels, nextBuffer->start, mInterpolator->getBufferBackPadding() * mNumChannels * sizeof(SampleType));
+    memcpy(currentBuffer->start + currentBuffer->length * mNumChannels, nextBuffer->start, BUFFER_BACK_PADDING * mNumChannels * sizeof(SampleType));
     
     // copy the end of the current buffer into the "hidden" frames below index zero of the next buffer
-    int bufferFrontSampleCount = mInterpolator->getBufferFrontPadding() * mNumChannels;
+    int bufferFrontSampleCount = BUFFER_FRONT_PADDING * mNumChannels;
     void* nextBufferHiddenFramesStart = nextBuffer->start - bufferFrontSampleCount;
     void* currentBufCopyStartPoint = currentBuffer->start + currentBuffer->length * mNumChannels - bufferFrontSampleCount;
     memcpy(nextBufferHiddenFramesStart, currentBufCopyStartPoint, bufferFrontSampleCount * sizeof(SampleType));
