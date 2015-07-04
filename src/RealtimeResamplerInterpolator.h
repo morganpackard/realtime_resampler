@@ -26,24 +26,25 @@ namespace RealtimeResampler {
   
     // Interpolators need to look in to the next buffer, and sometimes in to the previous buffer.
     // These values control how many of these "next and previous" frames they are supplied.
-    const int bufferFrontPadding;
-    const int bufferBackPadding;
+    const int mBufferFrontPadding;
+    const int mBufferBackPadding;
   
   public:
   
-  Interpolator():bufferFrontPadding(1), bufferBackPadding(2){}
-  
-  /*!
-    Interpolate between input frames. It's up to the caller to determine what the output buffer size will be.
-  */
+  Interpolator():mBufferFrontPadding(1), mBufferBackPadding(2){}
   
   protected:
   
+    /*!
+      Interpolate between input frames. It's up to the caller to determine what the output buffer size will be. The interpolator may look
+      as far ahead of the inputBuffer pointer as inputBuffer[-(mBufferFrontPadding*hop)]
+    */
+  
     virtual void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop) = 0;
     
-    int getBufferFrontPadding(){return bufferFrontPadding;}
+    int getBufferFrontPadding(){return mBufferFrontPadding;}
     
-    int getBufferBackPadding(){return bufferBackPadding;}
+    int getBufferBackPadding(){return mBufferBackPadding;}
     
   };
 
