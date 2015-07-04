@@ -22,16 +22,7 @@ namespace RealtimeResampler {
   
     friend class Renderer;
     
-  private:
-  
-    // Interpolators need to look in to the next buffer, and sometimes in to the previous buffer.
-    // These values control how many of these "next and previous" frames they are supplied.
-    const int mBufferFrontPadding;
-    const int mBufferBackPadding;
-  
   public:
-  
-  Interpolator():mBufferFrontPadding(1), mBufferBackPadding(2){}
   
   protected:
   
@@ -42,9 +33,6 @@ namespace RealtimeResampler {
   
     virtual void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop) = 0;
     
-    int getBufferFrontPadding(){return mBufferFrontPadding;}
-    
-    int getBufferBackPadding(){return mBufferBackPadding;}
     
   };
 
