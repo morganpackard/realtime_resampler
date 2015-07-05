@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <math.h>
 #include "RealtimeResamplerInterpolator.h"
+#include "RealtimeResamplerFilter.h"
 #include <cassert>
 #include <stdio.h> // TODO remove this
 #include <iostream>// TODO remove this
@@ -235,6 +236,13 @@ namespace RealtimeResampler {
     void* currentBufCopyStartPoint = currentBuffer->start + currentBuffer->length * mNumChannels - bufferFrontSampleCount;
     memcpy(nextBufferHiddenFramesStart, currentBufCopyStartPoint, bufferFrontSampleCount * sizeof(SampleType));
     
+    // run the new current buffer through the anti-aliasing filter
+    mLPF->process(currentBuffer, 3, currentBuffer->length);
+    
+  }
+  
+  void Renderer::setLowPassFilter(Filter* filter){
+    mLPF = filter;
   }
 
   

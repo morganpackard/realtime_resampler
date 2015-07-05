@@ -40,6 +40,8 @@ namespace RealtimeResampler {
         Also used as a general-purpose heap-allocated float array.
         
         Copy and assignment constructors do NOT copy audio data. Data must be explicitly copied.
+        
+        I'll admit it. This class is a bit ugly.
        
       */
   
@@ -71,8 +73,14 @@ namespace RealtimeResampler {
           return *this;
         }
         ~Buffer(){  freeFn(mData); }
+        
+        // The current length of the "actual" data, in frames. This doesn't include padding.
+        // The buffer doesn't know if it's stereo or not, so this may or may not equal mNumSamples
         size_t                  length;
+        
+        // the number of samples the allocated space will hold, minus the padding
         size_t                  mNumSamples;
+        
         size_t                  mFrontPadding;
         
         // mData, offset by frontPadding. The "official" start of the buffer
@@ -250,6 +258,7 @@ namespace RealtimeResampler {
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
+          Filter*                     mLPF;
 
       };
   
