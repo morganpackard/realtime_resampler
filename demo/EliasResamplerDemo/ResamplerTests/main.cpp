@@ -404,7 +404,7 @@ int main(int argc, const char * argv[]) {
     renderer.setAudioSource(&audioSource);
     renderer.setInterpolator(new LinearInterpolator());
     renderer.setLowPassFilter(new LPF12());
-    renderer.setPitch(1.1, 1.1, 0);
+    renderer.setPitch(1, 1, 0);
   
     renderer.render(destinationBuffer, BLOCK_SIZE);
     TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE * 2), BufferTestWrapper(testBuffer ,  BLOCK_SIZE * 2), "Buffer mismatch");

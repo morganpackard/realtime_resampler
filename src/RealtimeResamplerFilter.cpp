@@ -20,6 +20,7 @@ namespace RealtimeResampler {
     mNumChannels(numChannels)
   {
     mSourceCopy.start = mSourceCopy.mData + numChannels * Renderer::BUFFER_FRONT_PADDING;
+    mSourceCopy.mFrontPadding = numChannels * Renderer::BUFFER_FRONT_PADDING;
   }
 
   void IIRFilter::Biquad::filter(Buffer* buffer, size_t numFrames){
@@ -28,7 +29,7 @@ namespace RealtimeResampler {
     // source samples, and delayed feedback samples
     
     // copy the last two frames from the last call to the beginning of the source buffer
-    memcpy(mSourceCopy.mData, mSourceCopy.mData + mNumChannels * mSourceCopy.length, 2 * mNumChannels * sizeof(SampleType));
+    memcpy(mSourceCopy.mData, mSourceCopy.mData + mNumChannels * mSourceCopy.length, Renderer::BUFFER_FRONT_PADDING * mNumChannels * sizeof(SampleType));
     // copy in the incoming data
     memcpy(mSourceCopy.start, buffer->start, buffer->length * mNumChannels * sizeof(SampleType));
     // set the mSource buffer length to match the incoming data length
@@ -58,9 +59,9 @@ namespace RealtimeResampler {
     Filter::init(sampleRate, maxBufferFrames, numChannels);
     mBiquad = Biquad(maxBufferFrames, numChannels);
     
-    mBiquad.mCoef[0] = 1;
-    mBiquad.mCoef[1] = 0;
-    mBiquad.mCoef[2] = 0;
+    mBiquad.mCoef[0] = 0.3;
+    mBiquad.mCoef[1] = 0.3;
+    mBiquad.mCoef[2] = 0.3;
     mBiquad.mCoef[3] = 0;
     mBiquad.mCoef[4] = 0;
   }
