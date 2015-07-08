@@ -240,6 +240,7 @@ namespace RealtimeResampler {
           void                        error(std::string message); // todo -- don't use std::string. Use error codes instead.
           void                        calculatePitchForNextFrames(size_t numFrames);
           void                        swapBuffersAndFillNext();
+          void                        fillSourceBuffer(Buffer* buf);
         
           //                          -variables-
           int                         mNumChannels;

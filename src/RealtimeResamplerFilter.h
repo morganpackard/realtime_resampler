@@ -13,7 +13,9 @@
 
 namespace RealtimeResampler {
 
-
+  //////////////////////////////////////////
+  /// Abstract Filter delegate class.
+  //////////////////////////////////////////
 
   class Filter{
   
@@ -21,16 +23,20 @@ namespace RealtimeResampler {
     
     public:
     
-      Filter(float sampleRate, size_t maxBufferFrames, int numChannels);
-    
     protected:
       float                     mSampleRate;
       size_t                    mMaxBufferFrames;
       int                       mNumChannels;
       // TODO -- remove numFrames. That should be determined by the buffer object itself.
       virtual void              process(Buffer* buffer, float pitchFactor, size_t numFrames) = 0;
+      virtual void              init(float sampleRate, size_t maxBufferFrames, int numChannels);
     
   };
+  
+  
+  //////////////////////////////////////////
+  /// Abstract Infinite Impulse Response filter delegate class.
+  //////////////////////////////////////////
   
   class IIRFilter : public virtual Filter{
   
@@ -49,15 +55,21 @@ namespace RealtimeResampler {
     
   };
   
+  //////////////////////////////////////////
+  /// Two-Pole low-pass filter
+  //////////////////////////////////////////
+  
   class LPF12 : public IIRFilter{
   
     public:
     
-      LPF12(float sampleRate, size_t maxBufferFrames, int numChannels);
+      LPF12();
     
-      virtual void              process(Buffer* buffer, float pitchFactor, size_t numFrames);
+      void                      init(float sampleRate, size_t maxBufferFrames, int numChannels);
     
     protected:
+    
+      virtual void              process(Buffer* buffer, float pitchFactor, size_t numFrames);
     
       Biquad                    mBiquad;
   

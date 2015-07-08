@@ -36,7 +36,8 @@ namespace RealtimeResampler {
     mBufferSwapState(0),
     mSourceBufferReadHead(sourceBufferLength),
     mPitchBuffer(maxFramesToRender),
-    mInterpolationPositionBuffer(maxFramesToRender)
+    mInterpolationPositionBuffer(maxFramesToRender),
+    mLPF(0)
   {
   }
   
@@ -185,13 +186,6 @@ namespace RealtimeResampler {
     }
   }
   
-  void Renderer::setInterpolator(RealtimeResampler::Interpolator *interpolator){
-    mInterpolator = interpolator;
-    mSourceBuffer1 = Buffer( mSourceBufferLength * mNumChannels, BUFFER_FRONT_PADDING * mNumChannels, BUFFER_BACK_PADDING * mNumChannels);
-    mSourceBuffer2= Buffer( mSourceBufferLength * mNumChannels, BUFFER_FRONT_PADDING * mNumChannels, BUFFER_BACK_PADDING * mNumChannels);
-  }
-  
-  
   void Renderer::calculatePitchForNextFrames(size_t numFrames){
     double pitchChangePerFrame;
     if (mSecondsUntilPitchDestination > 0) {
@@ -212,6 +206,15 @@ namespace RealtimeResampler {
     }
   }
   
+  
+  void Renderer::fillSourceBuffer(Buffer* buf){
+    buf->length = mAudioSource->getSamples(buf->start, mSourceBufferLength, mNumChannels);
+    // run the buffer through the anti-aliasing filter
+    if(mLPF){
+      mLPF->process(buf, 3, buf->length);
+    }
+  }
+  
   void Renderer::swapBuffersAndFillNext(){
   
     mSourceBufferReadHead = fmax(0, mSourceBufferReadHead - mSourceBufferLength);
@@ -219,9 +222,10 @@ namespace RealtimeResampler {
     Buffer* currentBuffer = mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
     Buffer* nextBuffer =  !mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
     if (currentBuffer->length == 0) {
-      currentBuffer->length = mAudioSource->getSamples(currentBuffer->start, mSourceBufferLength, mNumChannels);
+      fillSourceBuffer(currentBuffer);
     }
-    nextBuffer->length = mAudioSource->getSamples(nextBuffer->start, mSourceBufferLength, mNumChannels);
+    
+    fillSourceBuffer(nextBuffer);
     
     // zero out the end of the buffer in case it's shorter than we requested
     memset(nextBuffer->start + nextBuffer->length * mNumChannels, 0, (mSourceBufferLength - nextBuffer->length) * mNumChannels * sizeof(SampleType) );
@@ -236,13 +240,18 @@ namespace RealtimeResampler {
     void* currentBufCopyStartPoint = currentBuffer->start + currentBuffer->length * mNumChannels - bufferFrontSampleCount;
     memcpy(nextBufferHiddenFramesStart, currentBufCopyStartPoint, bufferFrontSampleCount * sizeof(SampleType));
     
-    // run the new current buffer through the anti-aliasing filter
-    mLPF->process(currentBuffer, 3, currentBuffer->length);
-    
+
+  }
+  
+  void Renderer::setInterpolator(RealtimeResampler::Interpolator *interpolator){
+    mInterpolator = interpolator;
+    mSourceBuffer1 = Buffer( mSourceBufferLength * mNumChannels, BUFFER_FRONT_PADDING * mNumChannels, BUFFER_BACK_PADDING * mNumChannels);
+    mSourceBuffer2= Buffer( mSourceBufferLength * mNumChannels, BUFFER_FRONT_PADDING * mNumChannels, BUFFER_BACK_PADDING * mNumChannels);
   }
   
   void Renderer::setLowPassFilter(Filter* filter){
     mLPF = filter;
+    mLPF->init(mSampleRate, mSourceBufferLength, mNumChannels);
   }
 
   

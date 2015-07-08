@@ -31,9 +31,9 @@ namespace Tonic { namespace Tonic_{
     if(resampler != 0){
       delete resampler;
     }
-    resampler = new RealtimeResampler::Renderer(kSynthesisBlockSize, buffer_.channels(), 1000, 1000);
+    resampler = new RealtimeResampler::Renderer(Tonic::sampleRate(), buffer_.channels(), 64, 64);
     resampler->setInterpolator(new WatteTrilinearInterpolator());
-    resampler->setLowPassFilter(new LPF12(Tonic::sampleRate(), kSynthesisBlockSize, buffer.channels()));
+    resampler->setLowPassFilter(new LPF12());
     resampler->setAudioSource(this);
     printf("PitchableBufferPlayer_::setBuffer buffer size: %zu\n", buffer_.frames());
   }

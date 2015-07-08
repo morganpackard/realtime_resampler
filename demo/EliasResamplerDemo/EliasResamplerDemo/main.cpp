@@ -40,11 +40,11 @@ int main(int argc, const char * argv[])
     // --------- MAKE A SYNTH HERE -----------
         
 
-    //SampleTable sample = loadAudioFile("/junk from desktop/sounds/think_lc_tambourine.aif");
+    SampleTable sample = loadAudioFile("/junk from desktop/sounds/think_lc_tambourine.aif");
     //SampleTable sample = loadAudioFile("/junk from desktop/sounds/bass/MINIMOOG/BMM02B.WAV");
     //SampleTable sample = loadAudioFile("/junk from desktop/sounds/sampler patches/BRASS_SECTION_CRESC_GK.EXS/BSACN     -LR");
   
-    SampleTable sample = loadAudioFile("/Users/morganpackard/Data/clients/elias/sounds/sine_test_up.wav");
+    //SampleTable sample = loadAudioFile("/Users/morganpackard/Data/clients/elias/sounds/sine_test_up.wav");
 
 
     PitchableBufferPlayer player;
@@ -52,7 +52,7 @@ int main(int argc, const char * argv[])
       .setBuffer(sample)
       .trigger( ControlTrigger().trigger() )
       .trigger( ControlMetro().bpm(10) )
-      .playbackRate( 1.5 )
+      .playbackRate( 1.1 )
       .loop(true);
 
 

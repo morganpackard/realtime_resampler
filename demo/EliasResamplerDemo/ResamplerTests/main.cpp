@@ -10,6 +10,7 @@
 #include "RealtimeResampler.h"
 #include <stdio.h>
 #include "RealtimeResamplerInterpolator.h"
+#include "RealtimeResamplerFilter.h"
 #include <cmath>
 #include <iomanip>
 
@@ -393,6 +394,29 @@ int main(int argc, const char * argv[]) {
     renderer.render(destinationBuffer, BLOCK_SIZE);
     TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE), BufferTestWrapper(testBuffer ,  BLOCK_SIZE), "Buffer mismatch");
   
+  
+    ///////////////////////////////////////
+    // Basic pass-through test of LPF
+    ///////////////////////////////////////
+    
+    audioSource.setSourceBuffer(testBuffer, BLOCK_SIZE * 10);
+    renderer = Renderer(kSampleRate,  kNumChannels, BLOCK_SIZE);
+    renderer.setAudioSource(&audioSource);
+    renderer.setInterpolator(new LinearInterpolator());
+    renderer.setLowPassFilter(new LPF12());
+    renderer.setPitch(1.1, 1.1, 0);
+  
+    renderer.render(destinationBuffer, BLOCK_SIZE);
+    TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE * 2), BufferTestWrapper(testBuffer ,  BLOCK_SIZE * 2), "Buffer mismatch");
+  
+    renderer.render(destinationBuffer, BLOCK_SIZE);
+    TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE * 2), BufferTestWrapper(testBuffer + kNumChannels * BLOCK_SIZE ,  BLOCK_SIZE * 2), "Buffer mismatch");
+  
+    renderer.render(destinationBuffer, BLOCK_SIZE);
+    TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE * 2), BufferTestWrapper(testBuffer + kNumChannels * BLOCK_SIZE * 2 ,  BLOCK_SIZE * 2), "Buffer mismatch");
+  
+    renderer.render(destinationBuffer, BLOCK_SIZE);
+    TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE * 2), BufferTestWrapper(testBuffer + kNumChannels * BLOCK_SIZE * 3 ,  BLOCK_SIZE * 2), "Buffer mismatch");
   
     std::cout << "\n ======== Tests Completed =========== \n\n";
   
