@@ -5,8 +5,14 @@
 //
 
 #include "RealtimeResamplerFilter.h"
+#include <math.h>
+
 
 namespace RealtimeResampler {
+
+  #ifndef PI
+  const SampleType PI = 3.14159265358979f;
+  #endif
 
 
   void Filter::init(float sampleRate, size_t maxBufferFrames, int numChannels){
@@ -21,6 +27,18 @@ namespace RealtimeResampler {
   {
     mSourceCopy.start = mSourceCopy.mData + numChannels * Renderer::BUFFER_FRONT_PADDING;
     mSourceCopy.mFrontPadding = numChannels * Renderer::BUFFER_FRONT_PADDING;
+  }
+  
+  void IIRFilter::bltCoef( SampleType b2, SampleType b1, SampleType b0, SampleType a1, SampleType a0, SampleType fc, SampleType *coef_out)
+  {
+      SampleType sf = 1.0f/tanf(PI*fc/mSampleRate);
+      SampleType sfsq = sf*sf;
+      SampleType norm = a0 + a1*sf + sfsq;
+      coef_out[0] = (b0 + b1*sf + b2*sfsq)/norm;
+      coef_out[1] = 2.0f * (b0 - b2*sfsq)/norm;
+      coef_out[2] = (b0 - b1*sf + b2*sfsq)/norm;
+      coef_out[3] = 2.0f * (a0 - sfsq)/norm;
+      coef_out[4] = (a0 - a1*sf + sfsq)/norm;
   }
 
   void IIRFilter::Biquad::filter(Buffer* buffer, size_t numFrames){
@@ -64,6 +82,13 @@ namespace RealtimeResampler {
     mBiquad.mCoef[2] = 0.3;
     mBiquad.mCoef[3] = 0;
     mBiquad.mCoef[4] = 0;
+    
+    float Q = 1;
+    float cutoff = 300;
+    
+    bltCoef(0, 0, 1.0f/Q, 1.0f/Q, 1, cutoff, &mBiquad.mCoef[0]);
+    
+    
   }
   
   void LPF12::process(Buffer* buffer, float pitchFactor, size_t numFrames){

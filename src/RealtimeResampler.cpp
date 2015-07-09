@@ -209,10 +209,6 @@ namespace RealtimeResampler {
   
   void Renderer::fillSourceBuffer(Buffer* buf){
     buf->length = mAudioSource->getSamples(buf->start, mSourceBufferLength, mNumChannels);
-    // run the buffer through the anti-aliasing filter
-    if(mLPF){
-      mLPF->process(buf, 3, buf->length);
-    }
   }
   
   void Renderer::swapBuffersAndFillNext(){
@@ -223,6 +219,10 @@ namespace RealtimeResampler {
     Buffer* nextBuffer =  !mBufferSwapState ? &mSourceBuffer1 : &mSourceBuffer2;
     if (currentBuffer->length == 0) {
       fillSourceBuffer(currentBuffer);
+      // run the buffer through the anti-aliasing filter
+      if(mLPF){
+        mLPF->process(currentBuffer, 3, currentBuffer->length);
+      }
     }
     
     fillSourceBuffer(nextBuffer);
@@ -230,15 +230,19 @@ namespace RealtimeResampler {
     // zero out the end of the buffer in case it's shorter than we requested
     memset(nextBuffer->start + nextBuffer->length * mNumChannels, 0, (mSourceBufferLength - nextBuffer->length) * mNumChannels * sizeof(SampleType) );
     
-    // copy the first couple frames of the next buffer on to the end of the current buffer to handle interpolation between the end of the
-    // current and the beginning of the next.
-    memcpy(currentBuffer->start + currentBuffer->length * mNumChannels, nextBuffer->start, BUFFER_BACK_PADDING * mNumChannels * sizeof(SampleType));
-    
     // copy the end of the current buffer into the "hidden" frames below index zero of the next buffer
     int bufferFrontSampleCount = BUFFER_FRONT_PADDING * mNumChannels;
     void* nextBufferHiddenFramesStart = nextBuffer->start - bufferFrontSampleCount;
     void* currentBufCopyStartPoint = currentBuffer->start + currentBuffer->length * mNumChannels - bufferFrontSampleCount;
     memcpy(nextBufferHiddenFramesStart, currentBufCopyStartPoint, bufferFrontSampleCount * sizeof(SampleType));
+    
+    if(mLPF){
+      mLPF->process(nextBuffer, 3, nextBuffer->length);
+    }
+    
+    // copy the (filtered) first couple frames of the next buffer on to the end of the current buffer to handle interpolation between the end of the
+    // current and the beginning of the next.
+    memcpy(currentBuffer->start + currentBuffer->length * mNumChannels, nextBuffer->start, BUFFER_BACK_PADDING * mNumChannels * sizeof(SampleType));
     
 
   }

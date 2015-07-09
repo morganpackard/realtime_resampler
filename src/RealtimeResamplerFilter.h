@@ -53,6 +53,8 @@ namespace RealtimeResampler {
 
       };
     
+      void bltCoef( SampleType b2, SampleType b1, SampleType b0, SampleType a1, SampleType a0, SampleType fc, SampleType *coef_out);
+    
   };
   
   //////////////////////////////////////////
