@@ -241,6 +241,7 @@ namespace RealtimeResampler {
           void                        calculatePitchForNextFrames(size_t numFrames);
           void                        swapBuffersAndFillNext();
           void                        fillSourceBuffer(Buffer* buf);
+          void                        filterBuffer(Buffer* buf);
         
           //                          -variables-
           int                         mNumChannels;

@@ -211,6 +211,15 @@ namespace RealtimeResampler {
     buf->length = mAudioSource->getSamples(buf->start, mSourceBufferLength, mNumChannels);
   }
   
+  void Renderer::filterBuffer(Buffer* buf){
+    // Remove frequencies above nyquist. Use the start of the pitch buffer for
+    // convenience. There will be some error in the case of wild pitch bends,
+    // but it is assumed that this approach is good enough.
+    if(mLPF){
+      mLPF->process(buf, mLPF->pitchFactorToCutoff(*mPitchBuffer.start), buf->length);
+    }
+  }
+  
   void Renderer::swapBuffersAndFillNext(){
   
     mSourceBufferReadHead = fmax(0, mSourceBufferReadHead - mSourceBufferLength);
@@ -220,9 +229,7 @@ namespace RealtimeResampler {
     if (currentBuffer->length == 0) {
       fillSourceBuffer(currentBuffer);
       // run the buffer through the anti-aliasing filter
-      if(mLPF){
-        mLPF->process(currentBuffer, 3, currentBuffer->length);
-      }
+      filterBuffer(currentBuffer);
     }
     
     fillSourceBuffer(nextBuffer);
@@ -236,9 +243,7 @@ namespace RealtimeResampler {
     void* currentBufCopyStartPoint = currentBuffer->start + currentBuffer->length * mNumChannels - bufferFrontSampleCount;
     memcpy(nextBufferHiddenFramesStart, currentBufCopyStartPoint, bufferFrontSampleCount * sizeof(SampleType));
     
-    if(mLPF){
-      mLPF->process(nextBuffer, 3, nextBuffer->length);
-    }
+    filterBuffer(nextBuffer);
     
     // copy the (filtered) first couple frames of the next buffer on to the end of the current buffer to handle interpolation between the end of the
     // current and the beginning of the next.

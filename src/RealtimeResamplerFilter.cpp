@@ -14,12 +14,18 @@ namespace RealtimeResampler {
   const SampleType PI = 3.14159265358979f;
   #endif
 
-
   void Filter::init(float sampleRate, size_t maxBufferFrames, int numChannels){
     mSampleRate = sampleRate;
     mMaxBufferFrames = maxBufferFrames;
     mNumChannels = numChannels;
   }
+  
+  
+  SampleType Filter::pitchFactorToCutoff(SampleType pitchFactor){
+      return 0.9 * mSampleRate / ( 2 * std::max(1.0f, pitchFactor) ) ;
+  }
+  
+  IIRFilter::IIRFilter():mQ(5){}
 
   IIRFilter::Biquad::Biquad(size_t maxBufferFrames, int numChannels):
     mSourceCopy((maxBufferFrames + 2) * numChannels),
@@ -71,27 +77,26 @@ namespace RealtimeResampler {
   //////////////////////////////////////////
   
   
-  LPF12::LPF12(): mBiquad(0,1){}
+  LPF12::LPF12():
+    mBiquad(0,1)
+  {}
   
   void LPF12::init(float sampleRate, size_t maxBufferFrames, int numChannels){
     Filter::init(sampleRate, maxBufferFrames, numChannels);
+    mCutoff = mSampleRate / 2;
     mBiquad = Biquad(maxBufferFrames, numChannels);
     
-    mBiquad.mCoef[0] = 0.3;
-    mBiquad.mCoef[1] = 0.3;
-    mBiquad.mCoef[2] = 0.3;
-    mBiquad.mCoef[3] = 0;
-    mBiquad.mCoef[4] = 0;
-    
-    float Q = 1;
-    float cutoff = 300;
-    
-    bltCoef(0, 0, 1.0f/Q, 1.0f/Q, 1, cutoff, &mBiquad.mCoef[0]);
-    
+    bltCoef(0, 0, 1.0f/mQ, 1.0f/mQ, 1, mCutoff, &mBiquad.mCoef[0]);
     
   }
   
-  void LPF12::process(Buffer* buffer, float pitchFactor, size_t numFrames){
+  void LPF12::process(Buffer* buffer, float cutoff, size_t numFrames){
+    mCutoff = 200;
+    if(cutoff != mCutoff){
+      bltCoef(0, 0, 1.0f/mQ, 1.0f/mQ, 1, mCutoff, &mBiquad.mCoef[0]);
+      mCutoff = cutoff;
+    }
+  
     mBiquad.filter(buffer, numFrames);
   }
 

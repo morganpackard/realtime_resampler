@@ -28,8 +28,14 @@ namespace RealtimeResampler {
       size_t                    mMaxBufferFrames;
       int                       mNumChannels;
       // TODO -- remove numFrames. That should be determined by the buffer object itself.
-      virtual void              process(Buffer* buffer, float pitchFactor, size_t numFrames) = 0;
+      virtual void              process(Buffer* buffer, float cutoff, size_t numFrames) = 0;
       virtual void              init(float sampleRate, size_t maxBufferFrames, int numChannels);
+    
+      /*!
+        Given a pitch factor, where 1 is constant, and 2 is twice the speed, calculate a cutoff frequency that
+        sufficiently attenuates frequencies above nyquist (sample rate * 0.5)
+      */
+      virtual SampleType        pitchFactorToCutoff(SampleType pitchFactor);
     
   };
   
@@ -39,6 +45,10 @@ namespace RealtimeResampler {
   //////////////////////////////////////////
   
   class IIRFilter : public virtual Filter{
+  
+    public:
+    
+      IIRFilter();
   
     protected:
     
@@ -53,7 +63,8 @@ namespace RealtimeResampler {
 
       };
     
-      void bltCoef( SampleType b2, SampleType b1, SampleType b0, SampleType a1, SampleType a0, SampleType fc, SampleType *coef_out);
+      void                      bltCoef( SampleType b2, SampleType b1, SampleType b0, SampleType a1, SampleType a0, SampleType fc, SampleType *coef_out);
+      SampleType                mQ;
     
   };
   
@@ -71,9 +82,10 @@ namespace RealtimeResampler {
     
     protected:
     
-      virtual void              process(Buffer* buffer, float pitchFactor, size_t numFrames);
+      virtual void              process(Buffer* buffer, float cutoff, size_t numFrames);
     
       Biquad                    mBiquad;
+      SampleType                mCutoff;
   
   };
   
