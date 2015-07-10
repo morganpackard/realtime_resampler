@@ -15,13 +15,23 @@
 #include <stdio.h> // TODO remove this
 #include <iostream>// TODO remove this
 
+#ifndef REALTIME_RESAMPLER_BUFFER_BACK_PADDING
+  #define REALTIME_RESAMPLER_BUFFER_BACK_PADDING 2
+#endif
+
+#ifndef REALTIME_RESAMPLER_BUFFER_FRONT_PADDING
+  #define REALTIME_RESAMPLER_BUFFER_FRONT_PADDING 2
+#endif
+
 namespace RealtimeResampler {
 
   void* (*mallocFn)(size_t) = malloc;
   void (*freeFn)(void*) = free;
   
-  const int Renderer::BUFFER_BACK_PADDING = 2;
-  const int Renderer::BUFFER_FRONT_PADDING = 2;
+  
+  
+  const int Renderer::BUFFER_BACK_PADDING = REALTIME_RESAMPLER_BUFFER_BACK_PADDING;
+  const int Renderer::BUFFER_FRONT_PADDING = REALTIME_RESAMPLER_BUFFER_FRONT_PADDING;
   
   Renderer::Renderer(float sampleRate, int numChannels, size_t sourceBufferLength, size_t maxFramesToRender ) :
     mNumChannels(numChannels),
