@@ -22,7 +22,7 @@ namespace RealtimeResampler {
   
   
   SampleType Filter::pitchFactorToCutoff(SampleType pitchFactor){
-      return 0.9 * mSampleRate / ( 2 * std::max(1.0f, pitchFactor) ) ;
+      return 0.6 * mSampleRate / ( 2 * std::max(1.0f, pitchFactor) ) ;
   }
   
   IIRFilter::IIRFilter():mQ(5){}
@@ -91,10 +91,9 @@ namespace RealtimeResampler {
   }
   
   void LPF12::process(Buffer* buffer, float cutoff, size_t numFrames){
-    mCutoff = 200;
     if(cutoff != mCutoff){
-      bltCoef(0, 0, 1.0f/mQ, 1.0f/mQ, 1, mCutoff, &mBiquad.mCoef[0]);
       mCutoff = cutoff;
+      bltCoef(0, 0, 1.0f/mQ, 1.0f/mQ, 1, mCutoff, &mBiquad.mCoef[0]);
     }
   
     mBiquad.filter(buffer, numFrames);
