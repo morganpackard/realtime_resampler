@@ -13,6 +13,10 @@ namespace RealtimeResampler {
   #ifndef PI
   const SampleType PI = 3.14159265358979f;
   #endif
+  
+  Filter::Filter():
+    mCutoffToNyquistRatio(0.6)
+  {}
 
   void Filter::init(float sampleRate, size_t maxBufferFrames, int numChannels){
     mSampleRate = sampleRate;
@@ -20,9 +24,12 @@ namespace RealtimeResampler {
     mNumChannels = numChannels;
   }
   
+  void Filter::setCutoffToNyquistRatio(float ratio){
+    mCutoffToNyquistRatio = ratio;
+  }
   
   SampleType Filter::pitchFactorToCutoff(SampleType pitchFactor){
-      return 0.6 * mSampleRate / ( 2 * std::max(1.0f, pitchFactor) ) ;
+      return mCutoffToNyquistRatio * mSampleRate / ( 2 * std::max(1.0f, pitchFactor) ) ;
   }
   
   const float IIRFilter::Q_MIN = 0.7071;

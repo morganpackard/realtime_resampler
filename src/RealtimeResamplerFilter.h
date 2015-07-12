@@ -23,6 +23,14 @@ namespace RealtimeResampler {
     
     public:
     
+      Filter();
+    
+      /*!
+        Set the mCutoffToNyquistRatio value. See description of mCutoffToNyquistRatio;
+      */
+    
+      void                      setCutoffToNyquistRatio(float);
+    
     protected:
       float                     mSampleRate;
       size_t                    mMaxBufferFrames;
@@ -36,6 +44,15 @@ namespace RealtimeResampler {
         sufficiently attenuates frequencies above nyquist (sample rate * 0.5)
       */
       virtual SampleType        pitchFactorToCutoff(SampleType pitchFactor);
+    
+      /*!
+        Different filters have steeper and shallower rolloffs. Depending in the filter, it may be necessary to set the cutoff
+        significantly below the nyquist frequency in order to achieve an acceptable degree of anti-aliasing. One should feel
+        free to set this as often as desired. For example, the value could be set to 1 for pitch factors close to one, but 0.6 for high pitch 
+        factors, and interpolated in between.
+      */
+    
+      float                     mCutoffToNyquistRatio;
     
   };
   

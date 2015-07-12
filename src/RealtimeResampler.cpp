@@ -270,7 +270,9 @@ namespace RealtimeResampler {
   
   void Renderer::setLowPassFilter(Filter* filter){
     mLPF = filter;
-    mLPF->init(mSampleRate, mSourceBufferLength, mNumChannels);
+    if(mLPF){
+      mLPF->init(mSampleRate, mSourceBufferLength, mNumChannels);
+    }
   }
 
   
