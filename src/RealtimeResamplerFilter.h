@@ -107,31 +107,7 @@ namespace RealtimeResampler {
       SampleType                mCutoff;
   
   };
-  
-  
-  
-  //////////////////////////////////////////
-  /// Four-Pole low-pass filter
-  //////////////////////////////////////////
-  
-  class LPF24 : public IIRFilter{
-  
-    public:
-    
-      LPF24();
-    
-      void                      init(float sampleRate, size_t maxBufferFrames, int numChannels);
-    
-    protected:
-    
-      void                      process(Buffer* buffer, float cutoff, size_t numFrames);
-      void                      setCoefficients();
-    
-      Biquad                    mBiquad1;
-      Biquad                    mBiquad2;
-      SampleType                mCutoff;
-  
-  };
+ 
   
 
 }

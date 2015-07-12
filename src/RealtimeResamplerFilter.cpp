@@ -109,45 +109,5 @@ namespace RealtimeResampler {
   }
   
   
-  //////////////////////////////////////////
-  /// Four-Pole low-pass filter
-  //////////////////////////////////////////
-  
-  LPF24::LPF24():
-    mBiquad1(0,1),
-    mBiquad2(0,1)
-  {}
-  
-  void LPF24::setCoefficients(){
-    // stage 1
-    bltCoef(0, 0, 1.0f/mQ, 0.5412f/mQ, 1, mCutoff, &mBiquad1.mCoef[0]);
-        
-    // stage 2
-    bltCoef(0, 0, 1.0f/mQ, 1.3066f/mQ, 1, mCutoff, &mBiquad2.mCoef[0]);
-    
-  }
-  
-  void LPF24::init(float sampleRate, size_t maxBufferFrames, int numChannels){
-    Filter::init(sampleRate, maxBufferFrames, numChannels);
-    mCutoff = mSampleRate / 2;
-    mBiquad1 = Biquad(maxBufferFrames, numChannels);
-    mBiquad2 = Biquad(maxBufferFrames, numChannels);
-    
-    setCoefficients();
-    
-  }
-  
-  void LPF24::process(Buffer* buffer, float cutoff, size_t numFrames){
-  
-    if(cutoff != mCutoff){
-      mCutoff = cutoff;
-      setCoefficients();
-    }
-  
-    mBiquad1.filter(buffer, numFrames);
-    mBiquad2.filter(buffer, numFrames);
-    
-  }
-  
 
 }
