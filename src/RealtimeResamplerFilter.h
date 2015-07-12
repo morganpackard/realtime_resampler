@@ -50,6 +50,8 @@ namespace RealtimeResampler {
     
       IIRFilter();
   
+      static const float        Q_MIN;
+  
     protected:
     
       class Biquad {

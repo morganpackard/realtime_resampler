@@ -25,7 +25,9 @@ namespace RealtimeResampler {
       return 0.6 * mSampleRate / ( 2 * std::max(1.0f, pitchFactor) ) ;
   }
   
-  IIRFilter::IIRFilter():mQ(0.7071){}
+  const float IIRFilter::Q_MIN = 0.7071;
+  
+  IIRFilter::IIRFilter():mQ(Q_MIN){}
 
   IIRFilter::Biquad::Biquad(size_t maxBufferFrames, int numChannels):
     mSourceCopy((maxBufferFrames + 2) * numChannels),
