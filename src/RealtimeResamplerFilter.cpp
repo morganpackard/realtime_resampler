@@ -5,8 +5,8 @@
 //
 
 #include "RealtimeResamplerFilter.h"
-#include <math.h>
-
+#include <cmath>
+#include <algorithm>
 
 namespace RealtimeResampler {
 
@@ -25,7 +25,7 @@ namespace RealtimeResampler {
       return 0.6 * mSampleRate / ( 2 * std::max(1.0f, pitchFactor) ) ;
   }
   
-  IIRFilter::IIRFilter():mQ(5){}
+  IIRFilter::IIRFilter():mQ(0.7071){}
 
   IIRFilter::Biquad::Biquad(size_t maxBufferFrames, int numChannels):
     mSourceCopy((maxBufferFrames + 2) * numChannels),
@@ -110,11 +110,11 @@ namespace RealtimeResampler {
   {}
   
   void LPF24::setCoefficients(){
-            // stage 1
-        bltCoef(0, 0, 1.0f/mQ, 0.5412f/mQ, 1, mCutoff, &mBiquad1.mCoef[0]);
+    // stage 1
+    bltCoef(0, 0, 1.0f/mQ, 0.5412f/mQ, 1, mCutoff, &mBiquad1.mCoef[0]);
         
-        // stage 2
-        bltCoef(0, 0, 1.0f/mQ, 1.3066f/mQ, 1, mCutoff, &mBiquad2.mCoef[0]);
+    // stage 2
+    bltCoef(0, 0, 1.0f/mQ, 1.3066f/mQ, 1, mCutoff, &mBiquad2.mCoef[0]);
     
   }
   
@@ -129,6 +129,7 @@ namespace RealtimeResampler {
   }
   
   void LPF24::process(Buffer* buffer, float cutoff, size_t numFrames){
+  
     if(cutoff != mCutoff){
       mCutoff = cutoff;
       setCoefficients();
@@ -136,6 +137,7 @@ namespace RealtimeResampler {
   
     mBiquad1.filter(buffer, numFrames);
     mBiquad2.filter(buffer, numFrames);
+    
   }
   
 

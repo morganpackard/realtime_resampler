@@ -52,7 +52,7 @@ int main(int argc, const char * argv[])
       .setBuffer(sample)
       .trigger( ControlTrigger().trigger() )
       .trigger( ControlMetro().bpm(10) )
-      .playbackRate( 2 + 1.5 * ControlSineOsc().freq(0.3) )
+      .playbackRate( 1.5 )
       .loop(true);
 
 
