@@ -2,7 +2,7 @@
 //  RealtimeResampler.cpp
 //  Resampler
 //
-//  Created by Morgan Packard on 2/22/15.
+//  Created by Morgan Packard with encouragement and guidance from Philip Bennefall on 2/22/15.
 //
 
 #include "RealtimeResampler.h"

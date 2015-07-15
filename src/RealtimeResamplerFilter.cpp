@@ -1,7 +1,7 @@
 //
 //  RealtimeResamplerFilter.cpp
 //
-//  Created by Morgan Packard on 6/27/15.
+//  Created by Morgan Packard with encouragement and guidance from Philip Bennefall on 6/27/15.
 //
 
 #include "RealtimeResamplerFilter.h"
@@ -95,14 +95,14 @@ namespace RealtimeResampler {
     mCutoff = mSampleRate / 2;
     mBiquad = Biquad(maxBufferFrames, numChannels);
     
-    bltCoef(0, 0, 1.0f/mQ, 1.0f/mQ, 1, mCutoff, &mBiquad.mCoef[0]);
+    bltCoef(0, 0, 1, 1.0f/mQ, 1, mCutoff, &mBiquad.mCoef[0]);
     
   }
   
   void LPF12::process(Buffer* buffer, float cutoff, size_t numFrames){
     if(cutoff != mCutoff){
       mCutoff = cutoff;
-      bltCoef(0, 0, 1.0f/mQ, 1.0f/mQ, 1, mCutoff, &mBiquad.mCoef[0]);
+      bltCoef(0, 0, 1, 1.0f/mQ, 1, mCutoff, &mBiquad.mCoef[0]);
     }
   
     mBiquad.filter(buffer, numFrames);

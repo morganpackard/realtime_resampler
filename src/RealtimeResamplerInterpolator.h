@@ -1,8 +1,7 @@
 //
 //  RealtimeResamplerInterpolator.h
 //
-//  Created by Morgan Packard on 6/12/15.
-//  Copyright (c) 2015 Morgan Packard. All rights reserved.
+//  Created by Morgan Packard with encouragement and guidance from Philip Bennefall on 6/12/15.
 //
 
 #ifndef __EliasResamplerDemo__Interpolator__
@@ -28,7 +27,11 @@ namespace RealtimeResampler {
   
     /*!
       Interpolate between input frames. It's up to the caller to determine what the output buffer size will be. The interpolator may look
-      as far ahead of the inputBuffer pointer as inputBuffer[-(mBufferFrontPadding*hop)]
+      as far ahead of the inputBuffer pointer as inputBuffer[-(mBufferFrontPadding*hop)].
+      
+      The interpolationBuffer variable is a list of positions we need to interpolate. It is the sample length as the outputBuffer number
+      of frames. For example, for a four-frame mono input sped up for a factor of 1.5, the contents of the interpolationBuffer would be [0, 1.5, 3]
+     
     */
   
     virtual void process(SampleType* inputBuffer, SampleType* outputBuffer, SampleType* interpolationBuffer, size_t numFrames, int hop) = 0;

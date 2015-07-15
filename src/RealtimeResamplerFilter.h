@@ -1,7 +1,7 @@
 //
 //  RealtimeResamplerFilter.h
 //
-//  Created by Morgan Packard on 6/27/15.
+//  Created by Morgan Packard with encouragement and guidance from Philip Bennefall on 6/27/15.
 //
 
 #ifndef __EliasResamplerDemo__RealtimeResamplerFilter__
