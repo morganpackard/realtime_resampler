@@ -12,8 +12,6 @@
 #include "RealtimeResamplerInterpolator.h"
 #include "RealtimeResamplerFilter.h"
 #include <cassert>
-#include <stdio.h> // TODO remove this
-#include <iostream>// TODO remove this
 
 #ifndef REALTIME_RESAMPLER_BUFFER_BACK_PADDING
   #define REALTIME_RESAMPLER_BUFFER_BACK_PADDING 2
@@ -59,12 +57,8 @@ namespace RealtimeResampler {
       mSourceBuffer1.length = 0;
       mSourceBuffer2.length = 0;
       for(int i = 0; i < mLpfCount; i++){
-        mLPF[mLpfCount]->reset();
+        mLPF[i]->reset();
       }
-  }
-  
-  void Renderer::error(std::string message){
-    printf(message.c_str());
   }
 
   size_t Renderer::getNumChannels(){
@@ -277,7 +271,7 @@ namespace RealtimeResampler {
     // check to make sure the filter wasn't already added
     for(int i = 0; i < mLpfCount; i++){
       if (mLPF[i] == filter) {
-        error("ERROR in Renderer::addLowPassFilter. You must not add the same filter more than once.");
+        printf("ERROR in Renderer::addLowPassFilter. You must not add the same filter more than once.");
         return;
       }
     }

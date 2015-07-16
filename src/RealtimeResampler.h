@@ -14,7 +14,7 @@
 #define __Resampler__RealtimeResampler__
 
 #include <stdio.h>
-#include <string> // TODO remove this
+#include <cstring>
 #include <cstdlib>
 
 
@@ -128,17 +128,9 @@ namespace RealtimeResampler {
         public:
         
           /*!
-           Quality setting. Shortcuts for pre-defined combinations of filter/interpolator
-          */
-        
-          enum                        Quality {LOW, MEDIUM, HIGH};
-        
-          /*!
             Constructor
           */
-        
-          // TODO -- consider creating an initializer struct instead of all these arguments;
-        
+
           Renderer(
             float sampleRate,
             int numChannels,
@@ -206,13 +198,6 @@ namespace RealtimeResampler {
           void                        setAudioSource(AudioSource* audioSource);
         
           /*!
-            Set the course-grained quality of the renderer. The values of the Quality enum will actually be shortcuts to instantiating 
-            different interpolator/filter options. For example, LOW quality might mean linear intorpolation and no low pass filtering.
-          */
-          // TODO -- implement or remove this
-          void                        setQuality(Quality qaulity);
-        
-          /*!
             "Manually" set the interpolator. This should not be called after the first call to rRenderer::render.
           */
         
@@ -243,7 +228,6 @@ namespace RealtimeResampler {
         private:
         
           //                          -methods-
-          void                        error(std::string message); // todo -- don't use std::string. Use error codes instead.
           void                        calculatePitchForNextFrames(size_t numFrames);
           void                        swapBuffersAndFillNext();
           void                        fillSourceBuffer(Buffer* buf);

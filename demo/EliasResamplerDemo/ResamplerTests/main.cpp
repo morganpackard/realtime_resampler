@@ -418,6 +418,34 @@ int main(int argc, const char * argv[]) {
     renderer.render(destinationBuffer, BLOCK_SIZE);
     TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE * 2), BufferTestWrapper(testBuffer + kNumChannels * BLOCK_SIZE * 3 ,  BLOCK_SIZE * 2), "Buffer mismatch");
   
+  
+    
+    ///////////////////////////////////////
+    // Test impulse response of LPF
+    ///////////////////////////////////////
+  
+    SampleType* impulseBuffer = (SampleType*)malloc(kNumFramesInAudioSourceBuffer * kNumChannels * sizeof(SampleType));
+    memset(impulseBuffer, 0, kNumFramesInAudioSourceBuffer * kNumChannels * sizeof(SampleType));
+
+
+    for(int i = 0; i < 64; i++){
+      impulseBuffer[i * kNumChannels] = sin(M_PI_2 * i * 2 / 64.0);
+      impulseBuffer[i * kNumChannels + 1] = sin(M_PI_2 * i * 2 / 64.0);
+    }
+  
+    audioSource.setSourceBuffer(impulseBuffer, BLOCK_SIZE * 10);
+    renderer = Renderer(kSampleRate,  kNumChannels, BLOCK_SIZE);
+    renderer.setAudioSource(&audioSource);
+    renderer.setInterpolator(new LinearInterpolator());
+    renderer.addLowPassFilter(new LPF12());
+    renderer.addLowPassFilter(new LPF12());
+    renderer.addLowPassFilter(new LPF12());
+    renderer.setPitch(2.0001, 2.0001, 0);
+  
+    renderer.render(destinationBuffer, BLOCK_SIZE);
+    TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE * 2), BufferTestWrapper(impulseBuffer,  BLOCK_SIZE * 2), "Printing impulse response of filter");
+
+  
     std::cout << "\n ======== Tests Completed =========== \n\n";
   
     return 0;
