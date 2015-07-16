@@ -280,6 +280,10 @@ namespace RealtimeResampler {
       filter->init(mSampleRate, mSourceBufferLength, mNumChannels);
     }
   }
+  
+  void Renderer::clearLowPassfilters(){
+      mLpfCount = 0;
+  }
 
   
 }

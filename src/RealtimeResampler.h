@@ -224,6 +224,12 @@ namespace RealtimeResampler {
         
           void                        addLowPassFilter(Filter* filter);
         
+          /*!
+            Remove all low-pass filters.
+          */
+        
+          void                        clearLowPassfilters();
+        
           
           /*!
             Clear the internal buffers.
