@@ -26,31 +26,37 @@ namespace RealtimeResampler {
       Filter();
     
       /*!
-        Set the mCutoffToNyquistRatio value. See description of mCutoffToNyquistRatio;
-      */
-    
-      void                      setCutoffToNyquistRatio(float);
-    
-    protected:
-      float                     mSampleRate;
-      size_t                    mMaxBufferFrames;
-      int                       mNumChannels;
-      // TODO -- remove numFrames. That should be determined by the buffer object itself.
-      virtual void              process(Buffer* buffer, float cutoff, size_t numFrames) = 0;
-      virtual void              init(float sampleRate, size_t maxBufferFrames, int numChannels);
-    
-      /*!
-        Given a pitch factor, where 1 is constant, and 2 is twice the speed, calculate a cutoff frequency that
-        sufficiently attenuates frequencies above nyquist (sample rate * 0.5)
-      */
-      virtual SampleType        pitchFactorToCutoff(SampleType pitchFactor);
-    
-      /*!
         Different filters have steeper and shallower rolloffs. Depending in the filter, it may be necessary to set the cutoff
         significantly below the nyquist frequency in order to achieve an acceptable degree of anti-aliasing. One should feel
         free to set this as often as desired. For example, the value could be set to 1 for pitch factors close to one, but 0.6 for high pitch 
         factors, and interpolated in between.
       */
+    
+      void                      setCutoffToNyquistRatio(float);
+    
+    protected:
+      // TODO -- remove numFrames. That should be determined by the buffer object itself.
+      virtual void              process(Buffer* buffer, float cutoff, size_t numFrames) = 0;
+      virtual void              init(float sampleRate, size_t maxBufferFrames, int numChannels);
+    
+      /*!
+        Reset any state saved by the filter. In particular, zero out any delay lines.
+      */
+    
+      virtual void              reset(){};
+      
+      float                     mSampleRate;
+      size_t                    mMaxBufferFrames;
+      int                       mNumChannels;
+    
+      /*!
+        Given a pitch factor, where 1 is constant, and 2 is twice the speed, calculate a cutoff frequency that
+        sufficiently attenuates frequencies above nyquist (sample rate * 0.5)
+      */
+    
+      virtual SampleType        pitchFactorToCutoff(SampleType pitchFactor);
+    
+
     
       float                     mCutoffToNyquistRatio;
     
@@ -103,6 +109,7 @@ namespace RealtimeResampler {
     protected:
     
       void                      process(Buffer* buffer, float cutoff, size_t numFrames);
+      virtual void              reset();
     
       Biquad                    mBiquad;
       SampleType                mCutoff;

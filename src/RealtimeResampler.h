@@ -209,7 +209,7 @@ namespace RealtimeResampler {
             Set the course-grained quality of the renderer. The values of the Quality enum will actually be shortcuts to instantiating 
             different interpolator/filter options. For example, LOW quality might mean linear intorpolation and no low pass filtering.
           */
-        
+          // TODO -- implement or remove this
           void                        setQuality(Quality qaulity);
         
           /*!

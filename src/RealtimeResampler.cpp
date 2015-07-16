@@ -58,6 +58,9 @@ namespace RealtimeResampler {
   void Renderer::reset(){
       mSourceBuffer1.length = 0;
       mSourceBuffer2.length = 0;
+      for(int i = 0; i < mLpfCount; i++){
+        mLPF[mLpfCount]->reset();
+      }
   }
   
   void Renderer::error(std::string message){
@@ -222,11 +225,14 @@ namespace RealtimeResampler {
   }
   
   void Renderer::filterBuffer(Buffer* buf){
-    // Remove frequencies above nyquist. Use the start of the pitch buffer for
-    // convenience. There will be some error in the case of wild pitch bends,
-    // but it is assumed that this approach is good enough.
-    for(int i = 0; i < mLpfCount; i++){
-      mLPF[i]->process(buf, mLPF[i]->pitchFactorToCutoff(*mPitchBuffer.start), buf->length);
+    // There's no need to anti-alias if we're pitching down
+    if(mCurrentPitch > 1 || mPitchDestination > 0){
+      // Attenuate frequencies above nyquist. Use the start of the pitch buffer for
+      // convenience. There will be some error in the case of wild pitch bends,
+      // but it is assumed that this approach is good enough.
+      for(int i = 0; i < mLpfCount; i++){
+        mLPF[i]->process(buf, mLPF[i]->pitchFactorToCutoff(*mPitchBuffer.start), buf->length);
+      }
     }
   }
   

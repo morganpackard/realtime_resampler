@@ -120,6 +120,9 @@ namespace RealtimeResampler {
     mBiquad.filter(buffer, numFrames);
   }
   
-  
+  void LPF12::reset(){
+    memset(mBiquad.mSourceCopy.mData, 0, mBiquad.mSourceCopy.mNumSamples * sizeof(SampleType));
+    memset(mBiquad.mWorkspace.mData, 0, mBiquad.mWorkspace.mNumSamples * sizeof(SampleType));
+  }
 
 }

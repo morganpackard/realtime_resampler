@@ -121,8 +121,8 @@ static void* debugMallocFn(size_t size){
 
 int main(int argc, const char * argv[]) {
   
-//    mallocFn = debugMallocFn;
-//    freeFn = debugFreeFn;
+//    RealtimeResampler::mallocFn = debugMallocFn;
+//    RealtimeResampler::freeFn = debugFreeFn;
   
     static const int kNumChannels = 2;
   
@@ -403,7 +403,7 @@ int main(int argc, const char * argv[]) {
     renderer = Renderer(kSampleRate,  kNumChannels, BLOCK_SIZE);
     renderer.setAudioSource(&audioSource);
     renderer.setInterpolator(new LinearInterpolator());
-    renderer.setLowPassFilter(new LPF12());
+    renderer.addLowPassFilter(new LPF12());
     renderer.setPitch(1, 1, 0);
   
     renderer.render(destinationBuffer, BLOCK_SIZE);
