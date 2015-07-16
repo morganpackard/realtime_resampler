@@ -59,7 +59,7 @@ namespace RealtimeResampler {
       coef_out[4] = (a0 - a1*sf + sfsq)/norm;
   }
 
-  void IIRFilter::Biquad::filter(Buffer* buffer, size_t numFrames){
+  void IIRFilter::Biquad::filter(Buffer* buffer){
   
     size_t bufferLengthBytes = buffer->length * mNumChannels * sizeof(SampleType);
   
@@ -111,13 +111,13 @@ namespace RealtimeResampler {
     
   }
   
-  void LPF12::process(Buffer* buffer, float cutoff, size_t numFrames){
+  void LPF12::process(Buffer* buffer, float cutoff){
     if(cutoff != mCutoff){
       mCutoff = cutoff;
       bltCoef(0, 0, 1, 1.0f/mQ, 1, mCutoff, &mBiquad.mCoef[0]);
     }
   
-    mBiquad.filter(buffer, numFrames);
+    mBiquad.filter(buffer);
   }
   
   void LPF12::reset(){

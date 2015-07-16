@@ -12,6 +12,8 @@
 		A80E46201AD19BA700F13BA1 /* RealtimeResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */; };
 		A83B288A1B2B571800197C5F /* RealtimeResamplerInterpolator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A83B28881B2B571800197C5F /* RealtimeResamplerInterpolator.cpp */; };
 		A83B288B1B2B571800197C5F /* RealtimeResamplerInterpolator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A83B28881B2B571800197C5F /* RealtimeResamplerInterpolator.cpp */; };
+		A886668F1B58146200D11EC3 /* RealtimeResamplerBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A886668D1B58146200D11EC3 /* RealtimeResamplerBuffer.cpp */; };
+		A88666901B58146200D11EC3 /* RealtimeResamplerBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A886668D1B58146200D11EC3 /* RealtimeResamplerBuffer.cpp */; };
 		A890E8C31AB8DF93009FA404 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8C21AB8DF93009FA404 /* main.cpp */; };
 		A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */; };
 		A890E8DC1AB8E4D2009FA404 /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A890E8D91AB8E4D2009FA404 /* RtAudio.cpp */; };
@@ -69,6 +71,9 @@
 		A80E46191AD19A2600F13BA1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A83B28881B2B571800197C5F /* RealtimeResamplerInterpolator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RealtimeResamplerInterpolator.cpp; sourceTree = "<group>"; };
 		A83B28891B2B571800197C5F /* RealtimeResamplerInterpolator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RealtimeResamplerInterpolator.h; sourceTree = "<group>"; };
+		A886668D1B58146200D11EC3 /* RealtimeResamplerBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RealtimeResamplerBuffer.cpp; sourceTree = "<group>"; };
+		A886668E1B58146200D11EC3 /* RealtimeResamplerBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RealtimeResamplerBuffer.h; sourceTree = "<group>"; };
+		A88666911B58209B00D11EC3 /* RealtimeResamplerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RealtimeResamplerCommon.h; sourceTree = "<group>"; };
 		A890E8BF1AB8DF93009FA404 /* EliasResamplerDemo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EliasResamplerDemo; sourceTree = BUILT_PRODUCTS_DIR; };
 		A890E8C21AB8DF93009FA404 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A890E8CA1AB8DFF3009FA404 /* RealtimeResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RealtimeResampler.cpp; sourceTree = "<group>"; };
@@ -158,6 +163,9 @@
 				A83B28891B2B571800197C5F /* RealtimeResamplerInterpolator.h */,
 				A8B36C801B3F474D00B0C562 /* RealtimeResamplerFilter.cpp */,
 				A8B36C811B3F474D00B0C562 /* RealtimeResamplerFilter.h */,
+				A886668D1B58146200D11EC3 /* RealtimeResamplerBuffer.cpp */,
+				A886668E1B58146200D11EC3 /* RealtimeResamplerBuffer.h */,
+				A88666911B58209B00D11EC3 /* RealtimeResamplerCommon.h */,
 			);
 			name = resampler;
 			path = ../../../src;
@@ -305,6 +313,7 @@
 				A83B288B1B2B571800197C5F /* RealtimeResamplerInterpolator.cpp in Sources */,
 				A80E46201AD19BA700F13BA1 /* RealtimeResampler.cpp in Sources */,
 				A80E461A1AD19A2600F13BA1 /* main.cpp in Sources */,
+				A88666901B58146200D11EC3 /* RealtimeResamplerBuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A886668F1B58146200D11EC3 /* RealtimeResamplerBuffer.cpp in Sources */,
 				A8B36C821B3F474D00B0C562 /* RealtimeResamplerFilter.cpp in Sources */,
 				A83B288A1B2B571800197C5F /* RealtimeResamplerInterpolator.cpp in Sources */,
 				A890E8CC1AB8DFF3009FA404 /* RealtimeResampler.cpp in Sources */,

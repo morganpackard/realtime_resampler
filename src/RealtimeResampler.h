@@ -16,86 +16,17 @@
 #include <stdio.h>
 #include <cstring>
 #include <cstdlib>
-
+#include "RealtimeResamplerBuffer.h"
+#include "RealtimeResamplerCommon.h"
 
 namespace RealtimeResampler {
 
-      typedef float SampleType;
       class Interpolator;
       class Filter;
   
       // allocator / deallocator are malloc and free by default, but can be overridden
       extern void* (*mallocFn)(size_t);
       extern void (*freeFn)(void*);
-  
-      /*!
-        Memory-managed audio buffer class class. Handles allocation and deallocation. 
-       
-        Note frontPadding and backPadding. They are used when you want to permit "peaking" ahead and behind the
-        boundaries of the buffer. In ther words, you can keep a few frames from the previous buffer before postion
-        zero, and a few frames from the next buffer after "official" end of the buffer. This allows us to pass the same
-        data to different interpolation functions which may have different needs with regard to looking back past the two 
-        samples being interpolated.
-        
-        Also used as a general-purpose heap-allocated float array.
-        
-        Copy and assignment constructors do NOT copy audio data. Data must be explicitly copied.
-        
-        I'll admit it. This class is a bit ugly.
-       
-      */
-  
-      struct Buffer{
-        // constructor
-        Buffer(size_t numSamples, size_t frontPadding=0, size_t backPadding=0):
-          mNumSamples(frontPadding + numSamples + backPadding),
-          mFrontPadding(frontPadding),
-          length(0)
-        {
-          init();
-        }
-        
-        // copy constructor
-        Buffer(const Buffer &other):
-          mNumSamples(other.mNumSamples),
-          mFrontPadding(other.mFrontPadding),
-          length(other.length)
-        {
-          init();
-        }
-        
-        // assignment operator
-        Buffer& operator= (const Buffer& other){
-          mNumSamples = other.mNumSamples;
-          length = other.length;
-          mFrontPadding = other.mFrontPadding;
-          init();
-          return *this;
-        }
-        ~Buffer(){  freeFn(mData); }
-        
-        // The current length of the "actual" data, in frames. This doesn't include padding.
-        // The buffer doesn't know if it's stereo or not, so this may or may not equal mNumSamples
-        size_t                  length;
-        
-        // the number of samples the allocated space will hold, minus the padding
-        size_t                  mNumSamples;
-        
-        size_t                  mFrontPadding;
-        
-        // mData, offset by frontPadding. The "official" start of the buffer
-        SampleType*             start;
-        
-        void                    init(){
-          size_t bytes = (mNumSamples + mFrontPadding) * sizeof(SampleType);
-          mData = (SampleType*)(*mallocFn)(bytes);
-          start = mData + mFrontPadding;
-          memset(mData, 0, bytes);
-        }
-      
-        // All of the memory owned by this object
-        SampleType*             mData;
-      };
   
       //////////////////////////////////////////
       /// Abstract AudioSource delegate class.

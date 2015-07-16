@@ -35,8 +35,7 @@ namespace RealtimeResampler {
       void                      setCutoffToNyquistRatio(float);
     
     protected:
-      // TODO -- remove numFrames. That should be determined by the buffer object itself.
-      virtual void              process(Buffer* buffer, float cutoff, size_t numFrames) = 0;
+      virtual void              process(Buffer* buffer, float cutoff) = 0;
       virtual void              init(float sampleRate, size_t maxBufferFrames, int numChannels);
     
       /*!
@@ -85,7 +84,7 @@ namespace RealtimeResampler {
         Buffer                  mSourceCopy;
         Buffer                  mWorkspace;
         float                   mCoef[5];
-        void                    filter(Buffer* buffer, size_t numFrames);
+        void                    filter(Buffer* buffer);
 
       };
     
@@ -108,7 +107,7 @@ namespace RealtimeResampler {
     
     protected:
     
-      void                      process(Buffer* buffer, float cutoff, size_t numFrames);
+      void                      process(Buffer* buffer, float cutoff);
       virtual void              reset();
     
       Biquad                    mBiquad;

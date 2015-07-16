@@ -225,7 +225,7 @@ namespace RealtimeResampler {
       // convenience. There will be some error in the case of wild pitch bends,
       // but it is assumed that this approach is good enough.
       for(int i = 0; i < mLpfCount; i++){
-        mLPF[i]->process(buf, mLPF[i]->pitchFactorToCutoff(*mPitchBuffer.start), buf->length);
+        mLPF[i]->process(buf, mLPF[i]->pitchFactorToCutoff(*mPitchBuffer.start));
       }
     }
   }
