@@ -222,7 +222,7 @@ namespace RealtimeResampler {
             "Manually" set the low pass filter. This should not be called after the first call to rRenderer::render.
           */
         
-          void                        setLowPassFilter(Filter* filter);
+          void                        addLowPassFilter(Filter* filter);
         
           
           /*!
@@ -260,7 +260,8 @@ namespace RealtimeResampler {
           size_t                      mSourceBufferLength;
           Interpolator*               mInterpolator;
           size_t                      mMaxFramesToRender;
-          Filter*                     mLPF;
+          Filter*                     mLPF[10];
+          int                         mLpfCount;
 
       };
   

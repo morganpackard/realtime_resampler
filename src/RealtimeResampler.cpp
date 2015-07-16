@@ -47,7 +47,7 @@ namespace RealtimeResampler {
     mSourceBufferReadHead(sourceBufferLength),
     mPitchBuffer(maxFramesToRender),
     mInterpolationPositionBuffer(maxFramesToRender),
-    mLPF(0)
+    mLpfCount(0)
   {
   }
   
@@ -225,8 +225,8 @@ namespace RealtimeResampler {
     // Remove frequencies above nyquist. Use the start of the pitch buffer for
     // convenience. There will be some error in the case of wild pitch bends,
     // but it is assumed that this approach is good enough.
-    if(mLPF){
-      mLPF->process(buf, mLPF->pitchFactorToCutoff(*mPitchBuffer.start), buf->length);
+    for(int i = 0; i < mLpfCount; i++){
+      mLPF[i]->process(buf, mLPF[i]->pitchFactorToCutoff(*mPitchBuffer.start), buf->length);
     }
   }
   
@@ -259,7 +259,6 @@ namespace RealtimeResampler {
     // current and the beginning of the next.
     memcpy(currentBuffer->start + currentBuffer->length * mNumChannels, nextBuffer->start, BUFFER_BACK_PADDING * mNumChannels * sizeof(SampleType));
     
-
   }
   
   void Renderer::setInterpolator(RealtimeResampler::Interpolator *interpolator){
@@ -268,10 +267,17 @@ namespace RealtimeResampler {
     mSourceBuffer2= Buffer( mSourceBufferLength * mNumChannels, BUFFER_FRONT_PADDING * mNumChannels, BUFFER_BACK_PADDING * mNumChannels);
   }
   
-  void Renderer::setLowPassFilter(Filter* filter){
-    mLPF = filter;
-    if(mLPF){
-      mLPF->init(mSampleRate, mSourceBufferLength, mNumChannels);
+  void Renderer::addLowPassFilter(Filter* filter){
+    // check to make sure the filter wasn't already added
+    for(int i = 0; i < mLpfCount; i++){
+      if (mLPF[i] == filter) {
+        error("ERROR in Renderer::addLowPassFilter. You must not add the same filter more than once.");
+        return;
+      }
+    }
+    if (mLpfCount < 10) {
+      mLPF[mLpfCount++] = filter;
+      filter->init(mSampleRate, mSourceBufferLength, mNumChannels);
     }
   }
 

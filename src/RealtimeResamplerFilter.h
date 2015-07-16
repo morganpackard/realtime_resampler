@@ -77,6 +77,7 @@ namespace RealtimeResampler {
         Biquad(size_t maxBufferFrames, int numChannels);
         int                     mNumChannels;
         Buffer                  mSourceCopy;
+        Buffer                  mWorkspace;
         float                   mCoef[5];
         void                    filter(Buffer* buffer, size_t numFrames);
 
