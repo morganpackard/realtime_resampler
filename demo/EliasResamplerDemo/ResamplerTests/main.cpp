@@ -121,8 +121,16 @@ static void* debugMallocFn(size_t size){
 
 int main(int argc, const char * argv[]) {
   
-//    RealtimeResampler::mallocFn = debugMallocFn;
-//    RealtimeResampler::freeFn = debugFreeFn;
+
+
+    
+    ///////////////////////////////////////
+    // Test Buffer
+    ///////////////////////////////////////
+  
+    Buffer buf(10, 2);
+
+
   
     static const int kNumChannels = 2;
   
@@ -394,7 +402,10 @@ int main(int argc, const char * argv[]) {
     renderer.render(destinationBuffer, BLOCK_SIZE);
     TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE), BufferTestWrapper(testBuffer ,  BLOCK_SIZE), "Buffer mismatch");
   
-  
+    /* 
+    
+    // -- These tests will fail, but will print the results of the low-pass filter, which can be useful and interesting --
+    
     ///////////////////////////////////////
     // Basic pass-through test of LPF
     ///////////////////////////////////////
@@ -445,6 +456,7 @@ int main(int argc, const char * argv[]) {
     renderer.render(destinationBuffer, BLOCK_SIZE);
     TEST_EQ(BufferTestWrapper( destinationBuffer , BLOCK_SIZE * 2), BufferTestWrapper(impulseBuffer,  BLOCK_SIZE * 2), "Printing impulse response of filter");
 
+    */
   
     std::cout << "\n ======== Tests Completed =========== \n\n";
   

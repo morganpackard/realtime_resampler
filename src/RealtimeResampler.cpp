@@ -39,12 +39,12 @@ namespace RealtimeResampler {
     mSampleRate(sampleRate),
     mMaxFramesToRender(maxFramesToRender),
     mSourceBufferLength(sourceBufferLength),
-    mSourceBuffer1( sourceBufferLength * numChannels, BUFFER_FRONT_PADDING * numChannels, BUFFER_BACK_PADDING * numChannels),
-    mSourceBuffer2( sourceBufferLength * numChannels, BUFFER_FRONT_PADDING * numChannels, BUFFER_BACK_PADDING * numChannels),
+    mSourceBuffer1( sourceBufferLength, numChannels, BUFFER_FRONT_PADDING, BUFFER_BACK_PADDING),
+    mSourceBuffer2( sourceBufferLength, numChannels, BUFFER_FRONT_PADDING, BUFFER_BACK_PADDING),
     mBufferSwapState(0),
     mSourceBufferReadHead(sourceBufferLength),
-    mPitchBuffer(maxFramesToRender),
-    mInterpolationPositionBuffer(maxFramesToRender),
+    mPitchBuffer(maxFramesToRender, 1),
+    mInterpolationPositionBuffer(maxFramesToRender, 1),
     mLpfCount(0)
   {
   }
@@ -104,8 +104,8 @@ namespace RealtimeResampler {
         && ((interpolatedFramesToRender + numFramesRendered) < numFramesRequested)
       ){
         size_t pitchBufferPosition = numFramesRendered + interpolatedFramesToRender;
-        mInterpolationPositionBuffer.start[interpolatedFramesToRender] = interpPosition - interpPositionOffset;
-        interpPosition += mPitchBuffer.start[pitchBufferPosition];
+        mInterpolationPositionBuffer.getStartPtr()[interpolatedFramesToRender] = interpPosition - interpPositionOffset;
+        interpPosition += mPitchBuffer.getStartPtr()[pitchBufferPosition];
         interpolatedFramesToRender++;
       }
       
@@ -113,12 +113,12 @@ namespace RealtimeResampler {
       
       // start where we left off
       SampleType* writeHead = outputBuffer + numFramesRendered * mNumChannels;
-      SampleType* readHead = currentBuffer->start + ((int)mSourceBufferReadHead) * mNumChannels;
+      SampleType* readHead = currentBuffer->getStartPtr() + ((int)mSourceBufferReadHead) * mNumChannels;
       
       // interpolate [interpolatedFramesToRender] frames starting at readHead, writing to writehead
       // and using interpolationBuffer for frame position and interpolation coefficient
       for(int channel = 0; channel < mNumChannels; channel++){
-        mInterpolator->process(readHead + channel, writeHead + channel, mInterpolationPositionBuffer.start, interpolatedFramesToRender, mNumChannels);
+        mInterpolator->process(readHead + channel, writeHead + channel, mInterpolationPositionBuffer.getStartPtr(), interpolatedFramesToRender, mNumChannels);
       }
   
       // increment our total frame count
@@ -209,13 +209,13 @@ namespace RealtimeResampler {
         pitchChangePerFrame = 0;
         mCurrentPitch = mPitchDestination;
       }
-      mPitchBuffer.start[frame] = mCurrentPitch;
+      mPitchBuffer.getStartPtr()[frame] = mCurrentPitch;
     }
   }
   
   
   void Renderer::fillSourceBuffer(Buffer* buf){
-    buf->length = mAudioSource->getSamples(buf->start, mSourceBufferLength, mNumChannels);
+    buf->length = mAudioSource->getSamples(buf->getStartPtr(), mSourceBufferLength, mNumChannels);
   }
   
   void Renderer::filterBuffer(Buffer* buf){
@@ -225,7 +225,7 @@ namespace RealtimeResampler {
       // convenience. There will be some error in the case of wild pitch bends,
       // but it is assumed that this approach is good enough.
       for(int i = 0; i < mLpfCount; i++){
-        mLPF[i]->process(buf, mLPF[i]->pitchFactorToCutoff(*mPitchBuffer.start));
+        mLPF[i]->process(buf, mLPF[i]->pitchFactorToCutoff(*mPitchBuffer.getStartPtr()));
       }
     }
   }
@@ -245,19 +245,19 @@ namespace RealtimeResampler {
     fillSourceBuffer(nextBuffer);
     
     // zero out the end of the buffer in case it's shorter than we requested
-    memset(nextBuffer->start + nextBuffer->length * mNumChannels, 0, (mSourceBufferLength - nextBuffer->length) * mNumChannels * sizeof(SampleType) );
+    memset(nextBuffer->getStartPtr() + nextBuffer->length * mNumChannels, 0, (mSourceBufferLength - nextBuffer->length) * mNumChannels * sizeof(SampleType) );
     
     // copy the end of the current buffer into the "hidden" frames below index zero of the next buffer
     int bufferFrontSampleCount = BUFFER_FRONT_PADDING * mNumChannels;
-    void* nextBufferHiddenFramesStart = nextBuffer->start - bufferFrontSampleCount;
-    void* currentBufCopyStartPoint = currentBuffer->start + currentBuffer->length * mNumChannels - bufferFrontSampleCount;
+    void* nextBufferHiddenFramesStart = nextBuffer->getStartPtr() - bufferFrontSampleCount;
+    void* currentBufCopyStartPoint = currentBuffer->getStartPtr() + currentBuffer->length * mNumChannels - bufferFrontSampleCount;
     memcpy(nextBufferHiddenFramesStart, currentBufCopyStartPoint, bufferFrontSampleCount * sizeof(SampleType));
     
     filterBuffer(nextBuffer);
     
     // copy the (filtered) first couple frames of the next buffer on to the end of the current buffer to handle interpolation between the end of the
     // current and the beginning of the next.
-    memcpy(currentBuffer->start + currentBuffer->length * mNumChannels, nextBuffer->start, BUFFER_BACK_PADDING * mNumChannels * sizeof(SampleType));
+    memcpy(currentBuffer->getStartPtr() + currentBuffer->length * mNumChannels, nextBuffer->getStartPtr(), BUFFER_BACK_PADDING * mNumChannels * sizeof(SampleType));
     
   }
   

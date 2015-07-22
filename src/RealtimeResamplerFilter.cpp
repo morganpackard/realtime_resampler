@@ -37,15 +37,10 @@ namespace RealtimeResampler {
   IIRFilter::IIRFilter():mQ(Q_MIN){}
 
   IIRFilter::Biquad::Biquad(size_t maxBufferFrames, int numChannels):
-    mSourceCopy((maxBufferFrames + 2) * numChannels),
-    mWorkspace((maxBufferFrames + 2) * numChannels),
+    mSourceCopy(maxBufferFrames, numChannels, Renderer::BUFFER_FRONT_PADDING),
+    mWorkspace(maxBufferFrames, numChannels, Renderer::BUFFER_FRONT_PADDING),
     mNumChannels(numChannels)
-  {
-    mSourceCopy.start = mSourceCopy.mData + numChannels * Renderer::BUFFER_FRONT_PADDING;
-    mSourceCopy.mFrontPadding = numChannels * Renderer::BUFFER_FRONT_PADDING;
-    mWorkspace.start = mSourceCopy.mData + numChannels * Renderer::BUFFER_FRONT_PADDING;
-    mWorkspace.mFrontPadding = numChannels * Renderer::BUFFER_FRONT_PADDING;
-  }
+  {}
   
   void IIRFilter::bltCoef( SampleType b2, SampleType b1, SampleType b0, SampleType a1, SampleType a0, SampleType fc, SampleType *coef_out)
   {
@@ -67,20 +62,20 @@ namespace RealtimeResampler {
     // source samples, and delayed feedback samples
     
     // copy the last two frames from the last call to the beginning of the source buffer
-    memcpy(mSourceCopy.mData, mSourceCopy.mData + mNumChannels * mSourceCopy.length, Renderer::BUFFER_FRONT_PADDING * mNumChannels * sizeof(SampleType));
+    memcpy(mSourceCopy.getDataPtr(), mSourceCopy.getDataPtr() + mNumChannels * mSourceCopy.length, Renderer::BUFFER_FRONT_PADDING * mNumChannels * sizeof(SampleType));
     // copy in the incoming data
-    memcpy(mSourceCopy.start, buffer->start, bufferLengthBytes);
+    memcpy(mSourceCopy.getStartPtr(), buffer->getStartPtr(), bufferLengthBytes);
     // set the mSource buffer length to match the incoming data length
     mSourceCopy.length = buffer->length;
     
     // copy the last two frames of the workspace on to the beginning of the workspace
-    memcpy(mWorkspace.mData, mWorkspace.mData + mNumChannels * mWorkspace.length, Renderer::BUFFER_FRONT_PADDING * mNumChannels * sizeof(SampleType));
+    memcpy(mWorkspace.getDataPtr(), mWorkspace.getDataPtr() + mNumChannels * mWorkspace.length, Renderer::BUFFER_FRONT_PADDING * mNumChannels * sizeof(SampleType));
     mWorkspace.length = buffer->length;
     
     
     for (int chan = 0; chan < mNumChannels; chan++) {
-      SampleType* in = mSourceCopy.start + chan;
-      SampleType* out = mWorkspace.start + chan;
+      SampleType* in = mSourceCopy.getStartPtr() + chan;
+      SampleType* out = mWorkspace.getStartPtr() + chan;
     
       for (int i = 0; i < buffer->length ; i++) {
         *out = *(in)*mCoef[0] + *(in-mNumChannels)*mCoef[1] + *(in-2*mNumChannels)*mCoef[2] - *(out-mNumChannels)*mCoef[3] - *(out-2*mNumChannels)*mCoef[4];
@@ -89,7 +84,7 @@ namespace RealtimeResampler {
       }
     }
     
-    memcpy(buffer->start, mWorkspace.start, bufferLengthBytes);
+    memcpy(buffer->getStartPtr(), mWorkspace.getStartPtr(), bufferLengthBytes);
    
   }
 
@@ -121,8 +116,8 @@ namespace RealtimeResampler {
   }
   
   void LPF12::reset(){
-    memset(mBiquad.mSourceCopy.mData, 0, mBiquad.mSourceCopy.mNumSamples * sizeof(SampleType));
-    memset(mBiquad.mWorkspace.mData, 0, mBiquad.mWorkspace.mNumSamples * sizeof(SampleType));
+    mBiquad.mSourceCopy.clear();
+    mBiquad.mWorkspace.clear();
   }
 
 }

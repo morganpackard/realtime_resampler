@@ -9,9 +9,9 @@
 
 namespace RealtimeResampler{
 
-        Buffer::Buffer(size_t numSamples, size_t frontPadding, size_t backPadding):
-          mNumSamples(frontPadding + numSamples + backPadding),
-          mFrontPadding(frontPadding),
+        Buffer::Buffer(size_t numFrames, size_t numChannels, size_t frontPadding, size_t backPadding):
+          mNumSamples((frontPadding + numFrames + backPadding) * numChannels ),
+          mFrontPadding(frontPadding * numChannels),
           length(0)
         {
           init();
@@ -41,6 +41,17 @@ namespace RealtimeResampler{
           start = mData + mFrontPadding;
           memset(mData, 0, bytes);
         }
+  
+        void Buffer::clear(){
+          memset(mData, 0, mNumSamples * sizeof(SampleType));
+        }
 
+        SampleType* Buffer::getDataPtr(){
+          return mData;
+        }
+  
+        SampleType* Buffer::getStartPtr(){
+          return start;
+        }
 
 }

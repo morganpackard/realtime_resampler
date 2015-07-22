@@ -26,14 +26,13 @@ namespace RealtimeResampler {
         Also used as a general-purpose heap-allocated float array.
         
         Copy and assignment constructors do NOT copy audio data. Data must be explicitly copied.
-        
-        I'll admit it. This class is a bit ugly.
        
       */
   
-      struct Buffer{
-        // constructor
-        Buffer(size_t numSamples, size_t frontPadding=0, size_t backPadding=0);
+      class Buffer{
+      public:
+        // Constructor. Front padding and back padding arguments are in frames
+        Buffer(size_t numFrames, size_t numChannels, size_t frontPadding=0, size_t backPadding=0);
         
         ~Buffer();
         
@@ -43,22 +42,34 @@ namespace RealtimeResampler {
         // assignment operator
         Buffer& operator= (const Buffer& other);
         
+        SampleType*             getDataPtr();
+        
+        SampleType*             getStartPtr();
         
         // The current length of the "actual" data, in frames. This doesn't include padding.
-        // The buffer doesn't know if it's stereo or not, so this may or may not equal mNumSamples
+        // This is not set by the buffer. It's up to whoever's using the buffer, filling it with data, etc,
+        // to set the length appropriately
         size_t                  length;
+        
+        //  set all the samples to zero
+        void                    clear();
+        
+      protected:
+      
         
         // the number of samples the allocated space will hold, minus the padding
         size_t                  mNumSamples;
         
+        // the number of SAMPLES of front padding. Frames * numChannels
         size_t                  mFrontPadding;
+      
+        void                    init();
+        // All of the memory owned by this object
+        SampleType*             mData;
         
         // mData, offset by frontPadding. The "official" start of the buffer
         SampleType*             start;
         
-        void                    init();
-        // All of the memory owned by this object
-        SampleType*             mData;
       };
 
 }
