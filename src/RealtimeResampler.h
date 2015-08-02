@@ -99,23 +99,6 @@ namespace RealtimeResampler {
           float                       getCurrentPitch();
         
           /*!
-            Calclulate how many input frames will be needed to render a given number of output frames, starting with the next call to "render". 
-            This calculation is based on the currently scheduled pitch and interpolation. One should always call setPitch _before_ getInputFrameCount
-            rather than after. Otherwise the value returned by getInputFrameCount will be invalid.
-          */
-        
-          size_t                      getInputFrameCount(size_t outputFrameCount);
-        
-          /*!
-            Calclulate how many output frames may be rendered using a given number of input frames. 
-            This calculation is based on the currently scheduled pitch and interpolation. One should always call setPitch _before_ getOutputFrameCount
-            rather than after in order, otherwise the value returned by getInputFrameCount will be invalid.
-          */
-        
-          size_t                      getOutputFrameCount(size_t inputFrameCount);
-        
-        
-          /*!
             Get the number of channels the renderer was configured with.
           */
         

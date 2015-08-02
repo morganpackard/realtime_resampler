@@ -1,9 +1,12 @@
 //
-//  RealtimeResamplerBuffer.h
-//  EliasResamplerDemo
+//  RealtimeResampler.h
+//  Resampler
 //
-//  Created by Morgan Packard on 7/16/15.
-//  Copyright (c) 2015 Morgan Packard. All rights reserved.
+//  Created by Morgan Packard with encouragement and guidance from Philip Bennefall on 2/22/15.
+//
+//  Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
 //
 
 #ifndef __EliasResamplerDemo__RealtimeResamplerBuffer__

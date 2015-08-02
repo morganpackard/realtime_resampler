@@ -1,8 +1,12 @@
 //
-//  RealtimeResampler.cpp
+//  RealtimeResampler.h
 //  Resampler
 //
 //  Created by Morgan Packard with encouragement and guidance from Philip Bennefall on 2/22/15.
+//
+//  Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
 //
 
 #include "RealtimeResampler.h"
@@ -148,49 +152,6 @@ namespace RealtimeResampler {
       mCurrentPitch = start;
       mPitchDestination = end;
       mSecondsUntilPitchDestination = glideDuration;
-  }
-  
-  size_t Renderer::getInputFrameCount(size_t outputFrameCount){
-    double duration = outputFrameCount / mSampleRate;
-    double glideDuration = duration < mSecondsUntilPitchDestination ? duration : mSecondsUntilPitchDestination;
-    double nonGlideDuration = duration - glideDuration;
-    nonGlideDuration = nonGlideDuration > 0 ? nonGlideDuration : 0;
-    double glideSourceTime = 0;
-    if (glideDuration > 0) {
-      double slope = (mPitchDestination - mCurrentPitch) / mSecondsUntilPitchDestination;
-      double endPitch = mCurrentPitch + slope * glideDuration;
-      glideSourceTime = glideDuration *  (mCurrentPitch +  endPitch) / 2 ;
-    }
-    double nonGlideSourceTime = nonGlideDuration * mPitchDestination;
-    return ceil( (glideSourceTime + nonGlideSourceTime) * mSampleRate );
-  }
-  
-  
-  size_t Renderer::getOutputFrameCount(size_t inputFrameCount){
-    // First, calculate the total number of input frames required to render the entire pitch glide
-    float inputFramesForGlide = mSampleRate * mSecondsUntilPitchDestination * (mCurrentPitch + mPitchDestination) / 2;
-    // If that total is less than inputFrameCount, calculate the duration of glide needed to "use up" the input frames.
-    if (inputFrameCount < inputFramesForGlide) {
-      /*
-      
-        f(x) = mx + b;
-        area under f(x) = x * b + mx/2
-        area = x(b + m/2)
-       
-          area
-        --------  =  x
-        b + m/2
-      
-      */
-      
-      float slope = (mPitchDestination - mCurrentPitch) / mSecondsUntilPitchDestination;
-      return inputFrameCount / (mCurrentPitch + slope / 2);
-    }else{
-      float outputFramesForGlide = mSecondsUntilPitchDestination * mSampleRate;
-      size_t inputFramesForSustain = inputFrameCount - inputFramesForGlide;
-      size_t outputFramesForSustain = inputFramesForSustain / mPitchDestination;
-      return outputFramesForSustain + outputFramesForGlide;
-    }
   }
   
   void Renderer::calculatePitchForNextFrames(size_t numFrames){
