@@ -181,7 +181,7 @@ namespace RealtimeResampler {
   
   void Renderer::filterBuffer(Buffer* buf){
     // There's no need to anti-alias if we're pitching down
-    if(mCurrentPitch > 1 || mPitchDestination > 0){
+    if(mCurrentPitch > 1 || mPitchDestination > 1){
       // Attenuate frequencies above nyquist. Use the start of the pitch buffer for
       // convenience. There will be some error in the case of wild pitch bends,
       // but it is assumed that this approach is good enough.
