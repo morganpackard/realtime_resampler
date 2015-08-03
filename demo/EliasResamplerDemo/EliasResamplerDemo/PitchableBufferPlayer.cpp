@@ -22,6 +22,8 @@ namespace Tonic { namespace Tonic_{
   
   PitchableBufferPlayer_::~PitchableBufferPlayer_(){
     delete resampler;
+    delete mLPF;
+    delete mInterpolator;
   }
   
   void  PitchableBufferPlayer_::setBuffer(SampleTable buffer){
@@ -32,12 +34,11 @@ namespace Tonic { namespace Tonic_{
       delete resampler;
     }
     resampler = new RealtimeResampler::Renderer(Tonic::sampleRate(), buffer_.channels(), 64, 64);
-    resampler->setInterpolator(new WatteTrilinearInterpolator());
-    resampler->addLowPassFilter(new LPF12());
-//    resampler->addLowPassFilter(new LPF12());
-//    resampler->addLowPassFilter(new LPF12());
+    mInterpolator = new WatteTrilinearInterpolator();
+    mLPF = new LPF12();
+    resampler->setInterpolator(mInterpolator);
+    resampler->addLowPassFilter(mLPF);
     resampler->setAudioSource(this);
-    printf("PitchableBufferPlayer_::setBuffer buffer size: %zu\n", buffer_.frames());
   }
   
   inline void PitchableBufferPlayer_::computeSynthesisBlock(const SynthesisContext_ &context){
@@ -81,21 +82,14 @@ namespace Tonic { namespace Tonic_{
     
     while (totalFramesCopied < numFramesRequested) {
       size_t framesLeftInBuffer = calculateFramesLeftInBuffer();
-      size_t copyOverage = max(0, numFramesRequested - framesLeftInBuffer);
-      size_t framesToCopy = numFramesRequested - totalFramesCopied - copyOverage;
+      size_t framesToCopy = min(numFramesRequested - totalFramesCopied, framesLeftInBuffer);
       size_t bytesToCopy = framesToCopy * buffer_.channels() * sizeof(TonicFloat);
       memcpy(outputBuffer, &buffer_.dataPointer()[currentFrame * buffer_.channels()], bytesToCopy);
       
-      
-//      printf("PitchableBufferPlayer_::getSamples copying %lu frames starting at %lu\n", framesToCopy, currentFrame);
-      
-      if(totalFramesCopied > 0){
-          printf("PitchableBufferPlayer_::getSamples totalFramesCopied: %lu. framesToCopy: %lu\n", totalFramesCopied, framesToCopy);
-      }
-      
       totalFramesCopied += framesToCopy;
       currentFrame +=framesToCopy;
-      outputBuffer += framesToCopy;
+      outputBuffer += framesToCopy * numChannels;
+      
       if (currentFrame >= buffer_.frames()) {
         if(mDoesLoop){
           currentFrame = mStartSecs * sampleRate() * buffer_.channels();
@@ -104,11 +98,7 @@ namespace Tonic { namespace Tonic_{
         }
       }
     }
-    
-    if(totalFramesCopied < numFramesRequested){
-      printf("PitchableBufferPlayer_::getSamples returning fewer frames than requested\n");
-    }
-    
+
     return totalFramesCopied;
 
   }

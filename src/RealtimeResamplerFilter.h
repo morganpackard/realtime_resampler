@@ -29,6 +29,7 @@ namespace RealtimeResampler {
     public:
     
       Filter();
+      virtual ~Filter(){};
     
       /*!
         Different filters have steeper and shallower rolloffs. Depending in the filter, it may be necessary to set the cutoff

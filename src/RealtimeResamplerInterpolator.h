@@ -28,6 +28,8 @@ namespace RealtimeResampler {
     
   public:
   
+    virtual ~Interpolator(){};
+  
   protected:
   
     /*!
