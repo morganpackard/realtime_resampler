@@ -67,14 +67,18 @@ namespace RealtimeResampler {
     // source samples, and delayed feedback samples
     
     // copy the last two frames from the last call to the beginning of the source buffer
-    memcpy(mSourceCopy.getDataPtr(), mSourceCopy.getDataPtr() + mNumChannels * mSourceCopy.length, Renderer::BUFFER_FRONT_PADDING * mNumChannels * sizeof(SampleType));
+    if(mSourceCopy.length > 0){
+      memcpy(mSourceCopy.getDataPtr(), mSourceCopy.getDataPtr() + mNumChannels * mSourceCopy.length, Renderer::BUFFER_FRONT_PADDING * mNumChannels * sizeof(SampleType));
+    }
     // copy in the incoming data
     memcpy(mSourceCopy.getStartPtr(), buffer->getStartPtr(), bufferLengthBytes);
     // set the mSource buffer length to match the incoming data length
     mSourceCopy.length = buffer->length;
     
     // copy the last two frames of the workspace on to the beginning of the workspace
-    memcpy(mWorkspace.getDataPtr(), mWorkspace.getDataPtr() + mNumChannels * mWorkspace.length, Renderer::BUFFER_FRONT_PADDING * mNumChannels * sizeof(SampleType));
+    if(mWorkspace.length > 0){
+      memcpy(mWorkspace.getDataPtr(), mWorkspace.getDataPtr() + mNumChannels * mWorkspace.length, Renderer::BUFFER_FRONT_PADDING * mNumChannels * sizeof(SampleType));
+    }
     mWorkspace.length = buffer->length;
     
     
