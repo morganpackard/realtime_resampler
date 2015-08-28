@@ -142,64 +142,6 @@ int main(int argc, const char * argv[]) {
     testRenderer = renderer;
   
     ///////////////////////////////////////
-    // Test Renderer::getInputFrameCount
-    ///////////////////////////////////////
-  
-    renderer.setPitch(1, 1, 0);
-  
-    TEST_TRUE( abs(renderer.getInputFrameCount(100) - 100.0f) <= 1 , "InputFramecount at pitch == 1 failed")
-  
-    
-    renderer.setPitch(2, 2, 0);
-  
-    TEST_TRUE( abs(renderer.getInputFrameCount(100) - 200.0f) <= 1 , "InputFramecount at pitch == 2 failed")
-  
-    renderer.setPitch(1, 2, 0);
-  
-    TEST_TRUE( abs(renderer.getInputFrameCount(100) - 200.0f) <= 1 , "InputFramecount at pitch == 2 with instant glide failed")
-  
-    renderer.setPitch(1, 2, 1);
-    
-    TEST_EQ( renderer.getInputFrameCount(kSampleRate), kSampleRate * 1.5 , "InputFramecount at pitch == 2 with one second glide failed")
-  
-  
-    renderer.setPitch(1, 2, 1);
-    
-    TEST_EQ( renderer.getInputFrameCount(kSampleRate  + kSampleRate ), kSampleRate * 1.5 + kSampleRate * 2 , "InputFramecount at pitch == 2 with one second glide two second render failed")
-      
-    renderer.setPitch(1, 3, 2);
-
-    TEST_EQ( renderer.getInputFrameCount(kSampleRate), kSampleRate * 1.5 , "InputFramecount at pitch == 3 with two second glide failed")
-  
-  
-    ///////////////////////////////////////
-    // Test Renderer::getOutputFrameCount
-    ///////////////////////////////////////
-  
-    renderer.setPitch(1, 1, 0);
-  
-    TEST_EQ( renderer.getOutputFrameCount(kSampleRate), kSampleRate  , "getOutputFrameCount at pitch == 1 with no glide failed")
-  
-    renderer.setPitch(1, 2, 0);
-  
-    TEST_EQ( renderer.getOutputFrameCount(200), 100 , "getOutputFrameCount at pitch == 2 with instant glide failed")
-  
-  
-    renderer.setPitch(1, 2, 1);
-  
-    TEST_EQ( renderer.getOutputFrameCount(kSampleRate * 1.5), kSampleRate   , "getOutputFrameCount at pitch == 2 with one second glide failed")
-  
-    renderer.setPitch(1, 2, 1);
-    
-    TEST_EQ( renderer.getOutputFrameCount( kSampleRate * 1.5 + kSampleRate * 2   ), kSampleRate  + kSampleRate , "getOutputFrameCount at pitch == 2 with one second glide two second render failed")
-  
-  
-    renderer.setPitch(1, 3, 2);
-
-    TEST_EQ( renderer.getOutputFrameCount(kSampleRate * 1.5), kSampleRate  , "getOutputFrameCount at pitch == 3 with two second glide failed")
-  
-  
-    ///////////////////////////////////////
     // Test Renderer returns fewer frames when audio source provides fewer
     ///////////////////////////////////////
   
