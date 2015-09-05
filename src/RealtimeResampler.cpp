@@ -119,11 +119,19 @@ namespace RealtimeResampler {
       SampleType* writeHead = outputBuffer + numFramesRendered * mNumChannels;
       SampleType* readHead = currentBuffer->getStartPtr() + ((int)mSourceBufferReadHead) * mNumChannels;
       
-      // interpolate [interpolatedFramesToRender] frames starting at readHead, writing to writehead
-      // and using interpolationBuffer for frame position and interpolation coefficient
-      for(int channel = 0; channel < mNumChannels; channel++){
-        mInterpolator->process(readHead + channel, writeHead + channel, mInterpolationPositionBuffer.getStartPtr(), interpolatedFramesToRender, mNumChannels);
+      // no need to interpolate if the pitch is zero
+      if( mCurrentPitch == 1 && mPitchDestination == 1){
+        memcpy(writeHead, readHead, interpolatedFramesToRender * mNumChannels * sizeof(SampleType));
+      }else{
+        // otherwise, use the interpolator
+        // interpolate [interpolatedFramesToRender] frames starting at readHead, writing to writehead
+        // and using interpolationBuffer for frame position and interpolation coefficient
+        for(int channel = 0; channel < mNumChannels; channel++){
+          mInterpolator->process(readHead + channel, writeHead + channel, mInterpolationPositionBuffer.getStartPtr(), interpolatedFramesToRender, mNumChannels);
+        }
       }
+      
+
   
       // increment our total frame count
       numFramesRendered += interpolatedFramesToRender;

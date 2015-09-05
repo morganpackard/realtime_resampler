@@ -55,7 +55,7 @@ int main(int argc, const char * argv[])
       .trigger( ControlTrigger().trigger() )
       //.trigger( ControlMetro().bpm(10) )
       //.playbackRate( 2 + 1.5 * ControlSineOsc().freq(0.5) )
-      .playbackRate( 1.5 )
+      .playbackRate( 1 )
       .loop(true);
 
 
