@@ -229,13 +229,6 @@ namespace RealtimeResampler {
   }
   
   void Renderer::addLowPassFilter(Filter* filter){
-    // check to make sure the filter wasn't already added
-    for(int i = 0; i < mLpfCount; i++){
-      if (mLPF[i] == filter) {
-        printf("ERROR in Renderer::addLowPassFilter. You must not add the same filter more than once.");
-        return;
-      }
-    }
     if (mLpfCount < 10) {
       mLPF[mLpfCount++] = filter;
       filter->init(mSampleRate, mSourceBufferLength, mNumChannels);
